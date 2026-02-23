@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/outfit/300.css";
+@import "@fontsource/outfit/400.css";
+@import "@fontsource/outfit/600.css";
+
+@theme {
+  --color-al13-dark: #0f1115;
+  --color-al13-black: #090a0c;
+  --color-al13-glass: rgba(15, 17, 21, 0.65);
+  --color-al13-glass-light: rgba(255, 255, 255, 0.05);
+  --color-al13-glass-border: rgba(255, 255, 255, 0.08);
+  --color-al13-gold: #d4af37;
+  --color-al13-silver: #e0e0e0;
+  --color-al13-accent: #f5f5f5;
+
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Outfit", sans-serif;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-al13-glass backdrop-blur-md border border-al13-glass-border shadow-2xl;
+  }
+  .glass-panel-light {
+    @apply bg-al13-glass-light backdrop-blur-lg border border-white/10 shadow-xl;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-al13-silver to-white;
+  }
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-al13-gold to-yellow-200;
+  }
+}

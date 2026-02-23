@@ -1,0 +1,12 @@
+{
+    "00_Indice_Documentacion_Profesional.md": {
+        "status": "REJECTED_OR_PARTIAL",
+        "failures_count": 1,
+        "did_feedback": "[DID_PARTIAL]\n[Simulaci\u00f3n] Cliente LLM no configurado. Revisa la densidad del contenido."
+    },
+    "test_scriber.md": {
+        "status": "REJECTED_OR_PARTIAL",
+        "failures_count": 1,
+        "did_feedback": "[DID_PARTIAL]\n[Simulaci\u00f3n] Cliente LLM no configurado. Revisa la densidad del contenido."
+    }
+}

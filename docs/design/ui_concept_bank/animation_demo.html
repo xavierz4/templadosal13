@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AL13 Motion Demo</title>
+    <style>
+        :root {
+            --bg: #0A0A0C;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #F8F9FA;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a24 0%, #0A0A0C 60%);
+            overflow: hidden;
+        }
+        .grid { display: flex; gap: 2rem; }
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px; width: 300px; height: 420px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            cursor: pointer; position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .thumb {
+            height: 220px; border-radius: 8px; margin-bottom: 20px;
+            background: linear-gradient(135deg, #2a2a35, #111118);
+            position: relative; overflow: hidden;
+        }
+        /* Fake a glowing effect for realism */
+        .thumb::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg); animation: shine 4s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        
+        h3 { margin: 0 0 8px 0; font-size: 1.3rem; letter-spacing: -0.02em; font-weight: 500; }
+        p { margin: 0; font-size: 0.9rem; color: #888; }
+        
+        .btn {
+            background: rgba(255,255,255,0.9); color: #000; border: none;
+            padding: 14px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            width: 100%; 
+            transition: background 0.2s ease;
+        }
+        .badge {
+            position: absolute; top: 36px; right: 36px;
+            background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid" id="grid">
+        <div class="card" id="card1">
+            <div class="badge">Hover & Click Me</div>
+            <div>
+                <div class="thumb"></div>
+                <h3>División Baño 5020</h3>
+                <p>Simulador B2B (Touch Feedback)</p>
+            </div>
+            <button class="btn" id="btn1">Cotizar Proyecto</button>
+        </div>
+        <div class="card" id="card2">
+            <div>
+                <div class="thumb"></div>
+                <h3>Puerta Corrediza Oro</h3>
+                <p>Simulador Error Háptico</p>
+            </div>
+            <button class="btn" id="btn2">Cálculo de Error</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { animate, spring, stagger } from "https://cdn.jsdelivr.net/npm/motion@11.11.13/+esm";
+
+        // Entrance animation
+        animate(".card", 
+            { y: [100, 0], opacity: [0, 1] }, 
+            { delay: stagger(0.15), easing: spring({ stiffness: 200, damping: 20 }) }
+        );
+
+        // Tactile Spring Hover
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                animate(card, { scale: 0.96, y: -4 }, { easing: spring({ stiffness: 400, damping: 15, mass: 0.8 }) });
+                card.style.boxShadow = "0 30px 60px rgba(0,0,0,0.8)";
+            });
+            card.addEventListener('mouseleave', () => {
+                animate(card, { scale: 1, y: 0 }, { easing: spring({ stiffness: 300, damping: 20 }) });
+                card.style.boxShadow = "0 20px 40px rgba(0,0,0,0.5)";
+            });
+        });
+
+        // Click Event 1 - Success Ripple / Scaling
+        const btn1 = document.getElementById('btn1');
+        btn1.addEventListener('click', (e) => {
+            e.stopPropagation();
+            animate(btn1, { scale: 0.9 }, { duration: 0.1 });
+            setTimeout(() => {
+                animate(btn1, { scale: 1 }, { easing: spring({ stiffness: 400, damping: 10 }) });
+                btn1.textContent = "Cotización Creada ✓";
+            }, 100);
+            
+            // Pop the entire card lightly
+            animate('#card1', { scale: [0.96, 0.99, 0.96] }, { duration: 0.4, easing: spring() });
+        });
+
+        // Click Event 2 - Error Vibration
+        const btn2 = document.getElementById('btn2');
+        btn2.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // XState Error shake
+            animate('#card2', { x: [-15, 15, -10, 10, -5, 5, 0] }, { duration: 0.4 });
+            btn2.textContent = "Error: Dimensión Zod";
+            btn2.style.background = "#fca5a5";
+            setTimeout(() => {
+                btn2.textContent = "Cálculo de Error";
+                btn2.style.background = "rgba(255,255,255,0.9)";
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

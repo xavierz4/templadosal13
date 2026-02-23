@@ -1,0 +1,33 @@
+{
+  "name": "templados-temp",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test:unit": "vitest run",
+    "did:audit": "python tools/did_auditor/did_observer.py",
+    "did:clean": "python tools/did_auditor/clean_docs.py",
+    "setup:hooks": "python tools/did_auditor/install_git_hook.py"
+  },
+  "dependencies": {
+    "@astrojs/svelte": "^7.2.5",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/outfit": "^5.2.8",
+    "@tailwindcss/vite": "^4.2.0",
+    "astro": "^5.17.1",
+    "svelte": "^5.53.2",
+    "tailwindcss": "^4.2.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/svelte": "^5.3.1",
+    "@vite-pwa/astro": "^1.2.0",
+    "jsdom": "^28.1.0",
+    "vitest": "^4.0.18",
+    "workbox-window": "^7.4.0"
+  }
+}
