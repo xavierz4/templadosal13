@@ -1,58 +1,52 @@
 ---
 import PublicLayout from '@shared/ui/PublicLayout.astro';
 import Navbar from '@shared/ui/Navbar.svelte';
-import Hero from '@modules/landing/ui/Hero.svelte';
-import ValueProposition from '@modules/landing/ui/ValueProposition.svelte';
-import TechnicalValidator from '@modules/quoter/ui/TechnicalValidator.svelte';
+import { Hero, ValueProposition } from '@modules/landing';
+import { TechnicalValidator } from '@modules/quoter';
 import Footer from '@shared/ui/Footer.astro';
-import { getImage } from 'astro:assets';
+import { getImage, type ImageMetadata } from 'astro:assets';
 
 import heroImgBase from '../assets/gallery/vidrio.jpeg';
 
 // Estrategia de Imágenes Responsive Optimizada (FHD)
 // Generar un 4K (3840px) por cada imagen estancaba el servidor local durante +20 segundos.
-// Para AL13, una base estable en Full HD (1920px) con fallback a HD (1280px) es el balance 
+// Para AL13, una base estable en Full HD (1920px) con fallback a HD (1280px) es el balance
 // perfecto entre asombro visual B2C y rendimiento impecable tanto en Dev como en Producción.
 
-const getResponsive = async (img: any) => {
+const getResponsive = async (img: ImageMetadata) => {
   const opt2K = await getImage({ src: img, format: 'webp', width: 2560, quality: 90 });
   const optFHD = await getImage({ src: img, format: 'webp', width: 1920, quality: 90 });
   const optHD = await getImage({ src: img, format: 'webp', width: 1280, quality: 85 });
-  return { 
+  return {
     src: opt2K.src, // Fallback nativo 2K
-    srcset: `${optHD.src} 1280w, ${optFHD.src} 1920w, ${opt2K.src} 2560w` 
+    srcset: `${optHD.src} 1280w, ${optFHD.src} 1920w, ${opt2K.src} 2560w`,
   };
 };
 const responsiveHero = await getResponsive(heroImgBase);
 
-const bgImages = [
-  responsiveHero,
-  responsiveHero,
-  responsiveHero
-];
+const bgImages = [responsiveHero, responsiveHero, responsiveHero];
 ---
 
-<PublicLayout 
-  title="Templados AL13 - Boutique Industrial en Vidrio Templado" 
+<PublicLayout
+  title="Templados AL13 - Boutique Industrial en Vidrio Templado"
   description="Redefiniendo el estándar arquitectónico en cristal templado. Paneles 3D B2B/B2C para la era digital."
 >
-	<!-- Navbar con ScrollSpy reactivo en Cliente -->
-	<Navbar client:load />
+  <!-- Navbar con ScrollSpy reactivo en Cliente -->
+  <Navbar client:load />
 
-	<main>
-		<!-- Sección 1: El Escaparate (Hero Cine) -->
-		<Hero client:load backgroundImages={bgImages} />
-		
-		<!-- Sección 2: Propuesta de Valor (Feature List) -->
-		<ValueProposition client:visible />
+  <main>
+    <!-- Sección 1: El Escaparate (Hero Cine) -->
+    <Hero client:load backgroundImages={bgImages} />
 
-		<!-- Sección 3: Calculadora/Validador Técnico -->
-		<section id="cotizador" class="bg-[#0A0A0A] relative z-20">
-			<TechnicalValidator client:visible />
-		</section>
-	</main>
+    <!-- Sección 2: Propuesta de Valor (Feature List) -->
+    <ValueProposition client:visible />
 
-	<!-- El Pie Estático B2B -->
-	<Footer />
+    <!-- Sección 3: Calculadora/Validador Técnico -->
+    <section id="cotizador" class="bg-[#0A0A0A] relative z-20">
+      <TechnicalValidator client:visible />
+    </section>
+  </main>
 
+  <!-- El Pie Estático B2B -->
+  <Footer />
 </PublicLayout>
