@@ -1,13 +1,13 @@
 import type { APIRoute } from 'astro';
 import { LeadPayloadSchema } from '@core/domain/leadSchema';
-import { supabase } from '@core/infrastructure/supabase';
 import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
-import { generateB2BEmailHtml } from '@core/infrastructure/emailTemplate';
-import { Resend } from 'resend';
-import { config } from '@core/config/env';
 
-// Inicializar SDK de Resend con la variable de entorno validada estrictamente
-const resend = new Resend(config.RESEND_API_KEY);
+// Dependency Injection (Instanciación de Adapters de Infraestructura)
+import { SupabaseLeadRepository } from '@core/infrastructure/repositories/SupabaseLeadRepository';
+import { ResendEmailService } from '@core/infrastructure/services/ResendEmailService';
+
+const leadRepository = new SupabaseLeadRepository();
+const emailService = new ResendEmailService();
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -33,54 +33,15 @@ export const POST: APIRoute = async ({ request }) => {
         });
     }
 
-    // Task 3.1.3 & 3.1.4 - Guardar en base de datos previniendo inyección por SDK
-    const { data: insertedLead, error: dbError } = await supabase
-        .from('leads')
-        .insert([{
-            product_type: validatedData.productType,
-            customer_name: validatedData.contactName,
-            customer_phone: validatedData.phone,
-            measurements: {
-                width_mm: validatedData.width,
-                height_mm: validatedData.height,
-                glass_color: validatedData.glassColor,
-                aluminum_color: validatedData.aluminumColor,
-                thickness_recommended: physicsFeedback.recommendedThickness
-            },
-            notes: validatedData.companyName ? `Empresa: ${validatedData.companyName}` : null,
-            status: 'NUEVO' // Enums match Database['public']['Enums']['lead_status']
-        }])
-        .select()
-        .single();
+    // Task 3.1.3 & 3.1.4 - Guardar en base de datos mediante el Repositorio (Inversión de Dependencia)
+    const { id: insertedLeadId } = await leadRepository.saveLead(validatedData, physicsFeedback);
 
-    if (dbError) {
-        console.error("Supabase Error:", dbError);
-        throw new Error("No pudimos guardar los datos en nuestra bóveda.");
-    }
-
-    // Task 3.4.1 - Notificaciones Asíncronas Push (Resend SDK)
-    // Se ejecuta de manera "Fire-and-Forget" (sin await estricto que bloquee)
-    try {
-        const emailHtmlTemplate = generateB2BEmailHtml(validatedData, physicsFeedback, insertedLead.id);
-        
-        resend.emails.send({
-            from: 'Sistema AL13 <leads@templadosal13.com>', // Debe ser un dominio verificado
-            to: ['ceotemplados@gmail.com'], // TODO: Mover a env var
-            subject: `🚨 NUEVO LEAD B2B: ${validatedData.productType.toUpperCase()}`,
-            html: emailHtmlTemplate
-        }).then((data) => {
-             console.log("Email B2B enviado asincronamente:", data);
-        }).catch((err) => {
-             console.error("Error silencioso enviando correo Resend:", err);
-        });
-    } catch (e) {
-        // Fallar el correo no debe fallar el Lead
-        console.error("Fallo crítico iniciando Resend", e);
-    }
+    // Task 3.4.1 - Notificaciones Asíncronas Push delegadas al Servicio (Fire-and-Forget)
+    emailService.sendB2BLeadNotification(validatedData, physicsFeedback, insertedLeadId);
 
     return new Response(JSON.stringify({
       message: 'Ingeniería solicitada y Lead guardado con éxito.',
-      leadId: insertedLead.id,
+      leadId: insertedLeadId,
       physics: physicsFeedback
     }), {
       status: 201, // Status Created
@@ -110,3 +71,4 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 };
+

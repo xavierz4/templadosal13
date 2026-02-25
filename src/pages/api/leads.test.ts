@@ -1,23 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock the Supabase client entirely BEFORE importing the route
-vi.mock('@core/infrastructure/supabase', () => ({
-  supabase: {
-    from: vi.fn().mockReturnValue({
-      insert: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ data: { id: 'mocked-id' }, error: null })
-        })
-      })
-    })
-  }
-}));
-
-// Mock Resend entirely to avoid API Key validation errors
-vi.mock('resend', () => {
+// Mock de los Puertos de Infraestructura (Hexagonal) ANTES de importar la ruta
+vi.mock('@core/infrastructure/repositories/SupabaseLeadRepository', () => {
   return {
-    Resend: class {
-      emails = { send: vi.fn().mockResolvedValue({ id: 'test_email_id' }) };
+    SupabaseLeadRepository: class {
+      saveLead = vi.fn().mockResolvedValue({ id: 'mocked-id' });
+    }
+  };
+});
+
+vi.mock('@core/infrastructure/services/ResendEmailService', () => {
+  return {
+    ResendEmailService: class {
+      sendB2BLeadNotification = vi.fn().mockResolvedValue(true);
     }
   };
 });
