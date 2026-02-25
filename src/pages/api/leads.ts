@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
-import { LeadPayloadSchema } from '../../lib/leadSchema';
-import { supabase } from '../../lib/supabase';
-import { validateStructuralFeasibility } from '../../lib/physicsEngine';
-import { generateB2BEmailHtml } from '../../lib/emailTemplate';
+import { LeadPayloadSchema } from '@core/domain/leadSchema';
+import { supabase } from '@core/infrastructure/supabase';
+import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
+import { generateB2BEmailHtml } from '@core/infrastructure/emailTemplate';
 import { Resend } from 'resend';
 
 // Inicializar SDK de Resend con la variable de entorno

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade, slide } from 'svelte/transition';
-  import { validateStructuralFeasibility, type PhysicsResult, type ProductType } from '../../../lib/physicsEngine';
+  import { validateStructuralFeasibility, type PhysicsResult, type ProductType } from '@core/domain/physicsEngine';
   
   // State Machine (Svelte 5 Runes)
   let currentStep = $state(1);

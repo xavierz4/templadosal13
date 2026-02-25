@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock the Supabase client entirely BEFORE importing the route
-vi.mock('../../lib/supabase', () => ({
+vi.mock('@core/infrastructure/supabase', () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       insert: vi.fn().mockReturnValue({
@@ -12,6 +12,15 @@ vi.mock('../../lib/supabase', () => ({
     })
   }
 }));
+
+// Mock Resend entirely to avoid API Key validation errors
+vi.mock('resend', () => {
+  return {
+    Resend: class {
+      emails = { send: vi.fn().mockResolvedValue({ id: 'test_email_id' }) };
+    }
+  };
+});
 
 import { POST } from './leads';
 
