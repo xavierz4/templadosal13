@@ -42,3 +42,8 @@ __pycache__/
 tools/did_auditor/.venv/
 tools/did_auditor/.did_data/
 tools/did_auditor/__pycache__/
+
+# Documentación interna y agentes (No exponer públicamente)
+docs/
+agents/
+tools/
