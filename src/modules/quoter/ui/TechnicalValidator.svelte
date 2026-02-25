@@ -1,13 +1,14 @@
 <script lang="ts">
   import { fade, slide } from 'svelte/transition';
-  import { validateStructuralFeasibility, type PhysicsResult, type ProductType } from '@core/domain/physicsEngine';
+  import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
+  import { submitLeadB2B } from '../api/leadClient';
   
   // State Machine (Svelte 5 Runes)
   let currentStep = $state(1);
 
   // Payload a recopilar
   let quoteData = $state({
-    productType: '' as ProductType, // 'cabina_ducha', 'divisor_oficina', 'fachada_monumental', 'puerta_pivotante'
+    productType: '', // 'cabina_ducha', 'divisor_oficina', 'fachada_monumental', 'puerta_pivotante'
     width: '',
     height: '',
     glassColor: '',
@@ -19,7 +20,7 @@
   });
 
   // Resultado del Engine
-  let physicsFeedback = $state<PhysicsResult | null>(null);
+  let physicsFeedback = $state<any | null>(null);
 
   const steps = [
     { title: "Aplicación Arquitectónica", desc: "Elige el sistema de vidrio y aluminio a cotizar." },
@@ -61,21 +62,16 @@
     isSubmitting = true;
     
     try {
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(quoteData)
+      // Delegamos la red interactuando estrictamente con la API del Módulo (FSD Decoupling)
+      const result = await submitLeadB2B({
+         ...quoteData,
+         width: Number(quoteData.width),
+         height: Number(quoteData.height)
       });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Server error');
-      }
       
       console.log("Lead B2B Capturado Exitosamente:", result);
       submitSuccess = true;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error al enviar Lead:", err.message);
       // Aqui podrías mostrar un toast de error en el UI
     } finally {
@@ -83,8 +79,8 @@
     }
   }
 
-  function selectProduct(id: string) {
-    quoteData.productType = id as ProductType;
+  function selectProduct(id) {
+    quoteData.productType = id;
     setTimeout(nextStep, 300); // Flow automático suave
   }
 </script>
