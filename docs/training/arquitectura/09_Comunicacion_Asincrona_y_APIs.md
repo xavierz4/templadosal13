@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 9: Comunicación Asíncrona API y Mutaciones (Resiliencia B2B)
 

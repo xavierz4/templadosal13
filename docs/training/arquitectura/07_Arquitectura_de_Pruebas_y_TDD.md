@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 7: Arquitectura de Pruebas (TDD & Fail-Fast)
 

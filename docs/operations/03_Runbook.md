@@ -3,7 +3,7 @@
 **Sistema:** Tácticas de Emergencia B2B AL13 (The Playbook)  
 **Versión:** 1.0 (Crisis Management Standard)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

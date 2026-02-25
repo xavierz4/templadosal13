@@ -1,6 +1,6 @@
 # Módulo 10: Caso de Estudio Práctico - La Arquitectura Definitiva de Templados AL13
 
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 Bienvenidos a la guinda del pastel del Máster en Arquitectura de Software. Hasta ahora, hemos hablado de teoría, historia y patrones abstractos. En este módulo, aterrizamos en el mundo real, en la trinchera del proyecto **Templados AL13**.
 

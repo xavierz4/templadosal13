@@ -1,0 +1,24 @@
+---
+import PublicLayout from '@shared/ui/PublicLayout.astro';
+import Navbar from '@shared/ui/Navbar.svelte';
+import Footer from '@shared/ui/Footer.astro';
+---
+
+<PublicLayout title="Filosofía | Templados AL13" description="Filosofía y estándar detrás de AL13.">
+  <Navbar client:load />
+  
+  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center justify-center text-center">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <h1 class="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight">Nuestra Filosofía</h1>
+      <p class="text-zinc-400 text-lg">Forjamos arquitectura elevando el estándar del vidrio y aluminio al segmento boutique industrial.</p>
+      
+      <div class="pt-8">
+        <a href="/" class="inline-flex items-center gap-2 text-al13-gold hover:text-white transition-colors">
+          <span>&larr;</span> Volver al Inicio
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</PublicLayout>

@@ -3,7 +3,7 @@
 **Proyecto:** Plataforma de Generación de Demanda y Operación Autónoma - Templados AL13  
 **Versión:** 1.0 (Especificación Ejecutable BDD)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Transmutador:** The Scribe V2.0  
 
 

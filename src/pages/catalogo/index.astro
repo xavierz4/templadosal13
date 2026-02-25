@@ -1,0 +1,24 @@
+---
+import PublicLayout from '@shared/ui/PublicLayout.astro';
+import Navbar from '@shared/ui/Navbar.svelte';
+import Footer from '@shared/ui/Footer.astro';
+---
+
+<PublicLayout title="Catálogo | Templados AL13" description="Catálogo de diseño y estructuras en aluminio y vidrio.">
+  <Navbar client:load />
+  
+  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center justify-center text-center">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <h1 class="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight">Catálogo B2B</h1>
+      <p class="text-zinc-400 text-lg">Estamos preparando la experiencia inmersiva del catálogo en 3D. Pronto podrás interactuar con nuestras soluciones.</p>
+      
+      <div class="pt-8">
+        <a href="/" class="inline-flex items-center gap-2 text-al13-gold hover:text-white transition-colors">
+          <span>&larr;</span> Volver al Inicio
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</PublicLayout>

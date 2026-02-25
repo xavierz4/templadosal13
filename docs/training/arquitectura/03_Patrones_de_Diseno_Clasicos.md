@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 3: Patrones de Diseño Clásicos
 

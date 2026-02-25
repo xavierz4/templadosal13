@@ -3,7 +3,7 @@
 **Sistema:** Aseguramiento de Calidad Continua (QA/CI) AL13  
 **Versión:** 1.0 (Test-Driven Specs)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

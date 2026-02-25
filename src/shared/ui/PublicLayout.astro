@@ -1,0 +1,35 @@
+---
+import '@core/theme/global.css';
+import { ViewTransitions } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Templados AL13 - Boutique Industrial en Vidrio Templado", 
+  description = "Redefiniendo el estándar arquitectónico en cristal templado y estructuras de aluminio. Preparados para la revolución B2B de 2026."
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth bg-al13-black text-white">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- Open Graph / SEO Dinámico -->
+		<title>{title}</title>
+		<ViewTransitions />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+	</head>
+	<body class="antialiased min-h-screen flex flex-col selection:bg-al13-gold/30 selection:text-al13-gold">
+		<slot />
+	</body>
+</html>

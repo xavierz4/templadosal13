@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 1: La Era Oscura y el Nacimiento de las Reglas
 

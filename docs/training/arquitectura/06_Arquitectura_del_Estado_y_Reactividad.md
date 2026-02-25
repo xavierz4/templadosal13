@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 6: La Arquitectura del Estado (State Management)
 

@@ -3,7 +3,7 @@
 **Subsistema:** Base de Datos Relacional (PostgreSQL / Supabase SOV)  
 **Versión:** 1.0 (Esquema B2B/B2C Soberano)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

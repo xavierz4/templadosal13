@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Product Requirements Document (PRD)
 **Proyecto:** Plataforma Integral de Generación de Demanda y Gestión (CMS/CRM Propietario) - Templados AL13  

@@ -3,7 +3,7 @@
 **Módulo Central:** Motor Paramétrico (Quoter) & Ingestor CMS de Medios.  
 **Versión:** 1.0 (Especificación de Vuelo)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

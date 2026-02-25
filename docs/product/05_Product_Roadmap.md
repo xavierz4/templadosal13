@@ -3,7 +3,7 @@
 **Sistema:** Plataforma Integral de Generación de Demanda - Templados AL13  
 **Versión:** 1.0 (Estrategia B2B / B2C Visual)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

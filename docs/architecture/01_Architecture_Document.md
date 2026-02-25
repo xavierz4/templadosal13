@@ -3,7 +3,7 @@
 **Sistema:** Plataforma Integral de Generación de Demanda - Templados AL13  
 **Versión:** 1.0 (Topología Edge-Sovereign)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 
@@ -50,13 +50,14 @@ graph TD
 
 ## 3. Flujos de Datos Transaccionales (Data Flows)
 
-### 3.1 Flujo B2B (Inyección de Cotización Ciega)
-1.  **Actor:** Contratista. Ingresa dimensiones (Ancho 3m, Altura 2m).
-2.  **Isla Quoter (Svelte):** Aplica reglas de negocio en caché local (`If Ancho > 2m Then Requiere_Refuerzo`). Informa ok.
-3.  **Captura PII:** Solicita Email y Teléfono. Dispara `POST /api/leads`.
-4.  **Edge Worker / Astro Endpoint:** Sanitiza JSON con Zod. Enruta la petición a Supabase usando el rol de servicio `service_role` o un esquema anónimo con RLS permisivo de inserción ciego.
-5.  **Supabase RLS:** Verifica la legitimidad de la inserción. Un Trigger/Edge Function en Supabase o el propio intermediario dispara el webhook para enviar un correo (ej. Resend / SMTP).
-6.  **Respuesta Táctica:** Retorna `HTTP 201 Created` al Edge Worker. El Worker inyecta respuesta en la Isla Svelte (CSR).
+### 3.1 Flujo B2B / B2C (Captura Automática de Leads)
+1.  **Actor:** Contratista (B2B) o Consumidor Final (B2C). Ingresa dimensiones (Ancho 3m, Altura 2m).
+2.  **Isla Quoter (Svelte):** Aplica heurísticas del Motor Físico en memoria local (`If Ancho > 2m Then Requiere_Refuerzo`). El sistema asombra al cliente con parámetros técnicos en tiempo real.
+3.  **Captura PII:** Solicita Nombre y Teléfono. Dispara `POST /api/leads`.
+4.  **Edge Worker / Astro Endpoint:** Sanitiza JSON con Zod. Enruta la petición a Supabase previniendo inyecciones de código.
+5.  **Notificación Transaccional Asíncrona:** Inmediatamente después de insertar en BD, el endpoint dispara un evento `Fire-and-Forget` hacia el SDK de **Resend**. 
+    *   **Decisión Arquitectónica (FinOps):** Seleccionamos Resend por su capa gratuita de 3,000 correos/mes. Esto absorbe holgadamente la tracción B2B inicial y el escalado medio B2C a costo $0. Si el volumen B2C explota mediáticamente, la migración a AWS SES (o el upgrade al plan Pro de $20/mes) es trivial ya que la lógica está aislada en el backend `api/leads.ts` sin acoplar el frontend.
+6.  **Respuesta Táctica:** Retorna `HTTP 201 Created` al cliente de Svelte, mostrando mensaje de éxito sin obligar al usuario a esperar que el correo de notificación se envíe.
 
 ### 3.2 Flujo Administrador (CMS On-Demand Build)
 1.  **Actor:** Gerente. Sube proyecto `Casa Quinta` al CMS (Dashboard `/admin`).

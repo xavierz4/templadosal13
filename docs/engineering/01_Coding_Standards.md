@@ -3,7 +3,7 @@
 **Sistema:** Templados AL13 Monorepo Base (Astro/Islands + Node Backend)  
 **Versión:** 1.0 (Strict-Typing & Descriptive Domain)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

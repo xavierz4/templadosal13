@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # 🏛️ Máster en Arquitectura de Software: De Código Espagueti a Ingeniería de Élite
 

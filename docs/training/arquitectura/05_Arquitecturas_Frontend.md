@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 5: Arquitecturas Modernas Frontend y Hex-Sovereign Architecture
 

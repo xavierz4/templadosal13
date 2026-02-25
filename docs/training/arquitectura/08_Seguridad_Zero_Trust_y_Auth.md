@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 8: Seguridad Integral (Zero-Trust & Auth)
 

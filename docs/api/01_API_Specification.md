@@ -3,7 +3,7 @@
 **Subsistema:** Backend Soberano CMS / CRM (Templados AL13)  
 **Versión:** 1.0 (OAS 3.0 - OpenAPI Compliant)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

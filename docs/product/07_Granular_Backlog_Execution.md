@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Backlog Granular de Ejecución (Dinámico y Exhaustivo)
 
@@ -34,18 +34,18 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 1.2.6: Componentizar un `Badge.svelte` de prueba aplicando Glassmorphism para validar diseño.
 
 - **Task 1.3: Setup de Repositorio de Datos (Supabase/PostgreSQL)**
-    - [ ] 1.3.1: Instalar Supabase CLI v1 y ejecutar `supabase init` localmente.
-    - [ ] 1.3.2: Generar y configurar archivos `.env.example` y obligar `.env` en Gitignore.
-    - [ ] 1.3.3: Diseñar e implementar DDL (migration SQL) `001_initial_schema.sql` (Usuarios, Roles, Perfil AL13).
-    - [ ] 1.3.4: Diseñar DDL (migration SQL) `002_leads_schema.sql` (Cotizaciones, Status Kanban, Valores $).
-    - [ ] 1.3.5: Levantar motor local `supabase start` y validar conexión pgAdmin/Studio.
-    - [ ] 1.3.6: Generar tipos TypeScript estáticos a partir de Supabase (`supabase gen types typescript --local > src/lib/database.types.ts`).
+    - [x] 1.3.1: Instalar Supabase CLI v1 y ejecutar `supabase init` localmente.
+    - [x] 1.3.2: Generar y configurar archivos `.env.example` y obligar `.env` en Gitignore.
+    - [x] 1.3.3: Diseñar e implementar DDL (migration SQL) `001_initial_schema.sql` (Usuarios, Roles, Perfil AL13).
+    - [x] 1.3.4: Diseñar DDL (migration SQL) `002_leads_schema.sql` (Cotizaciones, Status Kanban, Valores $).
+    - [x] 1.3.5: [CLOUD] Configurar proyecto en Supabase Cloud (Dashboard) y vincular credenciales URL/ANON_KEY en `.env`.
+    - [x] 1.3.6: [CLOUD] Generar tipos TypeScript estáticos directamente desde Supabase Cloud (`supabase gen types typescript --project-id <tu-id> > src/lib/database.types.ts`).
 
 - **Task 1.4: Protocolos DevOps y Calidad (CI/CD)**
-    - [ ] 1.4.1: Instalar ESLint y Prettier Plugins para Astro y Svelte.
-    - [ ] 1.4.2: Configurar `.prettierrc` (Tabulaciones, comillas simples, line width).
-    - [ ] 1.4.3: Instalar `husky` y `lint-staged` para ganchos `pre-commit` automáticos.
-    - [ ] 1.4.4: Escribir GitHub Action `.github/workflows/ci.yml` para correr Linting + TypeCheck en cada PR.
+    - [x] 1.4.1: Instalar ESLint y Prettier Plugins para Astro y Svelte.
+    - [x] 1.4.2: Configurar `.prettierrc` (Tabulaciones, comillas simples, line width).
+    - [x] 1.4.3: Instalar `husky` y `lint-staged` para ganchos `pre-commit` automáticos.
+    - [x] 1.4.4: Escribir GitHub Action `.github/workflows/ci.yml` para correr Linting + TypeCheck en cada PR.
 
 ---
 
@@ -53,56 +53,56 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 **Objetivo:** Crear un escaparate público cinemático que asegure tiempos de carga hiper-rápidos (SEO Edge).
 
 - **Task 2.1: Layout Maestro Público**
-    - [ ] 2.1.1: Crear componente envolvente `PublicLayout.astro` manejando `<head>`, meta tags y SEO Title/Description dinámicos.
-    - [ ] 2.1.2: Implementar componente genérico Header/Nav (`Navbar.svelte`) con logo AL13 y scroll-spy (cambia color a transparente).
-    - [ ] 2.1.3: Implementar componente genérico Footer estático (Enlaces, Términos Legales, Redes).
+    - [x] 2.1.1: Crear componente envolvente `PublicLayout.astro` manejando `<head>`, meta tags y SEO Title/Description dinámicos.
+    - [x] 2.1.2: Implementar componente genérico Header/Nav (`Navbar.svelte`) con logo AL13 y scroll-spy (cambia color a transparente).
+    - [x] 2.1.3: Implementar componente genérico Footer estático (Enlaces, Términos Legales, Redes).
 
 - **Task 2.2: Componente "Hero Section" Premium**
-    - [ ] 2.2.1: Escribir tests unitarios Vitest definiendo existencia de textos principales y CTA de botón.
-    - [ ] 2.2.2: Construir HTML semántico de `Hero.svelte` (Título h1 impactante y Párrafo "Boutique Industrial").
-    - [ ] 2.2.3: Aplicar clases CSS `glass-panel` creadas en la Epic 1.2.
-    - [ ] 2.2.4: Refinar el botón CTA OnHover: Transición de 300ms a `scale(1.02)` y brillo interior sutil (Shadow).
-    - [ ] 2.2.5: Injectar un video de fondo comprimido (o imagen oscura abstracta) con overlay oscuro para contraste del texto.
+    - [x] 2.2.1: Escribir tests unitarios Vitest definiendo existencia de textos principales y CTA de botón.
+    - [x] 2.2.2: Construir HTML semántico de `Hero.svelte` (Título h1 impactante y Párrafo "Boutique Industrial").
+    - [x] 2.2.3: Aplicar clases CSS `glass-panel` creadas en la Epic 1.2.
+    - [x] 2.2.4: Refinar el botón CTA OnHover: Transición de 300ms a `scale(1.02)` y brillo interior sutil (Shadow).
+    - [x] 2.2.5: Injectar un video de fondo comprimido (o imagen oscura abstracta) con overlay oscuro para contraste del texto.
 
 - **Task 2.3: Value Proposition (Grid de Beneficios B2B / B2C)**
-    - [ ] 2.3.1: Crear componente aislable `FeatureCard.svelte` (Ícono, Título, Descripción corta).
-    - [ ] 2.3.2: Crear el grid iterador `FeaturesGrid.astro` que lea datos (arrays) mockeados.
-    - [ ] 2.3.3: Integrar animaciones de entrada AOS (Animate on Scroll) a las tarjetas para suavidad visual.
+    - [x] 2.3.1: Crear componente aislado de grilla UI `ValueProposition.svelte` (Íconos Lucide, Títulos, Descripción).
+    - [x] 2.3.2: Integrar datos mockeados (Pilares AL13) y renderizado Glassmorphism en Svelte.
+    - [x] 2.3.3: [REF] Reemplazar AOS por `svelte-motion` (Framer Motion API). Integrar animaciones de resorte atadas al scroll para revelar tarjetas.
 
 - **Task 2.4: Optimización Image Delivery y Web Vitals**
-    - [ ] 2.4.1: Convertir de lote todos los `png/jpg` a `webp/avif` usando componente nativo `<Image />` de Astro.
-    - [ ] 2.4.2: Asegurar carga diferida `loading="lazy"` en todas las imágenes por debajo del "fold" (del inicio de pantalla).
-    - [ ] 2.4.3: Revisar métricas Lighthouse CLI locales buscando puntuación perfecta en Performance/Accessibilidad.
+    - [x] 2.4.1: Convertir de lote todos los `png/jpg` a `webp/avif` usando componente nativo o API `getImage` de Astro.
+    - [x] 2.4.2: Asegurar carga diferida `loading="lazy"` en todas las imágenes por debajo del "fold" (NA/Optimizado).
+    - [x] 2.4.3: Revisar métricas Lighthouse CLI locales buscando puntuación perfecta en Performance/Accessibilidad.
 
 ---
 
-## 🧮 Epic 3: La Calculadora B2B Determinista (Core Logic)
-**Objetivo:** Permitir cotizaciones en vivo (State Machine Svelte) y captura asíncrona de Leades ($5M a 3 min).
+## 🧮 Epic 3: Validador Técnico de Viabilidad B2B (Core Logic)
+**Objetivo:** Permitir validación geométrica en vivo (State Machine Svelte) y captura asíncrona de Leads sin exponer ni depender de bases de datos de precios mantenibles.
 
-- **Task 3.1: Backend - Endpoint de Ingestión de Cotización (Leads)**
-    - [ ] 3.1.1: Crear archivo de API nativa en Astro `src/pages/api/leads.ts` (`POST`).
-    - [ ] 3.1.2: Validar Payload JSON de entrada usando librería `Zod` (Medidas, Nombre, Empresa, Teléfono).
-    - [ ] 3.1.3: Cifrar datos o prevenir Inyecciones SQL usando el ORM/Supabase SDK.
-    - [ ] 3.1.4: Grabar el `Lead` en la BD Supabase y retornar Status 201 (Created) con Lead_ID.
-    - [ ] 3.1.5: Escribir test de integración enviando POST falso al endpoint y verificando validación Zod.
+- **Task 3.1: Backend - Endpoint de Ingestión de Validación (Leads)**
+    - [x] 3.1.1: Crear archivo de API nativa en Astro `src/pages/api/leads.ts` (`POST`).
+    - [x] 3.1.2: Validar Payload JSON de entrada usando librería `Zod` (Medidas, Nombre, Empresa, Teléfono, Resultado Técnico).
+    - [x] 3.1.3: Cifrar datos o prevenir Inyecciones SQL usando el ORM/Supabase SDK.
+    - [x] 3.1.4: Grabar el `Lead` en la BD Supabase y retornar Status 201 (Created) con Lead_ID.
+    - [x] 3.1.5: Escribir test de integración enviando POST falso al endpoint y verificando validación Zod.
 
-- **Task 3.2: Frontend - UI Svelte State Machine (The Quoter Engine)**
-    - [ ] 3.2.1: Definir `store` global temporal o Runes (`$state`) para almacenar las selecciones del usuario en el navegador (Paso a Paso).
-    - [ ] 3.2.2: Construir UI Paso 1: Selección visual del tipo de producto (Puerta de Baño, Ventanal, etc).
-    - [ ] 3.2.3: Construir UI Paso 2: Input de Medidas (Alto x Ancho) con validadores rígidos (ej. máximo 2200mm).
-    - [ ] 3.2.4: Construir UI Paso 3: Tipos de Vidrio y Perfilería (10mm vs 8mm).
-    - [ ] 3.2.5: Construir UI Paso 4: Formulario final de datos del Contractor / B2C para "Enviar y Ver Precio".
+- **Task 3.2: Frontend - UI Svelte State Machine (The Validator Engine)**
+    - [x] 3.2.1: Definir Runes (`$state`) para almacenar las selecciones del usuario en el navegador (Paso a Paso).
+    - [x] 3.2.2: Construir UI Paso 1: Selección visual del tipo de producto (Puerta de Baño, Ventanal, etc).
+    - [x] 3.2.3: Construir UI Paso 2: Input de Medidas (Alto x Ancho) con validadores kinéticos de Motion (rechazo animado).
+    - [x] 3.2.4: Construir UI Paso 3: Tipos de Vidrio y Perfilería requeridos (Sugeridos por la física, no por el precio).
+    - [x] 3.2.5: Construir UI Paso 4: Formulario final para "Solicitar Asesoría y Validación Oficial" (Lead Gate).
 
-- **Task 3.3: Motor Matemático (Precios y Tolerancias)**
-    - [ ] 3.3.1: Aislar la clase/lógica JS en `src/lib/calculusEngine.ts`.
-    - [ ] 3.3.2: Escribir tests unitarios que verifiquen el precio del m2 contra la matriz base.
-    - [ ] 3.3.3: Implementar condición: Si Alto > 2100mm = Advertencia Viento / Forzar vidrio 10mm.
-    - [ ] 3.3.4: Conectar retorno del JS lógico a la vista final del resumen de la cotización en Svelte.
+- **Task 3.3: Motor Físico y Geométrico (Physics Tolerances)**
+    - [x] 3.3.1: Aislar la clase/lógica JS en `src/lib/physicsEngine.ts` (Cálculo de deflexión y dimensiones límite, CERO precios).
+    - [x] 3.3.2: Escribir tests unitarios que verifiquen las alertas de peligro de las medidas contra las normas NSR-10.
+    - [x] 3.3.3: Implementar condición: Si Alto > 2100mm = Advertencia Viento / Forzar vidrio 10mm.
+    - [x] 3.3.4: Conectar retorno del JS lógico a la vista final para asombrar al Arquitecto con expertise técnico.
 
 - **Task 3.4: Notificaciones Asíncronas Push (El CEO se entera)**
-    - [ ] 3.4.1: Integrar Resend / SendGrid SDK dentro del endpoint `/api/leads.ts`.
-    - [ ] 3.4.2: Diseñar plantilla HTML de correo ("Nuevo Lead B2B de $XX COP").
-    - [ ] 3.4.3: Testear envío asíncrono hacia correo corporativo del CEO AL13 (sin bloquear el loading del UI del usuario final).
+    - [x] 3.4.1: Integrar Resend / SendGrid SDK dentro del endpoint `/api/leads.ts`.
+    - [x] 3.4.2: Diseñar plantilla HTML de correo ("Nuevo Lead B2B de $XX COP").
+    - [x] 3.4.3: Testear envío asíncrono hacia correo corporativo del CEO AL13 (sin bloquear el loading del UI del usuario final).
 
 ---
 

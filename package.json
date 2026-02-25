@@ -8,25 +8,50 @@
     "preview": "astro preview",
     "astro": "astro",
     "test:unit": "vitest run",
-    "did:audit": "python tools/did_auditor/did_observer.py",
-    "did:clean": "python tools/did_auditor/clean_docs.py",
-    "setup:hooks": "python tools/did_auditor/install_git_hook.py"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,cjs,ts,astro,svelte}": "eslint --fix",
+    "*.{js,cjs,ts,astro,svelte,json,css,md}": "prettier --write"
   },
   "dependencies": {
     "@astrojs/svelte": "^7.2.5",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/outfit": "^5.2.8",
+    "@supabase/supabase-js": "^2.97.0",
     "@tailwindcss/vite": "^4.2.0",
     "astro": "^5.17.1",
+    "lucide-svelte": "^0.575.0",
+    "resend": "^6.9.2",
     "svelte": "^5.53.2",
+    "svelte-motion": "^0.12.2",
     "tailwindcss": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/svelte": "^5.3.1",
+    "@types/node": "^25.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
     "@vite-pwa/astro": "^1.2.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-astro": "^1.6.0",
+    "eslint-plugin-svelte": "^3.15.0",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-svelte": "^3.5.0",
+    "supabase": "^2.76.12",
+    "svelte-eslint-parser": "^1.4.1",
+    "typescript-eslint": "^8.56.0",
     "vitest": "^4.0.18",
     "workbox-window": "^7.4.0"
   }

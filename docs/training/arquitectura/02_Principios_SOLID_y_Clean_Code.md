@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 2: Los Principios Inquebrantables (SOLID & Clean Code)
 

@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Transformación Digital y Arquitectura Web 2026 para Templados AL13: Análisis Crítico y Estrategia de Modernización
 

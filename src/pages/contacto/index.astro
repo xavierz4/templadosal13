@@ -1,0 +1,24 @@
+---
+import PublicLayout from '@shared/ui/PublicLayout.astro';
+import Navbar from '@shared/ui/Navbar.svelte';
+import Footer from '@shared/ui/Footer.astro';
+---
+
+<PublicLayout title="Contacto B2B | Templados AL13" description="Contacto directo para proyectos B2B.">
+  <Navbar client:load />
+  
+  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center justify-center text-center">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <h1 class="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight">Portal B2B Contractors</h1>
+      <p class="text-zinc-400 text-lg">Sección en construcción para acceso preferencial a contratistas y profesionales de la arquitectura. (Epic 3)</p>
+      
+      <div class="pt-8">
+        <a href="/" class="inline-flex items-center gap-2 text-al13-gold hover:text-white transition-colors">
+          <span>&larr;</span> Volver al Inicio
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</PublicLayout>

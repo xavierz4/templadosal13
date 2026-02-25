@@ -3,7 +3,7 @@
 **Sistema:** Ecosistema Seguro AL13 (B2B/CMS In-House)  
 **Versión:** 1.0 (Zero-Trust & Data Sovereignty)  
 **Fecha:** Febrero 2026  
-**ESTADO DID:** `[DID_CERTIFIED]`  
+
 **Agente Compilador:** The Architect-Scribe V2.0  
 
 

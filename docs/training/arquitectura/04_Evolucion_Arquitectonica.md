@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Módulo 4: Evolución Arquitectónica (De Monolitos a DDD)
 

@@ -1,4 +1,4 @@
-**ESTADO DID:** `[DID_CERTIFIED]`
+
 
 # Product Vision Document (PVD)
 Documentación Profesional de Desarrollo de Software: Templados AL13
