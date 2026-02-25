@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '../types/database.types';
+import { config } from '../config/env';
 
-// Usamos import.meta.env para Vite/Astro
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Faltan variables de entorno de Supabase. Revisa tu archivo .env.");
-}
-
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// Crear cliente Supabase tipado estáticamente con la base de datos y llaves obligatorias
+export const supabase = createClient<Database>(
+  config.PUBLIC_SUPABASE_URL,
+  config.PUBLIC_SUPABASE_ANON_KEY
+);

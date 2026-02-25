@@ -4,9 +4,10 @@ import { supabase } from '@core/infrastructure/supabase';
 import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
 import { generateB2BEmailHtml } from '@core/infrastructure/emailTemplate';
 import { Resend } from 'resend';
+import { config } from '@core/config/env';
 
-// Inicializar SDK de Resend con la variable de entorno
-const resend = new Resend(import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+// Inicializar SDK de Resend con la variable de entorno validada estrictamente
+const resend = new Resend(config.RESEND_API_KEY);
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -37,15 +38,17 @@ export const POST: APIRoute = async ({ request }) => {
         .from('leads')
         .insert([{
             product_type: validatedData.productType,
-            width_mm: validatedData.width,
-            height_mm: validatedData.height,
-            glass_color: validatedData.glassColor,
-            aluminum_color: validatedData.aluminumColor,
-            contact_name: validatedData.contactName,
-            company_name: validatedData.companyName,
-            phone: validatedData.phone,
-            thickness_recommended: physicsFeedback.recommendedThickness,
-            status: 'NEW' // Kanban default status
+            customer_name: validatedData.contactName,
+            customer_phone: validatedData.phone,
+            measurements: {
+                width_mm: validatedData.width,
+                height_mm: validatedData.height,
+                glass_color: validatedData.glassColor,
+                aluminum_color: validatedData.aluminumColor,
+                thickness_recommended: physicsFeedback.recommendedThickness
+            },
+            notes: validatedData.companyName ? `Empresa: ${validatedData.companyName}` : null,
+            status: 'NUEVO' // Enums match Database['public']['Enums']['lead_status']
         }])
         .select()
         .single();
