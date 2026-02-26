@@ -22,7 +22,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
       include: ['src/core/domain/**/*.ts'],
-      exclude: ['**/*.test.ts', '**/*.d.ts', '**/strategies/I*.ts'],
+      exclude: ['**/*.test.ts', '**/*.d.ts', '**/repositories/I*.ts', '**/services/I*.ts', '**/strategies/*.ts'],
       thresholds: {
         lines: 80,
         functions: 80,

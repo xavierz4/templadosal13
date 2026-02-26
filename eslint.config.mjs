@@ -18,6 +18,7 @@ export default [
       // Svelte 5 rune syntax no soportado aún por el parser ESLint en estos archivos
       'src/modules/landing/ui/Hero.svelte',
       'src/modules/landing/ui/ValueProposition.svelte',
+      'src/modules/admin/ui/LoginForm.svelte',
     ],
   },
   {
