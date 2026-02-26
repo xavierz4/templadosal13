@@ -15,7 +15,33 @@
 > No esperar a que el usuario las pida. No omitir ninguna.
 
 ### INICIO DE SESIÓN
-- **AL ABRIR ESTE PROYECTO:** Leer este archivo (`AGENTS.md`) completo antes de escribir cualquier código. Si no lo has leído en esta sesión, hacerlo ahora.
+- **AL ABRIR ESTE PROYECTO:** Leer este archivo (`AGENTS.md`) completo antes de escribir cualquier código.
+- **SI** el usuario pide implementar una feature o tarea del backlog  
+  **ENTONCES** leer PRIMERO `docs/product/07_Granular_Backlog_Execution.md` para conocer el task ID, los criterios de aceptación y las dependencias.
+
+### 📚 MAPA DE DOCUMENTACIÓN — Qué leer según el tipo de tarea
+
+| Si vas a trabajar en... | Lee PRIMERO este documento |
+|---|---|
+| **Cualquier tarea nueva** | `docs/product/07_Granular_Backlog_Execution.md` — Backlog granular con IDs, criterios de aceptación y dependencias |
+| **Entender el producto** | `docs/product/01_Product_Vision_Document_(PVD).md` — Visión, propuesta de valor, mercado |
+| **Requisitos funcionales** | `docs/product/02_Product_Requirements_Document_(PRD).md` — Requisitos detallados |
+| **User Stories** | `docs/product/03_User_Stories_Document.md` — Historias de usuario con criterios |
+| **Requisitos técnicos** | `docs/product/04_Software_Requirements_Specification_(SRS).md` |
+| **Roadmap / Prioridad** | `docs/product/05_Product_Roadmap.md` + `06_Master_Backlog_Epics.md` |
+| **Arquitectura del sistema** | `docs/architecture/01_Architecture_Document.md` |
+| **Diseño técnico / SDD** | `docs/design/01_Software_Design_Document_(SDD).md` + `02_Technical_Specification.md` |
+| **API endpoints** | `docs/api/01_API_Specification.md` |
+| **Modelo de datos** | `docs/data/01_Data_Model_Document.md` |
+| **Seguridad / Auth** | `docs/security/` |
+| **Testing** | `docs/testing/01_Testing_Strategy_Document.md` |
+| **Observabilidad / SRE** | `docs/operations/01_Observability_Document.md` + `02_SRE_Reliability.md` |
+| **Reglas de código** | `docs/engineering/01_Coding_Standards.md` + `02_Engineering_Guidelines.md` |
+| **Curso de arquitectura** | `docs/training/arquitectura/00_Indice.md` (12 módulos) |
+| **Decisiones arquitectónicas** | `docs/adr/` — Architecture Decision Records |
+| **RFCs** | `docs/rfc/` — Propuestas técnicas formales |
+
+> **Regla de oro:** Si no conoces el contexto de una tarea, lee el Backlog Granular y el PVD antes de escribir una línea de código.
 
 ### AL ESCRIBIR CUALQUIER IMPORT
 - **SI** el import cruza capas (`core/` → `infrastructure/`, `modules/` → `core/`, etc.)  
