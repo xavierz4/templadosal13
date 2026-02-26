@@ -126,7 +126,16 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 **Objetivo:** Interfaz secreta y altamente segura para gestión comercial, Kanban y cambios de catálogo.
 
 - **Task 4.1: Bouncer de Seguridad y Auth Routing**
-    - [ ] 4.1.1: Crear componente `/admin/login` con formulario de acceso único (Supabase Auth Email/Password).
+    - [x] 4.1.1: Crear componente `/admin/login` con formulario de acceso único (Supabase Auth Email/Password).
+        - [x] Schema Zod: `src/core/domain/loginSchema.ts` (con sanitizeHtml XSS — REGLA 5)
+        - [x] Tests del schema: `src/core/domain/loginSchema.test.ts`
+        - [x] UI Svelte 5: `src/modules/admin/ui/LoginForm.svelte` (Glassmorphism, Runes $state/$derived — REGLA 4 UI Dumb)
+        - [x] Barrel File: `src/modules/admin/index.ts` (REGLA 3 — FSD)
+        - [x] Auth Client HTTP: `src/modules/admin/api/authClient.ts` (loginAdmin + logoutAdmin)
+        - [x] API Endpoint POST: `src/pages/api/auth/login.ts` (Hexagonal — Zod → SupabaseAuthService → HTTP — REGLA 2)
+        - [x] API Endpoint POST: `src/pages/api/auth/logout.ts`
+        - [x] Tests del endpoint: `src/pages/api/auth/login.test.ts`
+        - [x] Página Astro SSR: `src/pages/admin/login.astro` (prerender=false, meta noindex)
     - [ ] 4.1.2: Implementar SSR Layout `AdminLayout.astro` que intercepte Cookies JWT de Supabase en cada request.
     - [ ] 4.1.3: Redireccionar forzosamente a `/admin/login` si la Cookie de Sesión está expirada, previniendo acceso estático o cliente.
 
