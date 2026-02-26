@@ -8,6 +8,72 @@
 
 ---
 
+## ⚡ MANDATORY WORKFLOW — Comportamiento Determinista del Agente
+
+> **ESTAS INSTRUCCIONES SON ÓRDENES IMPERATIVAS, NO SUGERENCIAS.**  
+> El agente DEBE ejecutarlas automáticamente cuando se cumpla la condición.  
+> No esperar a que el usuario las pida. No omitir ninguna.
+
+### INICIO DE SESIÓN
+- **AL ABRIR ESTE PROYECTO:** Leer este archivo (`AGENTS.md`) completo antes de escribir cualquier código. Si no lo has leído en esta sesión, hacerlo ahora.
+
+### AL ESCRIBIR CUALQUIER IMPORT
+- **SI** el import cruza capas (`core/` → `infrastructure/`, `modules/` → `core/`, etc.)  
+  **ENTONCES** usar SIEMPRE alias absoluto: `@core/*`, `@shared/*`, `@modules/*`  
+  **NUNCA** escribir `../../` entre carpetas de distinta capa.
+
+### AL CREAR/EDITAR UN SCHEMA ZOD
+- **SI** el schema tiene un campo `z.string()` que recibe texto del usuario  
+  **ENTONCES** añadir `.transform(sanitizeHtml)` obligatoriamente.  
+  **Función:** `const sanitizeHtml = (str: string) => str.replace(/<\/?[^>]+(>|$)/g, "").trim();`
+
+### AL NECESITAR UNA VARIABLE DE ENTORNO
+- **SI** necesitas una API key, URL, o config de entorno  
+  **ENTONCES** añadirla PRIMERO al schema Zod en `src/core/config/env.ts`  
+  **ENTONCES** importar `config` desde `@core/config/env`  
+  **NUNCA** usar `process.env.X` o `import.meta.env.X` directamente en ningún otro archivo.
+
+### AL CREAR LÓGICA NUEVA EN `src/core/domain/`
+- **SI** creas o modificas una función/clase en `src/core/domain/`  
+  **ENTONCES** crear o actualizar un archivo `.test.ts` en la misma carpeta o en `tests/`  
+  **ENTONCES** los tests deben usar naming: `it('should [comportamiento] when [condición]')`  
+  **ENTONCES** mockear los ADAPTADORES (Repository/Service), nunca los SDKs directos.
+
+### AL AÑADIR UN NUEVO TIPO DE PRODUCTO DE VIDRIO
+- **SI** el usuario pide añadir un nuevo ProductType (ej: baranda, techo, piso)  
+  **ENTONCES** crear `src/core/domain/strategies/NuevoProductoStrategy.ts` (class implements IPhysicsStrategy)  
+  **ENTONCES** añadir `| 'nuevo_producto'` al type union `ProductType`  
+  **ENTONCES** registrar en `strategyRegistry` dentro de `physicsEngine.ts`  
+  **NUNCA** modificar la función `validate()` de las strategies existentes.
+
+### AL ESCRIBIR UN `catch`
+- **SI** escribes un bloque `catch`  
+  **ENTONCES** usar `catch (error: unknown)` + narrowing con `instanceof`  
+  **NUNCA** usar `catch (error: any)`  
+  **NUNCA** dejar un `catch {}` vacío — debe tener `console.error()` o `throw`.
+
+### AL ESCRIBIR `console.log/warn/error`
+- **ENTONCES** usar formato estructurado: `console.error("[Contexto] Descripción:", { datos })`  
+  **NUNCA** `console.log("aqui")` o `console.log(variable)` sin contexto.
+
+### AL ESCRIBIR UN SHORTCUT O HARDCODE TEMPORAL
+- **SI** dejas un valor hardcodeado, un workaround, o un shortcut  
+  **ENTONCES** documentarlo como: `// TODO: [TECH-XXX] Descripción. Causa: [razón]. Resolver: [deadline].`  
+  **NUNCA** escribir `// TODO: arreglar esto` sin ticket ni contexto.
+
+### AL HACER `git commit`
+- **ENTONCES** el commit message DEBE seguir: `tipo(scope): descripción en minúscula`  
+  **Tipos válidos:** `feat · fix · refactor · docs · test · chore · perf · ci · build`  
+  **Ejemplo:** `feat(quoter): add real-time price estimation panel`  
+  **NUNCA** `"cambios varios"` o `"update files"`.
+
+### AL COMPLETAR UNA FEATURE COMPLEJA
+- **ANTES** de hacer el commit final de una feature que toca 3+ archivos  
+  **ENTONCES** ejecutar mentalmente el checklist de `/code_review`:
+  1. ¿Imports con @aliases? 2. ¿SOLID 5/5? 3. ¿Capa correcta? 4. ¿XSS sanitizado? 5. ¿Env en env.ts? 6. ¿Tests? 7. ¿Commit message?
+
+---
+
 ## 🏛️ Stack Tecnológico del Proyecto
 - **Framework Web:** Astro (BFF / SSG / SSR)
 - **UI Components:** Svelte 5 (con Runes: `$state`, `$derived`)
