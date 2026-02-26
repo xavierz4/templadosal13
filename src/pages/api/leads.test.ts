@@ -31,7 +31,7 @@ describe('B2B Leads API Endpoint POST', () => {
       })
     });
 
-    const response = await POST({ request: mockRequest } as any);
+    const response = await POST({ request: mockRequest } as Parameters<typeof POST>[0]);
     expect(response.status).toBe(400);
     
     const result = await response.json();
@@ -51,7 +51,7 @@ describe('B2B Leads API Endpoint POST', () => {
         })
       });
   
-      const response = await POST({ request: mockRequest } as any);
+      const response = await POST({ request: mockRequest } as Parameters<typeof POST>[0]);
       expect(response.status).toBe(422);
       
       const result = await response.json();

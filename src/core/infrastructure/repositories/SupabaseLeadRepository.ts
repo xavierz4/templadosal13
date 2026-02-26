@@ -1,7 +1,8 @@
-import { supabase } from '../supabase';
-import type { ILeadRepository } from '../../domain/repositories/ILeadRepository';
-import type { LeadPayload } from '../../domain/leadSchema';
-import type { PhysicsResult } from '../../domain/physicsEngine';
+import { supabase } from '@core/infrastructure/supabase';
+import type { ILeadRepository } from '@core/domain/repositories/ILeadRepository';
+import type { LeadPayload } from '@core/domain/leadSchema';
+import type { PhysicsResult } from '@core/domain/physicsEngine';
+
 
 /**
  * Adaptador de Infraestructura para Supabase (Database Repository)

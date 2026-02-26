@@ -1,9 +1,10 @@
 import { Resend } from 'resend';
-import { config } from '../../config/env';
-import { generateB2BEmailHtml } from '../emailTemplate';
-import type { IEmailService } from '../../domain/services/IEmailService';
-import type { LeadPayload } from '../../domain/leadSchema';
-import type { PhysicsResult } from '../../domain/physicsEngine';
+import { config } from '@core/config/env';
+import { generateB2BEmailHtml } from '@core/infrastructure/emailTemplate';
+import type { IEmailService } from '@core/domain/services/IEmailService';
+import type { LeadPayload } from '@core/domain/leadSchema';
+import type { PhysicsResult } from '@core/domain/physicsEngine';
+
 
 // Instanciación aislada
 const resend = new Resend(config.RESEND_API_KEY);
@@ -22,7 +23,7 @@ export class ResendEmailService implements IEmailService {
               subject: `🚨 NUEVO LEAD B2B: ${payload.productType.toUpperCase()}`,
               html: emailHtmlTemplate
           }).then((data) => {
-               console.log("Email B2B enviado asincronamente:", data);
+               console.warn("[EmailService] Email B2B enviado asincrónamente:", data);
           }).catch((err) => {
                console.error("Error silencioso enviando correo Resend:", err);
           });

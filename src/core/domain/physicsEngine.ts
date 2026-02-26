@@ -24,7 +24,7 @@ export function validateStructuralFeasibility(input: PhysicsInput): PhysicsResul
   const area = (input.width * input.height) / 1000000; // m2
   const maxHeight = input.height;
   
-  let result: PhysicsResult = {
+  const result: PhysicsResult = {
     isValid: true,
     recommendedThickness: 8, // starting default
     warnings: [],

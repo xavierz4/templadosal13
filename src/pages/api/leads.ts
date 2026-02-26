@@ -50,12 +50,14 @@ export const POST: APIRoute = async ({ request }) => {
       }
     });
 
-  } catch (error: any) {
-    if (error.name === 'ZodError') {
-         // Errores de validación de Zod
+  } catch (error: unknown) {
+    const isZodError = typeof error === 'object' && error !== null && (error as { name?: string }).name === 'ZodError';
+
+    if (isZodError) {
+        const zodErr = error as { errors: unknown[] };
         return new Response(JSON.stringify({
             error: 'Campos de entrada inválidos o faltantes.',
-            details: error.errors
+            details: zodErr.errors
         }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }

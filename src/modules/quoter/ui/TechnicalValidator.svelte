@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade, slide } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
   import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
   import { submitLeadB2B } from '../api/leadClient';
   
@@ -69,7 +69,7 @@
          height: Number(quoteData.height)
       });
       
-      console.log("Lead B2B Capturado Exitosamente:", result);
+      console.warn("[TechnicalValidator] Lead B2B enviado exitosamente:", result);
       submitSuccess = true;
     } catch (err) {
       console.error("Error al enviar Lead:", err.message);
@@ -98,7 +98,7 @@
 
   <!-- Progress Bar B2B -->
   <div class="flex items-center justify-between mb-12 relative before:absolute before:top-1/2 before:-translate-y-1/2 before:h-[1px] before:w-full before:bg-white/10 before:-z-10">
-    {#each steps as step, i}
+    {#each steps as step, i (i)}
       <div class="flex flex-col items-center gap-3 relative">
         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500
           {currentStep >= i + 1 
@@ -126,7 +126,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {#each products as product}
+          {#each products as product (product.id)}
             <button 
               onclick={() => selectProduct(product.id)}
               class="group relative flex items-center p-6 border rounded-xl text-left transition-all duration-300
@@ -207,7 +207,7 @@
         </div>
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-          {#each ['Incoloro Extra-Claro', 'Gris Humo', 'Bronce Espejo', 'Esmerilado Privacy'] as color}
+          {#each ['Incoloro Extra-Claro', 'Gris Humo', 'Bronce Espejo', 'Esmerilado Privacy'] as color (color)}
             <button 
               onclick={() => quoteData.glassColor = color}
               class="flex flex-col items-center p-4 border rounded-xl transition-all duration-300
@@ -287,7 +287,7 @@
                  <div class="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded-r-lg">
                    <span class="text-yellow-500 font-bold mb-1 flex items-center gap-2"><span>🛡️</span> Carga Estructural Detectada </span>
                    <ul class="list-disc pl-5 text-zinc-300 text-sm mt-2">
-                     {#each physicsFeedback.warnings as warning}
+                     {#each physicsFeedback.warnings as warning (warning)}
                        <li>{warning}</li>
                      {/each}
                    </ul>
