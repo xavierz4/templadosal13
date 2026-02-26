@@ -9,7 +9,20 @@ El objetivo es garantizar que el código cumpla con los estándares SOLID, HSA, 
 
 ---
 
-## Paso 1 — Revisión SOLID (5/5)
+## Paso 1 — Rutas Absolutas (Aliases)
+
+```
+¿Todos los imports entre capas diferentes usan @alias?
+  → @core/*   para imports del núcleo de dominio e infraestructura
+  → @shared/* para componentes y utils globales
+  → @modules/* para acceso al API pública de otro módulo
+  → Rutas relativas ./ solo permitidas dentro del mismo directorio inmediato
+  → Prohibido ../../ entre capas distintas
+```
+
+---
+
+## Paso 2 — Revisión SOLID (5/5)
 
 Verificar CADA principio contra el código nuevo:
 
