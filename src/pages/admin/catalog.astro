@@ -1,0 +1,94 @@
+---
+/**
+ * /admin/catalog.astro — CMS Catálogo de Proyectos (Task 4.3)
+ *
+ * SSR con AdminLayout (hereda auth guard automáticamente).
+ * Fetches todos los proyectos del catálogo en el frontmatter (server-side).
+ * Renderiza el formulario de subida y el grid de gestión.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { ProjectUploadForm, CatalogGrid } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseCatalogRepository } from '@core/infrastructure/repositories/SupabaseCatalogRepository';
+import type { CatalogProject } from '@core/domain/catalogSchema';
+
+export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.cookies);
+const catalogRepository = new SupabaseCatalogRepository(supabase);
+
+let projects: CatalogProject[] = [];
+let fetchError = '';
+
+try {
+  projects = await catalogRepository.getAll();
+} catch (error: unknown) {
+  fetchError = error instanceof Error ? error.message : 'Error al cargar el catálogo.';
+}
+---
+
+<AdminLayout title="CMS Catálogo" section="Catálogo">
+  {fetchError && <div class="fetch-error">⚠️ {fetchError}</div>}
+
+  <!-- Stats -->
+  <div class="catalog-stats">
+    <div class="stat-pill">
+      <span class="pill-num">{projects.length}</span>
+      <span class="pill-label">Total Proyectos</span>
+    </div>
+    <div class="stat-pill">
+      <span class="pill-num">{projects.filter((p) => p.is_published).length}</span>
+      <span class="pill-label">Publicados</span>
+    </div>
+    <div class="stat-pill">
+      <span class="pill-num">{projects.filter((p) => !p.is_published).length}</span>
+      <span class="pill-label">Borradores</span>
+    </div>
+  </div>
+
+  <!-- Upload Form (Svelte island — necesita JS para el upload) -->
+  <ProjectUploadForm client:load />
+
+  <!-- Catalog Grid (Svelte island — necesita JS para toggle/delete) -->
+  <CatalogGrid projects={projects} client:load />
+</AdminLayout>
+
+<style>
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .catalog-stats {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+  }
+
+  .pill-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #d4af37;
+  }
+
+  .pill-label {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>

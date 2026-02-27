@@ -21,6 +21,8 @@ export default [
       'src/modules/admin/ui/LoginForm.svelte',
       'src/modules/admin/ui/KanbanBoard.svelte',
       'src/modules/admin/ui/KanbanCard.svelte',
+      'src/modules/admin/ui/ProjectUploadForm.svelte',
+      'src/modules/admin/ui/CatalogGrid.svelte',
     ],
   },
   {

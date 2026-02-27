@@ -164,10 +164,25 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 
 
 - **Task 4.3: CMS de Catálogo (Uploader a Buckets S3/Supabase Storage)**
-    - [ ] 4.3.1: Crear tabla/esquema en Base Datos para "Catálogo de Productos".
-    - [ ] 4.3.2: Construir UI en Svelte: Formulario "Añadir Proyecto Exitoso".
-    - [ ] 4.3.3: Programar función de subida presigned de imágenes (Imágenes de baño/cocina) directo al bucket optimizado ignorando NodeJS proxy por velocidad.
-    - [ ] 4.3.4: Revalidar Caché SSG de Astro programáticamente si una imagen pública es actualizada.
+    - [x] 4.3.1: Crear tabla/esquema en Base Datos para "Catálogo de Productos".
+        - [x] Migración SQL: `supabase/migrations/20260227000000_catalog_schema.sql` (RLS, índice, bucket instructions)
+        - [x] Tipos de dominio: `src/core/domain/catalogSchema.ts` (CatalogProject, CatalogProjectInputSchema, PresignRequestSchema)
+        - [x] Contrato: `src/core/domain/repositories/ICatalogRepository.ts` (5 métodos: getAll, getPublished, create, togglePublish, delete)
+        - [x] Implementación: `src/core/infrastructure/repositories/SupabaseCatalogRepository.ts` (DI constructor SSR)
+    - [x] 4.3.2: Construir UI en Svelte: Formulario "Añadir Proyecto Exitoso".
+        - [x] `src/modules/admin/ui/ProjectUploadForm.svelte` (3 pasos: form → upload XHR con progreso → confirmación)
+        - [x] `src/modules/admin/ui/CatalogGrid.svelte` (grid responsive, toggle publish, delete con confirm)
+        - [x] `src/modules/admin/api/catalogAdminClient.ts` (getPresignedUrl, uploadImageToStorage, createProject, togglePublish, deleteProject)
+        - [x] Página SSR: `src/pages/admin/catalog.astro` (AdminLayout, stats row, islands Svelte)
+        - [x] Barrel: `src/modules/admin/index.ts` actualizado con ProjectUploadForm y CatalogGrid
+    - [x] 4.3.3: Programar función de subida presigned de imágenes directo al bucket optimizado ignorando NodeJS proxy.
+        - [x] `src/core/infrastructure/storage/SupabaseStorageService.ts` (createPresignedUploadUrl, deleteFile)
+        - [x] Endpoint: `src/pages/api/admin/catalog/presign.ts` (POST, auth guard, Zod image/* validation)
+        - [x] Endpoint: `src/pages/api/admin/catalog/index.ts` (POST, crea registro en BD)
+        - [x] Endpoint: `src/pages/api/admin/catalog/[id].ts` (PATCH toggle publish, DELETE con Storage cleanup)
+    - [x] 4.3.4: Revalidar Caché SSG de Astro programáticamente si una imagen pública es actualizada.
+        - [x] Resuelto por diseño: `/admin/catalog` y catálogo público usan `prerender = false` (SSR on-demand). No hay caché que revalidar.
+
 
 ---
 
