@@ -19,6 +19,8 @@ export default [
       'src/modules/landing/ui/Hero.svelte',
       'src/modules/landing/ui/ValueProposition.svelte',
       'src/modules/admin/ui/LoginForm.svelte',
+      'src/modules/admin/ui/KanbanBoard.svelte',
+      'src/modules/admin/ui/KanbanCard.svelte',
     ],
   },
   {

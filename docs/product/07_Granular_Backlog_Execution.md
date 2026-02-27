@@ -146,10 +146,22 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 
 
 - **Task 4.2: CRM Dashboard B2B (Módulo Kanban de Leads)**
-    - [ ] 4.2.1: Crear ruta SSR `/admin/leads` que haga fetch de todos los Leads Ordenados (`ORDER BY created_at DESC`).
-    - [ ] 4.2.2: Construir componente Svelte `KanbanBoard` compuesto por columnas "Nuevo", "Cotizado", "Cerrado Ganado", "Perdido".
-    - [ ] 4.2.3: Implementar librería de Drag-and-Drop (DND) ligera vinculada a Runes en Svelte.
-    - [ ] 4.2.4: Crear endpoint interno (PATCH) en Astro para mutar el status de un Lead en la Base de Datos al soltar la tarjeta de arrastre (Drop).
+    - [x] 4.2.1: Crear ruta SSR `/admin/leads` que haga fetch de todos los Leads Ordenados (`ORDER BY created_at DESC`).
+        - [x] Tipos de dominio: `src/core/domain/leadAdminSchema.ts` (`LeadStatus` enum, `AdminLead` interface, `LeadStatusUpdateSchema` Zod)
+        - [x] Extender `ILeadRepository`: métodos `getAll()` y `updateStatus()` añadidos al contrato
+        - [x] Implementar en `SupabaseLeadRepository`: DI constructor para client SSR, `getAll()` + `updateStatus()`
+        - [x] Página SSR: `src/pages/admin/leads.astro` (AdminLayout, stats row, `KanbanBoard client:load`)
+    - [x] 4.2.2: Construir componente Svelte `KanbanBoard` compuesto por columnas "Nuevo", "Cotizado", "Cerrado Ganado", "Perdido".
+        - [x] `src/modules/admin/ui/KanbanBoard.svelte` (Svelte 5 Runes, 4 columnas, DnD nativo, optimistic UI)
+        - [x] `src/modules/admin/ui/KanbanCard.svelte` (componente dumb: glassmorphism, datos del lead, teléfono, medidas)
+    - [x] 4.2.3: Implementar librería de Drag-and-Drop (DND) ligera vinculada a Runes en Svelte.
+        - [x] HTML5 Drag and Drop API nativa (YAGNI — sin dependencia extra)
+        - [x] Optimistic UI: tarjeta se mueve inmediatamente, revierte si el servidor falla con error banner
+    - [x] 4.2.4: Crear endpoint interno (PATCH) en Astro para mutar el status de un Lead en la Base de Datos al soltar la tarjeta de arrastre (Drop).
+        - [x] Endpoint: `src/pages/api/admin/leads/[id].ts` (auth guard, Zod validation, DI SSR client)
+        - [x] Client HTTP: `src/modules/admin/api/leadsAdminClient.ts` (`updateLeadStatus()` — REGLA 4)
+        - [x] Barrel file: `src/modules/admin/index.ts` actualizado con `KanbanBoard` y `KanbanCard`
+
 
 - **Task 4.3: CMS de Catálogo (Uploader a Buckets S3/Supabase Storage)**
     - [ ] 4.3.1: Crear tabla/esquema en Base Datos para "Catálogo de Productos".

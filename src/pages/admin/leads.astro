@@ -1,0 +1,97 @@
+---
+/**
+ * /admin/leads.astro — CRM Kanban de Leads B2B (Task 4.2.1)
+ *
+ * SSR con AdminLayout (hereda auth guard automáticamente).
+ * Fetches todos los leads en el frontmatter (server-side, seguro).
+ * Pasa los datos al KanbanBoard como prop.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { KanbanBoard } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseLeadRepository } from '@core/infrastructure/repositories/SupabaseLeadRepository';
+import type { AdminLead } from '@core/domain/leadAdminSchema';
+
+export const prerender = false;
+
+// Auth guard heredado del AdminLayout — si no hay sesión, redirige a /admin/login
+// Aquí solo construimos el repositorio con el client SSR para respetar RLS
+const supabase = createSupabaseServerClient(Astro.cookies);
+const leadRepository = new SupabaseLeadRepository(supabase);
+
+let leads: AdminLead[] = [];
+let fetchError = '';
+
+try {
+  leads = await leadRepository.getAll();
+} catch (error: unknown) {
+  if (error instanceof Error) {
+    fetchError = error.message;
+  } else {
+    fetchError = 'Error al cargar los leads.';
+  }
+}
+---
+
+<AdminLayout title="CRM Leads" section="Leads">
+  {fetchError && <div class="fetch-error">⚠️ {fetchError}</div>}
+
+  <!-- Stats row -->
+  <div class="leads-stats">
+    <div class="stat-pill">
+      <span class="pill-num">{leads.length}</span>
+      <span class="pill-label">Total Leads</span>
+    </div>
+    <div class="stat-pill">
+      <span class="pill-num">{leads.filter((l) => l.status === 'NUEVO').length}</span>
+      <span class="pill-label">Nuevos</span>
+    </div>
+    <div class="stat-pill">
+      <span class="pill-num">{leads.filter((l) => l.status === 'CERRADO_GANADO').length}</span>
+      <span class="pill-label">Ganados</span>
+    </div>
+  </div>
+
+  <!-- Kanban Board (Svelte 5, client:load para DnD interactivo) -->
+  <KanbanBoard {leads} client:load />
+</AdminLayout>
+
+<style>
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .leads-stats {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+  }
+
+  .pill-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #d4af37;
+  }
+
+  .pill-label {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>
