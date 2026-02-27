@@ -21,7 +21,7 @@ export class SupabaseStorageService {
    */
   async createPresignedUploadUrl(
     filename: string,
-    expiresIn = 300
+    _expiresIn = 300
   ): Promise<{ signedUrl: string; path: string; publicUrl: string }> {
     // Usar UUID en el path para evitar colisiones de nombres (Security — REGLA 0)
     const ext = filename.split('.').pop()?.toLowerCase() ?? 'jpg';
