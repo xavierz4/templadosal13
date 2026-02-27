@@ -1,0 +1,345 @@
+---
+/**
+ * AdminLayout.astro — SSR Layout para el Panel de Administración (Task 4.1.2)
+ *
+ * Responsabilidades (REGLA 2 — Sin lógica de negocio en pages/):
+ *   1. Interceptar cookies JWT de Supabase en cada request SSR
+ *   2. Verificar sesión activa vía IAuthService
+ *   3. Redirigir a /admin/login si no hay sesión válida
+ *   4. Renderizar <slot /> con el contenido del panel si autenticado
+ *
+ * Seguridad (Security Design Doc §2.1):
+ *   - HttpOnly cookies via @supabase/ssr (NO localStorage)
+ *   - meta noindex para proteger el panel de crawlers
+ *   - nofollow para no exponer rutas internas del CMS
+ */
+import '@core/theme/global.css';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+
+// SSR obligatorio — nunca pre-renderizar el admin panel
+export const prerender = false;
+
+interface Props {
+  title?: string;
+  section?: string;
+}
+
+const { title = 'Admin Panel', section = 'Dashboard' } = Astro.props;
+
+// ─── Auth Guard (REGLA 2 — Orquestación pura: cookies → supabase → redirect) ───
+const supabase = createSupabaseServerClient(Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+if (!session) {
+  // Sesión inexpirada o cookie ausente → bouncer estricto
+  console.warn('[AdminLayout] Unauthenticated access attempt. Redirecting to /admin/login.');
+  return Astro.redirect('/admin/login', 302);
+}
+
+const adminEmail = session.user.email ?? 'Admin';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Blindar el panel de crawlers y motores de búsqueda -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Panel de Administración — Templados AL13" />
+    <title>{title} | Admin — Templados AL13</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #090a0c;
+        color: #f5f5f5;
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      /* ─── Top Bar ─── */
+      .topbar {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        height: 58px;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(8px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+      }
+
+      .brand-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #d4af37;
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+      }
+
+      .brand-name {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #e0e0e0;
+        letter-spacing: 0.04em;
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .admin-badge {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.4);
+        font-family: 'Inter', sans-serif;
+      }
+
+      .logout-btn {
+        padding: 0.35rem 0.85rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .logout-btn:hover {
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.06);
+      }
+
+      /* ─── Sidebar ─── */
+      .sidebar {
+        background: rgba(255, 255, 255, 0.015);
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 1.5rem 0;
+        overflow-y: auto;
+      }
+
+      .nav-section-title {
+        padding: 0 1.25rem 0.5rem;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.25);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.6rem 1.25rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.45);
+        text-decoration: none;
+        border-radius: 0;
+        transition: all 0.2s ease;
+        border-left: 2px solid transparent;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .nav-item:hover {
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.04);
+        border-left-color: rgba(212, 175, 55, 0.4);
+      }
+
+      .nav-item.active {
+        color: #d4af37;
+        background: rgba(212, 175, 55, 0.06);
+        border-left-color: #d4af37;
+        font-weight: 500;
+      }
+
+      .nav-icon {
+        width: 16px;
+        height: 16px;
+        opacity: 0.7;
+        flex-shrink: 0;
+      }
+
+      .nav-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.05);
+        margin: 0.75rem 1.25rem;
+      }
+
+      /* ─── Main content ─── */
+      .admin-main {
+        padding: 2rem;
+        overflow-y: auto;
+        background: #090a0c;
+      }
+
+      .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .page-breadcrumb {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 0.35rem;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.03em;
+      }
+
+      .page-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #e0e0e0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-dot"></div>
+        <span class="brand-name">Templados AL13</span>
+      </div>
+      <div class="topbar-right">
+        <span class="admin-badge">{adminEmail}</span>
+        <a href="/api/auth/logout" class="logout-btn" id="logout-btn">Cerrar sesión</a>
+      </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" aria-label="Panel de administración">
+      <p class="nav-section-title">CRM</p>
+      <a
+        href="/admin"
+        class={`nav-item ${section === 'Dashboard' ? 'active' : ''}`}
+        aria-current={section === 'Dashboard' ? 'page' : 'false'}
+      >
+        <!-- Icon: BarChart -->
+        <svg
+          class="nav-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"
+          ></rect><rect x="14" y="14" width="7" height="7"></rect><rect
+            x="3"
+            y="14"
+            width="7"
+            height="7"></rect>
+        </svg>
+        Dashboard
+      </a>
+      <a
+        href="/admin/leads"
+        class={`nav-item ${section === 'Leads' ? 'active' : ''}`}
+        aria-current={section === 'Leads' ? 'page' : 'false'}
+      >
+        <!-- Icon: Users -->
+        <svg
+          class="nav-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"
+          ></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"
+          ></path>
+        </svg>
+        Leads B2B
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <p class="nav-section-title">Catálogo</p>
+      <a
+        href="/admin/catalog"
+        class={`nav-item ${section === 'Catalog' ? 'active' : ''}`}
+        aria-current={section === 'Catalog' ? 'page' : 'false'}
+      >
+        <!-- Icon: Grid -->
+        <svg
+          class="nav-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Nuevo Proyecto
+      </a>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="admin-main" id="admin-content">
+      <div class="page-header">
+        <p class="page-breadcrumb">Admin / {section}</p>
+        <h1 class="page-title">{title}</h1>
+      </div>
+      <slot />
+    </main>
+
+    <!-- Logout handler: POST /api/auth/logout then redirect -->
+    <script>
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+          } catch {
+            // fire-and-forget — redirigir incluso si falla el fetch
+          }
+          window.location.href = '/admin/login';
+        });
+      }
+    </script>
+  </body>
+</html>

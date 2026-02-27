@@ -136,8 +136,14 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
         - [x] API Endpoint POST: `src/pages/api/auth/logout.ts`
         - [x] Tests del endpoint: `src/pages/api/auth/login.test.ts`
         - [x] Página Astro SSR: `src/pages/admin/login.astro` (prerender=false, meta noindex)
-    - [ ] 4.1.2: Implementar SSR Layout `AdminLayout.astro` que intercepte Cookies JWT de Supabase en cada request.
-    - [ ] 4.1.3: Redireccionar forzosamente a `/admin/login` si la Cookie de Sesión está expirada, previniendo acceso estático o cliente.
+    - [x] 4.1.2: Implementar SSR Layout `AdminLayout.astro` que intercepte Cookies JWT de Supabase en cada request.
+        - [x] Layout SSR: `src/shared/ui/AdminLayout.astro` (prerender=false, JWT guard, sidebar, topbar con logout)
+        - [x] Auth guard: `supabase.auth.getSession()` → redirect 302 a `/admin/login` si sin sesión
+        - [x] Dashboard index: `src/pages/admin/index.astro` (stat cards + auth banner + roadmap de proximas tasks)
+        - [x] Logout: botón en topbar con fetch POST `/api/auth/logout` + redirect client-side
+    - [x] 4.1.3: Redireccionar forzosamente a `/admin/login` si la Cookie de Sesión está expirada, previniendo acceso estático o cliente.
+        - [x] `src/pages/admin/login.astro`: chequea sesión activa → redirect 302 a `/admin` si ya autenticado
+
 
 - **Task 4.2: CRM Dashboard B2B (Módulo Kanban de Leads)**
     - [ ] 4.2.1: Crear ruta SSR `/admin/leads` que haga fetch de todos los Leads Ordenados (`ORDER BY created_at DESC`).

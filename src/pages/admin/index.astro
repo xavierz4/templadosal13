@@ -1,0 +1,252 @@
+---
+/**
+ * /admin/index.astro — Dashboard Principal del Admin Panel (Task 4.1.2)
+ *
+ * Usa AdminLayout que intercepta JWT cookie y redirige si no hay sesión.
+ * Esta página solo muestra estadísticas básicas (placeholder para Epic 4.2).
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+
+// SSR obligatorio para auth con cookies
+export const prerender = false;
+---
+
+<AdminLayout title="Dashboard" section="Dashboard">
+  <div class="dashboard-grid">
+    <!-- Stat Cards -->
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--leads">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"
+          ></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <p class="stat-label">Leads Totales</p>
+        <p class="stat-value">—</p>
+        <p class="stat-sub">Kanban disponible en Epic 4.2</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--pending">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <p class="stat-label">Leads Nuevos (7d)</p>
+        <p class="stat-value">—</p>
+        <p class="stat-sub">Telemetría en Epic 6.2</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--catalog">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"
+          ></rect>
+          <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"
+          ></rect>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <p class="stat-label">Proyectos Catálogo</p>
+        <p class="stat-value">—</p>
+        <p class="stat-sub">CMS disponible en Epic 4.3</p>
+      </div>
+    </div>
+
+    <!-- Auth OK Banner -->
+    <div class="auth-banner">
+      <div class="auth-banner-icon">🔐</div>
+      <div>
+        <p class="auth-banner-title">Sesión autenticada correctamente</p>
+        <p class="auth-banner-sub">
+          Cookie JWT interceptada vía <code>@supabase/ssr</code> · HttpOnly · Secure · SameSite=Strict
+        </p>
+      </div>
+    </div>
+
+    <!-- Next tasks -->
+    <div class="next-card">
+      <h2 class="next-title">⚙️ Próximos módulos</h2>
+      <ul class="next-list">
+        <li class="next-item next-item--done">
+          ✅ Task 4.1.1 — Login UI + Supabase Auth endpoints
+        </li>
+        <li class="next-item next-item--done">✅ Task 4.1.2 — AdminLayout SSR con JWT guard</li>
+        <li class="next-item next-item--todo">
+          ⬜ Task 4.1.3 — Redirect automático si ya autenticado al entrar a /admin/login
+        </li>
+        <li class="next-item next-item--todo">⬜ Task 4.2 — CRM Kanban de Leads B2B</li>
+        <li class="next-item next-item--todo">⬜ Task 4.3 — CMS Catálogo + upload S3</li>
+      </ul>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  /* Stats */
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.875rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .stat-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .stat-icon--leads {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+  }
+  .stat-icon--pending {
+    background: rgba(96, 165, 250, 0.1);
+    color: #60a5fa;
+  }
+  .stat-icon--catalog {
+    background: rgba(167, 139, 250, 0.1);
+    color: #a78bfa;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.25rem;
+  }
+  .stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f5f5f5;
+    line-height: 1;
+  }
+  .stat-sub {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin-top: 0.25rem;
+  }
+
+  /* Auth Banner */
+  .auth-banner {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(34, 197, 94, 0.06);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    border-radius: 0.875rem;
+  }
+
+  .auth-banner-icon {
+    font-size: 1.4rem;
+  }
+  .auth-banner-title {
+    font-weight: 600;
+    color: #86efac;
+    font-size: 0.875rem;
+    margin-bottom: 0.2rem;
+  }
+  .auth-banner-sub {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .auth-banner-sub code {
+    font-family: 'Courier New', monospace;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+  }
+
+  /* Next tasks */
+  .next-card {
+    grid-column: 1 / -1;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.875rem;
+  }
+
+  .next-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    margin-bottom: 1rem;
+  }
+
+  .next-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .next-item {
+    font-size: 0.825rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+  }
+  .next-item--done {
+    color: rgba(134, 239, 172, 0.7);
+    background: rgba(34, 197, 94, 0.04);
+  }
+  .next-item--todo {
+    color: rgba(255, 255, 255, 0.35);
+  }
+</style>
