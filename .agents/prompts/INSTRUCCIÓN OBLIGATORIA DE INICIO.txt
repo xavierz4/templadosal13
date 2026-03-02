@@ -1,0 +1,24 @@
+INSTRUCCIÓN OBLIGATORIA DE INICIO:
+1. Lee el archivo AGENTS.md completo (incluye las 16 reglas + MANDATORY WORKFLOW + mapa de documentación)
+2. Lee docs/product/07_Granular_Backlog_Execution.md para conocer qué está hecho y qué falta
+3. Lee docs/architecture/01_Architecture_Document.md para entender la estructura del código
+
+Este es el proyecto Templados AL13 — plataforma web de vidrio templado y aluminio arquitectónico (Colombia).
+
+ESTADO ACTUAL:
+- Stack: Astro + Svelte 5 + TypeScript strict + Supabase + Resend + Tailwind CSS
+- Arquitectura: HSA (Hexagonal) con SOLID 5/5 implementado
+- Patrones: Repository (ILeadRepository → Supabase), Strategy (IPhysicsStrategy → 4 productos), Dependency Inversion
+- CI/CD: commitlint + ESLint REGLA 0 (bloquea ../../) + Vitest 80% coverage + GitHub Actions
+- Épicas completadas: 1, 2, 3 | Pendientes: 4 (Admin), 5 (3D WebGL), 6 (SEO)
+
+DOCUMENTOS ADICIONALES (leer si la tarea lo requiere):
+- Product Vision: docs/product/01_Product_Vision_Document_(PVD).md
+- User Stories: docs/product/03_User_Stories_Document.md
+- API Spec: docs/api/01_API_Specification.md
+- Testing Strategy: docs/testing/01_Testing_Strategy_Document.md
+- Coding Standards: docs/engineering/01_Coding_Standards.md
+- Security: docs/security/
+- Manual del agente: docs/training/arquitectura/13_Manual_de_Uso_del_Agente.md
+
+MI TAREA: [ 4.1.2: Implementar SSR Layout `AdminLayout.astro` que intercepte Cookies JWT de Supabase en cada request.]"Haz /code_review de los últimos cambios"

@@ -190,22 +190,22 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 **Objetivo:** Funcionalidad Eye-Candy que destruya a la competencia visual, donde el usuario final pueda rotar un vidrio templado 3D en su móvil.
 
 - **Task 5.1: Setup Core 3D (Threlte Engine)**
-    - [ ] 5.1.1: Instalar la dependencia oficial `three` y `@threlte/core` compatible con Svelte 5.
-    - [ ] 5.1.2: Montar componente de Canvas maestro (`3DCanvas.svelte`) asegurando z-index debajo del texto UI pero arriba del fondo.
+    - [x] 5.1.1: Instalar la dependencia oficial `three` y `@threlte/core` compatible con Svelte 5.
+    - [x] 5.1.2: Montar componente de Canvas maestro (`3DCanvas.svelte`) asegurando z-index debajo del texto UI pero arriba del fondo.
 
 - **Task 5.2: Ingesta de Escenarios PBR (Modelos y Materiales)**
-    - [ ] 5.2.1: Optimizar modelo crudo de aluminio `.glb` mediante `gltf-pipeline` o Draco compression en terminal (Reducción MBs).
-    - [ ] 5.2.2: Cargar el modelo en Threlte asíncronamente (Suspense Loader UI).
-    - [ ] 5.2.3: Programar shaders fotorrealistas (MeshPhysicalMaterial) asignando "Transmission = 1.0", "Roughness < 0.1", e IOR (Índice de refracción) equivalente a vidrio clásico para el target 3D.
-    - [ ] 5.2.4: Asignar coloración "Anodizado/Mate" a las estructuras del perfil perimetral metálico en ThreeJS.
+    - [x] 5.2.1: Optimizar modelo crudo de aluminio `.glb` mediante `gltf-pipeline` o Draco compression en terminal (Reducción MBs).
+    - [x] 5.2.2: Cargar el modelo en Threlte asíncronamente (Suspense Loader UI).
+    - [x] 5.2.3: Programar shaders fotorrealistas (MeshPhysicalMaterial) asignando "Transmission = 1.0", "Roughness < 0.1", e IOR (Índice de refracción) equivalente a vidrio clásico para el target 3D.
+    - [x] 5.2.4: Asignar coloración "Anodizado/Mate" a las estructuras del perfil perimetral metálico en ThreeJS.
 
 - **Task 5.3: Coreografías de Cámara (Orbiting)**
-    - [ ] 5.3.1: Inyectar `<OrbitControls />` limitando el pitch polar a rangos normales (el usuario no puede ver la ducha "desde abajo" u horizontes absurdos).
-    - [ ] 5.3.2: Auto-rotación sutil y lenta (`autoRotate={true} autoRotateSpeed={0.5}`) si el usuario no interactúa en 5 segundos.
+    - [x] 5.3.1: Inyectar `<OrbitControls />` limitando el pitch polar a rangos normales (el usuario no puede ver la ducha "desde abajo" u horizontes absurdos).
+    - [x] 5.3.2: Auto-rotación sutil y lenta (`autoRotate={true} autoRotateSpeed={0.5}`) si el usuario no interactúa en 5 segundos.
 
 - **Task 5.4: Degradación SRE (Site Reliability Engineering / Fallback)**
-    - [ ] 5.4.1: Programar detector (script muy veloz) de capabilities WebGL en el navegador del cliente antes del montaje.
-    - [ ] 5.4.2: Destruir el Canvas 3D e inyectar una "Imagen 2D de Alta Calidad (AVIF)" inmediatamente si el teléfono es obsoleto o carece de Aceleración de Hardware.
+    - [x] 5.4.1: Programar detector (script muy veloz) de capabilities WebGL en el navegador del cliente antes del montaje.
+    - [x] 5.4.2: Destruir el Canvas 3D e inyectar una "Imagen 2D de Alta Calidad (AVIF)" inmediatamente si el teléfono es obsoleto o carece de Aceleración de Hardware.
 
 ---
 
