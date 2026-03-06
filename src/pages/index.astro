@@ -1,7 +1,7 @@
 ---
 import PublicLayout from '@shared/ui/PublicLayout.astro';
 import Navbar from '@shared/ui/Navbar.svelte';
-import { Hero, ValueProposition } from '@modules/landing';
+import { Hero, TrustTicker, ValueProposition } from '@modules/landing';
 import { TechnicalValidator } from '@modules/quoter';
 import Footer from '@shared/ui/Footer.astro';
 ---
@@ -16,6 +16,9 @@ import Footer from '@shared/ui/Footer.astro';
   <main>
     <!-- Sección 1: El Escaparate (Hero Cine) -->
     <Hero client:idle />
+
+    <!-- Sección 1.5: Ticker de Autoridad B2B (Logos Infinitos) -->
+    <TrustTicker />
 
     <!-- Sección 2: Propuesta de Valor (Feature List) -->
     <ValueProposition client:visible />

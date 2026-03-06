@@ -4,3 +4,4 @@
 
 export { default as Hero } from './ui/Hero.svelte';
 export { default as ValueProposition } from './ui/ValueProposition.svelte';
+export { default as TrustTicker } from './ui/TrustTicker.astro';

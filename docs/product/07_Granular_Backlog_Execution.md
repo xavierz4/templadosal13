@@ -272,12 +272,12 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 8.2.3: Reemplazar íconos abstractos por un sistema de *Trust Badges* hiper-realistas en las imágenes.
 
 - **Task 8.3: Validador Paramétrico Sensorial (Geometry Feedback)**
-    - [ ] 8.3.1: Diseñar Componente interactivo SVG de Plano Arquitectónico junto al Input de Medidas en el Cotizador Ducha/Baño B2C.
-    - [ ] 8.3.2: Vincular Reactividad Svelte 5 para que el polígono SVG escale su aspecto (Ancho y Alto) en milisegundos reales mientras el usuario digita medidas.
-    - [ ] 8.3.3: Vincular el Core de Tolerancias NSR-10 para hacer un Fill Transition rojo alertando fallas espaciales/físicas instantáneamente frente a los ojos del comprador.
+    - [x] 8.3.1: Diseñar Componente interactivo SVG de Plano Arquitectónico junto al Input de Medidas en el Cotizador Ducha/Baño B2C.
+    - [x] 8.3.2: Vincular Reactividad Svelte 5 para que el polígono SVG escale su aspecto (Ancho y Alto) en milisegundos reales mientras el usuario digita medidas.
+    - [x] 8.3.3: Vincular el Core de Tolerancias NSR-10 para hacer un Fill Transition rojo alertando fallas espaciales/físicas instantáneamente frente a los ojos del comprador.
 
 - **Task 8.4: Prueba Social y Autoridad Industrial (Trust Engine)**
-    - [ ] 8.4.1: Maquetar un Ticker Infinito (carrusel animado por GPU) conteniendo Logotipos en escala de grises (opacidad 30%) de Aliados, Marcas ISO, o Constructoras (Autoridad Estática).
+    - [x] 8.4.1: Maquetar un Ticker Infinito (carrusel animado por GPU) conteniendo Logotipos en escala de grises (opacidad 30%) de Aliados, Marcas ISO, o Constructoras (Autoridad Estática).
     - [ ] 8.4.2: Insertar un bloque de Impacto Numérico Cuantitativo con mega-tipografías exponiendo "10+ Años Promedio", "Extrusión Calibre 2mm" para la mentalidad del Ingeniero Civil.
 
 - **Task 8.5: Enrutamiento de Embudo B2B (Sticky Call-To-Action)**
