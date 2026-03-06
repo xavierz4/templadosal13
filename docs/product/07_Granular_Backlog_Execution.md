@@ -281,5 +281,5 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 8.4.2: Intercalar Bloque de Impacto Numérico Cuantitativo con Mega-Tipografía (ej. "10+ Años", "2mm Calibre", "100% NSR-10") debajo de los beneficios y antes del Quoter UI.
 
 - **Task 8.5: Enrutamiento de Embudo B2B (Sticky Call-To-Action)**
-    - [ ] 8.5.1: Transformar el Header NavBar para alojar una inyección en vivo asíncrona ("Solicitar Cotización"), una vez rebasado el umbral Y del Hero Image.
-    - [ ] 8.5.2: Investigar UX A/B para botón FAB (Floating Action Button) persistente que nunca abandone la órbita inferior derecha del usuario en páginas transaccionales largas.
+    - [x] 8.5.1: Transformar el Header NavBar para alojar una inyección en vivo asíncrona ("Solicitar Cotización"), una vez rebasado el umbral Y del Hero Image.
+    - [x] 8.5.2: Investigar UX A/B para botón FAB (Floating Action Button) persistente que nunca abandone la órbita inferior derecha del usuario en páginas transaccionales largas.
