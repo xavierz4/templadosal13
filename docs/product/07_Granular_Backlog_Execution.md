@@ -278,7 +278,7 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 
 - **Task 8.4: Prueba Social y Autoridad Industrial (Trust Engine)**
     - [x] 8.4.1: Maquetar un Ticker Infinito (carrusel animado por GPU) conteniendo Logotipos en escala de grises (opacidad 30%) de Aliados, Marcas ISO, o Constructoras (Autoridad Estática).
-    - [ ] 8.4.2: Insertar un bloque de Impacto Numérico Cuantitativo con mega-tipografías exponiendo "10+ Años Promedio", "Extrusión Calibre 2mm" para la mentalidad del Ingeniero Civil.
+    - [x] 8.4.2: Intercalar Bloque de Impacto Numérico Cuantitativo con Mega-Tipografía (ej. "10+ Años", "2mm Calibre", "100% NSR-10") debajo de los beneficios y antes del Quoter UI.
 
 - **Task 8.5: Enrutamiento de Embudo B2B (Sticky Call-To-Action)**
     - [ ] 8.5.1: Transformar el Header NavBar para alojar una inyección en vivo asíncrona ("Solicitar Cotización"), una vez rebasado el umbral Y del Hero Image.

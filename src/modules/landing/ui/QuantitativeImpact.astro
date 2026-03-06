@@ -1,0 +1,81 @@
+---
+// src/modules/landing/ui/QuantitativeImpact.astro
+---
+
+<section class="py-24 bg-al13-dark border-y border-white/5 relative overflow-hidden">
+  <!-- Glowing subtle gradients para integrarse al look "Glass" y no verse plano -->
+  <div
+    class="absolute -top-[200px] left-1/4 w-[500px] h-[500px] bg-al13-cyan/10 rounded-full blur-[150px] opacity-30 pointer-events-none"
+  >
+  </div>
+  <div
+    class="absolute -bottom-[200px] right-1/4 w-[500px] h-[500px] bg-al13-gold/10 rounded-full blur-[150px] opacity-20 pointer-events-none"
+  >
+  </div>
+
+  <div class="container mx-auto px-4 lg:px-8 relative z-10 w-full max-w-7xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <!-- Bloque 1: Años Promedio -->
+      <div class="flex flex-col text-center lg:text-left space-y-2 group">
+        <h4
+          class="font-outfit font-black text-6xl md:text-7xl xl:text-8xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-600 transition-all duration-500 group-hover:to-al13-cyan"
+        >
+          10+
+        </h4>
+        <div class="h-px w-16 bg-gradient-to-r from-white/20 to-transparent mx-auto lg:mx-0 my-2">
+        </div>
+        <p class="font-mono text-sm uppercase tracking-widest text-zinc-400">Años Promedio</p>
+        <p class="text-zinc-500 text-sm mt-1">
+          De experiencia técnica aplicable en diseño estructural de aluminios.
+        </p>
+      </div>
+
+      <!-- Bloque 2: Calibre Extrusión -->
+      <div class="flex flex-col text-center lg:text-left space-y-2 group">
+        <h4
+          class="font-outfit font-black text-6xl md:text-7xl xl:text-8xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-600 transition-all duration-500 group-hover:to-al13-gold"
+        >
+          2mm
+        </h4>
+        <div class="h-px w-16 bg-gradient-to-r from-white/20 to-transparent mx-auto lg:mx-0 my-2">
+        </div>
+        <p class="font-mono text-sm uppercase tracking-widest text-zinc-400">Calibre Extrusión</p>
+        <p class="text-zinc-500 text-sm mt-1">
+          Robustez industrial que garantiza rigidez monolítica ante el Viento.
+        </p>
+      </div>
+
+      <!-- Bloque 3: Normativa Sismoresistente -->
+      <div class="flex flex-col text-center lg:text-left space-y-2 group">
+        <h4
+          class="font-outfit font-black text-6xl md:text-7xl xl:text-8xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-600 transition-all duration-500 group-hover:to-emerald-500"
+        >
+          100%
+        </h4>
+        <div class="h-px w-16 bg-gradient-to-r from-white/20 to-transparent mx-auto lg:mx-0 my-2">
+        </div>
+        <p class="font-mono text-sm uppercase tracking-widest text-zinc-400">
+          Certificación NSR-10
+        </p>
+        <p class="text-zinc-500 text-sm mt-1">
+          Nuestra ingeniería base se sujeta al Título B de cargas colombianas.
+        </p>
+      </div>
+
+      <!-- Bloque 4: Calidad Óptica -->
+      <div class="flex flex-col text-center lg:text-left space-y-2 group">
+        <h4
+          class="font-outfit font-black text-6xl md:text-7xl xl:text-8xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-zinc-600 transition-all duration-500 group-hover:to-blue-400"
+        >
+          0.0%
+        </h4>
+        <div class="h-px w-16 bg-gradient-to-r from-white/20 to-transparent mx-auto lg:mx-0 my-2">
+        </div>
+        <p class="font-mono text-sm uppercase tracking-widest text-zinc-400">Distorsión Óptica</p>
+        <p class="text-zinc-500 text-sm mt-1">
+          Superficies templadas de alta pureza reflectiva para fachadas.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

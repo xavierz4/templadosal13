@@ -1,7 +1,7 @@
 ---
 import PublicLayout from '@shared/ui/PublicLayout.astro';
 import Navbar from '@shared/ui/Navbar.svelte';
-import { Hero, TrustTicker, ValueProposition } from '@modules/landing';
+import { Hero, TrustTicker, ValueProposition, QuantitativeImpact } from '@modules/landing';
 import { TechnicalValidator } from '@modules/quoter';
 import Footer from '@shared/ui/Footer.astro';
 ---
@@ -23,8 +23,14 @@ import Footer from '@shared/ui/Footer.astro';
     <!-- Sección 2: Propuesta de Valor (Feature List) -->
     <ValueProposition client:visible />
 
-    <!-- Sección 3: Calculadora/Validador Técnico -->
-    <section id="cotizador" class="bg-[#0A0A0A] relative z-20">
+    <!-- Sección 2.5: Datos de Impacto Numérico (Autoridad B2B) -->
+    <QuantitativeImpact />
+
+    <!-- Sección 3: Calculadora Técnica (Geometry Feedback Live Engine) -->
+    <section
+      id="cotizador"
+      class="py-24 bg-al13-dark border-t border-white/10 relative overflow-hidden"
+    >
       <TechnicalValidator client:visible />
     </section>
   </main>
