@@ -11,9 +11,9 @@ export const prerender = false;
  * Cierra la sesión del administrador y limpia cookies.
  * Solo orquesta (REGLA 2): delega a SupabaseAuthService.signOut()
  */
-export const POST: APIRoute = async ({ cookies }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    const supabaseClient = createSupabaseServerClient(cookies);
+    const supabaseClient = createSupabaseServerClient(request, cookies);
     const authService = new SupabaseAuthService(supabaseClient);
 
     await authService.signOut();
@@ -40,4 +40,11 @@ export const POST: APIRoute = async ({ cookies }) => {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+};
+
+// Permitir redirecciones de navegación directa (clics en enlaces)
+export const GET: APIRoute = async (context) => {
+  const result = await POST(context);
+  // Redirigir siempre tras un GET manual
+  return context.redirect('/admin/login', 302);
 };

@@ -1,0 +1,35 @@
+---
+/**
+ * /admin/analytics.astro — Ruta SSR del Dashboard B.I. (Task 6.2.2)
+ * Arquitectura SOBERANA: Cero carga de B.I. al servidor JS, Data pre-digerida.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { AnalyticsDashboard } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseAnalyticsRepository } from '@core/infrastructure/repositories/SupabaseAnalyticsRepository';
+
+// Componente SSR Restringido
+export const prerender = false;
+
+// Instanciar DI Repository (HSA)
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const analyticsRepo = new SupabaseAnalyticsRepository(supabase);
+
+let data = [];
+try {
+  data = await analyticsRepo.getDashboardAnalytics();
+} catch (error) {
+  console.error('[Admin Analytics] Fallo al inyectar BI Data', error);
+}
+---
+
+<AdminLayout title="Performance & Telemetría" section="Analytics">
+  <div class="mb-4">
+    <p class="text-sm text-white/50">
+      Soberanía Analítica: Cálculo L3 delegado a motor PostgreSQL (Supabase). Cero overhead web.
+    </p>
+  </div>
+  
+  <!-- Isla Svelte 5 asimétrica: Despacha gráficas ChartJS pesadas solo al cliente visual -->
+  <AnalyticsDashboard data={data} client:load />
+</AdminLayout>

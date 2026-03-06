@@ -19,7 +19,9 @@
     "*.{js,cjs,ts,astro,svelte,json,css,md}": "prettier --write"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/sitemap": "^3.7.0",
     "@astrojs/svelte": "^7.2.5",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/outfit": "^5.2.8",
@@ -29,6 +31,7 @@
     "@threlte/core": "^8.4.0",
     "@threlte/extras": "^9.8.1",
     "astro": "^5.17.1",
+    "chart.js": "^4.5.1",
     "lucide-svelte": "^0.575.0",
     "resend": "^6.9.2",
     "svelte": "^5.53.2",

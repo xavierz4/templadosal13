@@ -14,7 +14,14 @@ import type { CatalogProject } from '@core/domain/catalogSchema';
 
 export const prerender = false;
 
-const supabase = createSupabaseServerClient(Astro.cookies);
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+// 1. Auth Guard en la capa más alta para evitar ResponseSentError
+const { data: { session } } = await supabase.auth.getSession();
+if (!session) {
+  return Astro.redirect('/admin/login', 302);
+}
+
 const catalogRepository = new SupabaseCatalogRepository(supabase);
 
 let projects: CatalogProject[] = [];
@@ -24,6 +31,7 @@ try {
   projects = await catalogRepository.getAll();
 } catch (error: unknown) {
   fetchError = error instanceof Error ? error.message : 'Error al cargar el catálogo.';
+  console.error('[Admin CMS] Catalog Fetch Error:', error);
 }
 ---
 

@@ -18,6 +18,8 @@ export const LeadPayloadSchema = z.object({
     .optional()
     .transform(val => val ? sanitizeHtml(val) : val),
   phone: z.string().min(7, "El teléfono debe tener minimo 7 numeros").max(50),
+  utmSource: z.string().max(255).optional().transform(v => v ? sanitizeHtml(v) : v),
+  utmCampaign: z.string().max(255).optional().transform(v => v ? sanitizeHtml(v) : v),
 });
 
 export type LeadPayload = z.infer<typeof LeadPayloadSchema>;

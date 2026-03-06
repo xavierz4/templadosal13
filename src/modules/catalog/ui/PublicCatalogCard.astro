@@ -1,0 +1,79 @@
+---
+import type { CatalogProject } from '@core/domain/catalogSchema';
+
+interface Props {
+  project: CatalogProject;
+}
+
+const { project } = Astro.props;
+---
+
+<!-- 
+  Tarjeta Cuadrada Premium 1:1 (Aspect Square).
+  Fondo Glassmorphism Dark Metal + Imagen + Overlay.
+  Hover Effect escala la imagen y revela más brillo en el borde.
+-->
+<a 
+  href={`/catalogo/interactivo`} 
+  data-category={project.category}
+  class="catalog-card group relative block w-full aspect-square rounded-[1.5rem] bg-[#121212] overflow-hidden border-[1px] border-white/5 hover:border-white/20 transition-all duration-300 shadow-[2px_4px_16px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(255,255,255,0.05)] cursor-pointer"
+>
+  
+  <!-- Contenedor interior padding 1.25rem (Espacio "Case" de la tarjeta) -->
+  <div class="absolute inset-0 p-4 lg:p-5 flex flex-col">
+    
+    <!-- Imagen Principal del Producto (Efecto Lente/Zoom) -->
+    <div class="relative w-full h-full rounded-2xl overflow-hidden bg-zinc-900 border border-white/10 inner-shadow">
+      
+      <!-- Fallback en caso de no tener image_url -->
+      {!project.image_url && (
+        <div class="absolute inset-0 flex items-center justify-center text-zinc-700 bg-zinc-900">
+          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </div>
+      )}
+
+      <img 
+        src={project.image_url || '/hero_placeholder.jpg'} 
+        alt={project.title} 
+        class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 ease-out group-hover:scale-105"
+        loading="lazy"
+        decoding="async"
+      />
+
+      <!-- Overlay Gradiente Inferior (Oscuro -> Transparente) para legibilidad -->
+      <div class="absolute inset-x-0 bottom-0 origin-bottom h-2/3 bg-gradient-to-t from-[#0A0A0A]/95 via-[#0A0A0A]/60 to-transparent pointer-events-none rounded-b-2xl"></div>
+
+      <!-- Contenido de Texto Inferior -->
+      <div class="absolute bottom-0 left-0 w-full p-5 lg:p-6 flex items-end justify-between z-10">
+        
+        <!-- Nombre del Producto -->
+        <h2 class="text-white font-sans font-semibold tracking-wide uppercase leading-tight text-lg lg:text-xl drop-shadow-md pr-4" style="font-family: 'Outfit', sans-serif;">
+          {project.title}
+        </h2>
+
+        <!-- Botón / Badge "VER 3D" Isotérmico a la derecha -->
+        <div class="flex-shrink-0 flex flex-col items-center justify-center p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-md text-zinc-300 group-hover:bg-white/10 group-hover:text-white transition-colors duration-300 shadow-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-1">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <path d="M12 22V9"/>
+            <path d="M4.27 19 12 9"/>
+            <path d="M19.73 19 12 9"/>
+          </svg>
+          <span class="text-[0.6rem] lg:text-xs font-bold tracking-widest text-center" style="letter-spacing: 1px;">VER 3D</span>
+        </div>
+
+      </div>
+
+    </div>
+    
+  </div>
+  
+  <!-- Highlight / Glow effect on hover (Luz que cruza en diagonal) -->
+  <div class="absolute inset-0 rounded-[1.5rem] pointer-events-none opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-tr from-transparent via-white to-transparent"></div>
+</a>
+
+<style>
+  .inner-shadow {
+    box-shadow: inset 0px 4px 20px rgba(0, 0, 0, 0.5);
+  }
+</style>

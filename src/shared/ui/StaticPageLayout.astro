@@ -1,0 +1,38 @@
+---
+import PublicLayout from './PublicLayout.astro';
+import Navbar from './Navbar.svelte';
+import Footer from './Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  lastUpdated?: string;
+}
+
+const { title, description, lastUpdated } = Astro.props;
+---
+
+<PublicLayout title={`${title} | Templados AL13`} description={description}>
+  <Navbar client:load />
+
+  <main class="min-h-screen bg-al13-background pt-32 pb-24 px-6 md:px-12">
+    <!-- Header Legal -->
+    <header class="max-w-3xl mx-auto mb-12 border-b border-white/10 pb-8">
+      <h1 class="text-3xl md:text-5xl font-heading font-bold text-white tracking-tight mb-4">
+        {title}
+      </h1>
+      {lastUpdated && (
+        <p class="text-zinc-500 text-sm">
+          Última actualización: <span class="text-al13-cyan">{lastUpdated}</span>
+        </p>
+      )}
+    </header>
+
+    <!-- Contenido Textual (Prose) -->
+    <article class="max-w-3xl mx-auto prose prose-invert prose-zinc prose-headings:font-heading prose-headings:font-bold prose-a:text-al13-cyan hover:prose-a:text-al13-emerald prose-a:transition-colors prose-p:leading-relaxed prose-li:leading-relaxed text-zinc-300">
+      <slot />
+    </article>
+  </main>
+
+  <Footer />
+</PublicLayout>

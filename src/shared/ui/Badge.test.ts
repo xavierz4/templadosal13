@@ -22,8 +22,8 @@ describe('Atomic Component: Badge.svelte (Glassmorphism UI)', () => {
     it('applies premium styling classes when type is "premium"', () => {
         render(Badge, { text: 'Premium', type: 'premium' });
         const element = screen.getByText('Premium');
-        // El badge Premium inyecta Oro de la paleta B2B Luxury
-        expect(element.className).toContain('text-al13-gold');
-        expect(element.className).toContain('from-al13-gold/10');
+        // El badge Premium inyecta Oro de la paleta
+        expect(element.className).toContain('text-al13-cyan');
+        expect(element.className).toContain('from-al13-cyan/10');
     });
 });

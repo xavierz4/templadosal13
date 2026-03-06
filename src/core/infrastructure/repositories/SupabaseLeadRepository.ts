@@ -26,10 +26,12 @@ export class SupabaseLeadRepository implements ILeadRepository {
 
   // ─── Método existente (Task 3.x) ─────────────────────────────────────────
   async saveLead(payload: LeadPayload, physics: PhysicsResult): Promise<{ id: string }> {
-    const { data: insertedLead, error: dbError } = await this.client
+    const generatedId = crypto.randomUUID();
+    const { error: dbError } = await this.client
       .from('leads')
       .insert([
         {
+          id: generatedId,
           product_type: payload.productType,
           customer_name: payload.contactName,
           customer_phone: payload.phone,
@@ -42,17 +44,17 @@ export class SupabaseLeadRepository implements ILeadRepository {
           },
           notes: payload.companyName ? `Empresa: ${payload.companyName}` : null,
           status: 'NUEVO',
+          utm_source: payload.utmSource,
+          utm_campaign: payload.utmCampaign,
         },
-      ])
-      .select()
-      .single();
+      ]);
 
     if (dbError) {
       console.error('[LeadRepository] saveLead error:', { message: dbError.message });
       throw new Error('No pudimos guardar los datos en nuestra bóveda.');
     }
 
-    return { id: insertedLead.id };
+    return { id: generatedId };
   }
 
   // ─── Nuevos métodos para el Admin CRM (Task 4.2) ─────────────────────────

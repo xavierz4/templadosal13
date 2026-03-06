@@ -15,7 +15,7 @@ export const prerender = false;
  */
 export const POST: APIRoute = async ({ request, cookies }) => {
   // ── Auth Guard ────────────────────────────────────────────
-  const supabaseClient = createSupabaseServerClient(cookies);
+  const supabaseClient = createSupabaseServerClient(request, cookies);
   const {
     data: { session },
   } = await supabaseClient.auth.getSession();

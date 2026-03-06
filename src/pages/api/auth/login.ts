@@ -24,7 +24,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const validatedData = LoginPayloadSchema.parse(payload);
 
     // DI: crear client SSR con cookies del request
-    const supabaseClient = createSupabaseServerClient(cookies);
+    const supabaseClient = createSupabaseServerClient(request, cookies);
     const authService = new SupabaseAuthService(supabaseClient);
 
     // Delegar autenticación al servicio (Hexagonal — REGLA 2)

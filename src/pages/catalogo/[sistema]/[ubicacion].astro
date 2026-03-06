@@ -1,0 +1,152 @@
+---
+// REGLA 0: Imports Absolutos
+import PublicLayout from '@shared/ui/PublicLayout.astro';
+import Navbar from '@shared/ui/Navbar.svelte';
+import Footer from '@shared/ui/Footer.astro';
+import { supabase } from '@core/infrastructure/supabase';
+import { SupabaseSeoRepository } from '@core/infrastructure/repositories/SupabaseSeoRepository';
+import type { SeoSystem, SeoLocation } from '@core/domain/seoSchema';
+
+// REGLA 2: Lógica aislada en capa Infraestructura/Dominio
+export async function getStaticPaths() {
+  const seoRepo = new SupabaseSeoRepository(supabase);
+  
+  try {
+    const systems = await seoRepo.getAllSystems();
+    const locations = await seoRepo.getAllLocations();
+    
+    // Producto cartesiano: Todas las combinaciones de Sistemas x Ubicaciones (SSG Matrix)
+    const paths = systems.flatMap((system: SeoSystem) => 
+      locations.map((location: SeoLocation) => ({
+        params: { 
+          sistema: system.slug, 
+          ubicacion: location.slug 
+        },
+        props: { 
+          systemName: system.name, 
+          locationName: location.name,
+          department: location.department
+        },
+      }))
+    );
+
+    return paths;
+  } catch (error) {
+    console.error("[SEO SSR] Error fatal pre-renderizando rutas dinámicas:", error);
+    return [];
+  }
+}
+
+interface Props {
+  systemName: string;
+  locationName: string;
+  department: string;
+}
+
+const { systemName, locationName, department } = Astro.props;
+
+// Meta tags dinámicos altamente transaccionales
+const title = `${systemName} en ${locationName} | Templados AL13`;
+const description = `Expertos B2B en manufactura e instalación de ${systemName.toLowerCase()} en ${locationName}, ${department}. Cotiza ahora tu proyecto comercial o residencial con Templados AL13.`;
+
+// Schema.org en JSON-LD para posicionamiento local B2B y Rich Snippets
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Templados AL13",
+  "image": "https://templados-al13.com/favicon.svg",
+  "telephone": "+573023971999",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": locationName,
+    "addressRegion": department,
+    "addressCountry": "CO"
+  },
+  "url": Astro.url.href,
+  "description": description,
+  "priceRange": "$$$",
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": systemName
+    }
+  }
+};
+---
+
+<PublicLayout title={title} description={description} jsonLd={jsonLd}>
+  <Navbar client:load />
+
+  <!-- Hero B2B Section -->
+  <main class="pt-32 pb-16 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto flex-1 w-full">
+    <div class="glass-panel p-8 md:p-12 lg:p-16 text-center max-w-5xl mx-auto rounded-[2rem] relative overflow-hidden border border-white/10 shadow-2xl">
+      <div class="absolute inset-0 bg-gradient-to-br from-al13-cyan/10 via-transparent to-al13-cyan/5 -z-10"></div>
+      
+      <!-- Badge Local SEO -->
+      <div class="flex justify-center mb-8 pr-16 md:pr-0">
+        <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-al13-cyan/10 text-al13-cyan text-xs md:text-sm font-bold tracking-widest uppercase border border-al13-cyan/30 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+          Cobertura en {locationName}
+        </span>
+      </div>
+      
+      <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-outfit font-black tracking-tighter mb-8 leading-tight pr-16 md:pr-0">
+        Sistemas de <span class="bg-gradient-to-r from-al13-cyan to-white bg-clip-text text-transparent">{systemName}</span>
+      </h1>
+      
+      <p class="text-lg md:text-xl lg:text-2xl text-gray-300 md:leading-relaxed mb-12 max-w-4xl mx-auto font-light pr-16 md:pr-0">
+        Transformamos espacios corporativos y residenciales en <strong class="text-white">{locationName}, {department}</strong>. 
+        Cumplimos rigurosamente la norma técnica colombiana <span class="text-al13-cyan/80">NSR-10</span> con acabados de primera categoría resistentes a climas agresivos.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-5 justify-center pr-16 md:pr-0">
+        <a href="/catalogo/interactivo" class="inline-flex items-center justify-center px-8 py-4 bg-al13-cyan text-al13-black font-bold uppercase tracking-wider text-sm rounded-xl hover:scale-[1.03] transition-transform duration-300 shadow-[0_0_20px_rgba(0,240,255,0.4)]">
+          Probar Cotizador 3D Automático
+        </a>
+        <a href="/contacto" class="inline-flex items-center justify-center px-8 py-4 bg-white/5 font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-white/10 transition-colors duration-300 border border-white/20 text-white backdrop-blur-md">
+          Atención Corporativa Directa
+        </a>
+      </div>
+    </div>
+    
+    <!-- Trust Engine Grid -->
+    <section class="mt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <!-- Card 1 -->
+      <div class="glass-panel p-8 rounded-3xl border border-white/5 hover:border-al13-cyan/30 transition-colors duration-500 group">
+        <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-al13-cyan/10 transition-colors duration-500 border border-white/10">
+          <svg class="w-7 h-7 text-al13-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-outfit font-bold mb-4 text-white">Cumplimiento NSR-10</h3>
+        <p class="text-base text-gray-400 leading-relaxed font-light">Estructuras calculadas para tolerar fuerza de vientos extremos (Huracanes) e impacto sísmico obligatorio en Colombia.</p>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="glass-panel p-8 rounded-3xl border border-al13-cyan/20 relative overflow-hidden group shadow-[0_0_30px_rgba(0,240,255,0.05)]">
+        <div class="absolute inset-0 bg-gradient-to-br from-al13-cyan/5 to-transparent -z-10 group-hover:from-al13-cyan/10 transition-colors duration-500"></div>
+        <div class="w-14 h-14 bg-al13-cyan/10 rounded-2xl flex items-center justify-center mb-6 border border-al13-cyan/30">
+          <svg class="w-7 h-7 text-al13-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-outfit font-bold mb-4 text-white">Logística en {locationName}</h3>
+        <p class="text-base text-gray-400 leading-relaxed font-light">No tercerizamos. Despliegue operativo con cuadrillas in-house. Toma de medidas rectificada milimétricamente con láser en el sitio.</p>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="glass-panel p-8 rounded-3xl border border-white/5 hover:border-al13-cyan/30 transition-colors duration-500 group">
+        <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-al13-cyan/10 transition-colors duration-500 border border-white/10">
+          <svg class="w-7 h-7 text-al13-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-outfit font-bold mb-4 text-white">Vidrio Termo-Tratado</h3>
+        <p class="text-base text-gray-400 leading-relaxed font-light">Cristales expuestos a 650°C para adquirir resistencia 5x superior. Control acústico y aislamiento de temperatura opcional para hotelería.</p>
+      </div>
+    </section>
+  </main>
+  
+  <Footer />
+</PublicLayout>

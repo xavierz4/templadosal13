@@ -12,38 +12,36 @@
   import { GLTF, useDraco } from '@threlte/extras';
   import { MeshPhysicalMaterial, MeshStandardMaterial } from 'three';
 
-  let props = $props();
+  // Props reactivas Svelte 5 (Inyectables desde arriba)
+  let { glassType = 'clear', frameColor = 'anodizado', ...rest } = $props();
 
   // Material Premium "Vidrio Arquitectónico AL13"
-  const glassMaterial = new MeshPhysicalMaterial({
-    transmission: 1.0, // Transparencia física completa
-    ior: 1.52, // Índice de refracción del vidrio
-    roughness: 0.05, // Superficie ultra pulida
-    metalness: 0.1, // Ligero reflejo estructural
-    color: '#eef2f5', // Tinte icy sutil
+  const glassMaterial = $derived(new MeshPhysicalMaterial({
+    transmission: 1.0, 
+    ior: glassType === 'clear' ? 1.52 : (glassType === 'smoke' ? 1.6 : 1.45), 
+    roughness: glassType === 'frosted' ? 0.35 : 0.05, 
+    metalness: 0.1, 
+    color: glassType === 'clear' ? '#eef2f5' : (glassType === 'smoke' ? '#1a1a1a' : '#dcdcdc'),
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
     clearcoatRoughness: 0.1,
-  });
+  }));
 
   // Material "Aluminio Anodizado Mate" para perfiles
-  const metalMaterial = new MeshStandardMaterial({
-    color: '#1f1f1f', // Gris espacial / Negro mate AL13
-    metalness: 0.85, // Material altamente metálico
-    roughness: 0.5, // Acabado mate, difumina los reflejos
-  });
+  const metalMaterial = $derived(new MeshStandardMaterial({
+    color: frameColor === 'anodizado' ? '#8f9296' : (frameColor === 'black' ? '#111111' : '#b8860b'), 
+    metalness: 0.85, 
+    roughness: 0.5, 
+  }));
 
-  /** @param {any} e */
-  const handleSceneLoad = (e) => {
-    // Traverse interception to assign PBR logic dynamically
-    if (e?.scene) {
-      /** @param {any} child */
-      e.scene.traverse((child) => {
+  $effect(() => {
+    // Traverse interception to assign PBR logic dynamically upon prop change
+    if (sceneObject) {
+      sceneObject.traverse((child: any) => {
         if (child.isMesh) {
           const name = (child.name || '').toLowerCase();
 
-          // Lógica Semántica B2B: Busca llaves de perfilería metálica
           if (
             name.includes('frame') ||
             name.includes('metal') ||
@@ -52,7 +50,6 @@
           ) {
             child.material = metalMaterial;
           } else {
-            // Default: Aplicamos Vidrio al resto (Incluyendo el Box temporal)
             child.material = glassMaterial;
           }
 
@@ -60,6 +57,14 @@
           child.receiveShadow = true;
         }
       });
+    }
+  });
+
+  let sceneObject: any = $state(null);
+
+  const handleSceneLoad = (e: any) => {
+    if (e?.scene) {
+        sceneObject = e.scene;
     }
   };
 </script>
@@ -74,5 +79,5 @@
   dracoLoader={useDraco('https://www.gstatic.com/draco/v1/decoders/')}
   position={[0, -1, 0]}
   onload={handleSceneLoad}
-  {...props}
+  {...rest}
 />

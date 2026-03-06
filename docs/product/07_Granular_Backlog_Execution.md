@@ -120,6 +120,10 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 3.5.7: Corregir todos los `catch (error: any)` a `catch (error: unknown)` con narrowing `instanceof`.
     - [x] 3.5.8: Actualizar tests en `leads.test.ts` para mockear interfaces (no SDKs directos).
 
+- **Task 3.6: [ADD] Integración Omnicanal del Cotizador**
+    - [x] 3.6.1: Conectar evento de click en "Cotizar Este Sistema" (vista `/catalogo/interactivo`) para que redirija fluidamente al `TechnicalValidator`.
+    - [x] 3.6.2: Añadir inyección de parámetros URL (`?product=puerta_pivotante`) para asegurar que el cotizador preseleccione automáticamente el elemento vitrineado.
+
 ---
 
 ## 🛡️ Epic 4: El Panel de Control Admin (CMS Privado Soberano)
@@ -183,6 +187,10 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 4.3.4: Revalidar Caché SSG de Astro programáticamente si una imagen pública es actualizada.
         - [x] Resuelto por diseño: `/admin/catalog` y catálogo público usan `prerender = false` (SSR on-demand). No hay caché que revalidar.
 
+- **Task 4.4: [ADD] Seed Inicial del Catálogo Público (Mockups B2B)**
+    - [x] 4.4.1: Subir los 12 Renders/Mockups generados fotorealistas (Estética Cyan/Emerald) al Supabase Storage Bucket `catalog-images`.
+    - [x] 4.4.2: Ejecutar Script de Seed o inserción manual CMS para popular la tabla `catalog_projects` y eliminar el 404 general en el frontend `/catalogo`.
+
 
 ---
 
@@ -207,19 +215,71 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
     - [x] 5.4.1: Programar detector (script muy veloz) de capabilities WebGL en el navegador del cliente antes del montaje.
     - [x] 5.4.2: Destruir el Canvas 3D e inyectar una "Imagen 2D de Alta Calidad (AVIF)" inmediatamente si el teléfono es obsoleto o carece de Aceleración de Hardware.
 
+- **Task 5.5: [ADD] Gemelo Digital Realista (Digital Twin Models)**
+    - [x] 5.5.1: Sustituir el cubo de *debug* primitive en `<Scene3DCanvas />` por la carga asíncrona de archivos GLB/GLTF arquitectónicos reales y optimizados.
+    - [x] 5.5.2: Configurar reactividad en Svelte (Runes) para que el selector 2D de la UI mute los shaders (`roughness`, `transmission`, `color`) del modelo GLTF en tiempo real (ej. Vidrio Transparente a Gris Humo).
+
+---
+
+## 💎 Epic 7: [ADD] Completitud de Ecosistema y Polish Final (The B2B Premium Finish)
+**Objetivo:** Eliminar vacíos muertos (Stubs, 404s) interceptados en la auditoría y solidificar la narrativa corporativa total.
+
+- **Task 7.1: Despliegue de Páginas Informativas (Zero Stubs)**
+    - [x] 7.1.1: Reemplazar el cascarón de `/nosotros` (Filosofía) maquetando la historia de la marca, propuesta de valor AL13 y ventaja competitiva del cristal templado estructural.
+    - [x] 7.1.2: Revitalizar `/contacto` (Portal B2B) más allá del cotizador, integrando canales en frío, un formulario directo de contacto, y listado de sedes corporativas.
+
+- **Task 7.2: Cumplimiento Legal B2B**
+    - [x] 7.2.1: Crear `<StaticPageLayout>` limpio para textos pesados y enrutar `/privacidad` y `/terminos` solventando los hipervínculos rotos del Footer.
+    - [x] 7.2.2: Redactar estructura estática Markdown asumiendo Políticas de Privacidad estándar para un negocio B2B/SaaS en Latinoamérica.
+
 ---
 
 ## 📈 Epic 6: Scalado Programático Orgánico y Telemetría (Growth)
 **Objetivo:** Expansión hiper-escalable del sitio sin intervención humana a todos los barrios y ciudades, soportado por data real.
 
-- **Task 6.1: Motor Generador Programático de Rutas SSR (Local SEO)**
-    - [ ] 6.1.1: Crear tabla o array maestro de variables SEO (Ej. ["Bogotá Chico", "Medellín Poblado", "Puertas Plegables", "Mamparas Vidrio"]).
-    - [ ] 6.1.2: Programar la plantilla dinámica Astro dinámica `/catalogo/[tipo]/[ubicacion].astro`.
-    - [ ] 6.1.3: Proveer la función `getStaticPaths()` si SSG, o lectura de Base Datos SSR para inyectar miles de combinaciones en un build, dominando búsquedas nicho como "mamparas vidrio bogota chico" orgánicamente.
-    - [ ] 6.1.4: Inyectar el `<Title>` y meta descripciones `h1` atómicamente relevantes para ese nicho preciso generado.
+- **Task 6.1: Motor Generador Programático de Rutas SSR/SSG (Local SEO)**
+    - [x] 6.1.1: Diseñar esquema en Supabase `seo_locations` y `seo_systems` poblado con Seed Data estratégico del área de influencia real (Riohacha, Maicao, Uribia, Fonseca, San Juan del Cesar, Santa Marta, Valledupar).
+    - [x] 6.1.2: Programar la ruta dinámica Astro `src/pages/catalogo/[sistema]/[ubicacion].astro`.
+    - [x] 6.1.3: Escribir la función `getStaticPaths()` asíncrona que haga fetch a Supabase para pre-renderizar en build time combinaciones hiper-locales (ej. "mamparas de vidrio templado en riohacha" o "fachadas comerciales en maicao").
+    - [x] 6.1.4: Inyectar metadatos atómicos (Title, Meta Description, JSON-LD Schema de Empresa Local) en el `PublicLayout` condicionalmente según la ruta generada.
+    - [x] 6.1.5: [ADD] Integrar `@astrojs/sitemap`. Configurar generación dinámica de `sitemap.xml` que auto-indexe todas las miles de URL creadas y subirlas a Google Search Console.
 
-- **Task 6.2: Dashboard Telemetría Comercial Interno**
-    - [ ] 6.2.1: En el módulo Admin de la Epic 4, crear endpoint estadístico global (Grafana primitivo embebido).
-    - [ ] 6.2.2: Fetch agregado de "Conversion Rates" (Cuantos iniciaron la calculadora web VS cuántos dejaron sus datos).
-    - [ ] 6.2.3: Gráfico de barras o ChartJS mostrando volumen monetario ($) Lead por tipo de producto semanalmente.
-    - [ ] 6.2.4: Registro de logs de errores del Front-end enviados directamente a Supabase Errors Tab (Frontend Observability).
+- **Task 6.2: Dashboard de Telemetría Interna (Business Intelligence)**
+    - [x] 6.2.1: En Supabase, crear "Database Views" y Funciones RPC (Remote Procedure Calls) que agrupen la cantidad de Leads por Mes, Producto y Estado del Kanban.
+    - [x] 6.2.2: Construir UI en Svelte para la ruta `/admin/analytics` utilizando una librería ligera (ej. `LayerCake` o `Chart.js`) que consuma el RPC y renderice: Conversion Rates y Volumen en Pipeline ($).
+    - [x] 6.2.3: Programar Edge Function en Supabase (Deno) que se dispare cada semana vía CRON tabulando un resumen ejecutivo en PDF y enviándolo al CEO por Resend.
+        - [x] `supabase/functions/weekly-report/index.ts` (Deno Edge Function con jsPDF + autoTable + Resend API)
+        - [x] `supabase/functions/weekly-report/deno.json` (Configuración Deno)
+        - [x] `supabase/migrations/20260304000000_weekly_report_cron.sql` (pg_cron + pg_net, Lunes 08:00 UTC)
+        - [x] Pendiente despliegue: configurar secrets en Supabase Dashboard (`RESEND_API_KEY`, `REPORT_RECIPIENT_EMAIL`) y reemplazar placeholder de ProjectRef en la migración SQL
+    - [x] 6.2.4: Instaurar Frontend Observability: Captura de excepciones globales JS (`window.onerror`) enviando un POST asíncrono silencioso a una tabla `client_logs` en Supabase para cacería proactiva de bugs.
+    - [x] 6.2.5: [ADD] Tracking de Atribución (UTMs): Capturar parámetros `utm_source` y `utm_campaign` desde la URL en el Frontend y persistirlos silenciosamente en la tabla `leads`, para enlazar cada cotización con su respectivo origen de pauta (Meta Ads / Google Ads).
+    - [x] 6.2.6: [ADD] Webhooks de Emisión (Realtime B2B): Implementar un Triggers en PostgreSQL (Supabase) que, al insertar un nuevo Lead, dispare un Webhook saliente hacia Zapier/Make. Esto habilitará notificaciones instantáneas a WhatsApp, Slack o la ingesta en CRMs externos (Salesforce/Hubspot) sin tocar el código base.
+
+---
+
+## 🎩 Epic 8: World-Class UI/UX Polish & Conversion Rate Optimization (CRO)
+**Objetivo:** Elevar la experiencia estética B2B a un estándar internacional estelar mediante cinetismo, prueba social persuasiva y micro-interacciones web inmersivas.
+
+- **Task 8.1: Hero Section Inmersivo (Magnetic UI)**
+    - [ ] 8.1.1: Implementar efecto Tilt 3D (Parallax Inverso) en el panel derecho (Glassmorphism), logrando que el cristal siga el movimiento interactivo del cursor.
+    - [ ] 8.1.2: Sustituir el actual slider estático de imágenes por un Hero cinemático con Video Loop en segundo plano, ultra-comprimido (WebM), enseñando reflejos y cortes industriales.
+    - [ ] 8.1.3: Refinar overlay y gradientes CSS para preservar el Local Contrast y la legibilidad absoluta del Copy Principal SEO.
+
+- **Task 8.2: Propuesta de Valor Editorial (Storytelling Z-Pattern)**
+    - [ ] 8.2.1: Desechar la cuadrícula estandarizada y reconstruir `ValueProposition.svelte` usando un patrón de zig-zag "Z-Pattern" (flujo óptico asimétrico de revista).
+    - [ ] 8.2.2: Reemplazar los iconos genéricos Lucide por Macrofotografía hiperrealista (acercamientos milimétricos al aluminio anodizado y biseles PBR).
+    - [ ] 8.2.3: Programar Tipografía Cinética (Staggered Reveal) atada al ScrollSpy para hacer aparecer los textos como cortina abriéndose fluido tras hacer scroll.
+
+- **Task 8.3: Validador Paramétrico Sensorial (Geometry Feedback)**
+    - [ ] 8.3.1: Diseñar Componente interactivo SVG de Plano Arquitectónico junto al Input de Medidas en el Cotizador Ducha/Baño B2C.
+    - [ ] 8.3.2: Vincular Reactividad Svelte 5 para que el polígono SVG escale su aspecto (Ancho y Alto) en milisegundos reales mientras el usuario digita medidas.
+    - [ ] 8.3.3: Vincular el Core de Tolerancias NSR-10 para hacer un Fill Transition rojo alertando fallas espaciales/físicas instantáneamente frente a los ojos del comprador.
+
+- **Task 8.4: Prueba Social y Autoridad Industrial (Trust Engine)**
+    - [ ] 8.4.1: Maquetar un Ticker Infinito (carrusel animado por GPU) conteniendo Logotipos en escala de grises (opacidad 30%) de Aliados, Marcas ISO, o Constructoras (Autoridad Estática).
+    - [ ] 8.4.2: Insertar un bloque de Impacto Numérico Cuantitativo con mega-tipografías exponiendo "10+ Años Promedio", "Extrusión Calibre 2mm" para la mentalidad del Ingeniero Civil.
+
+- **Task 8.5: Enrutamiento de Embudo B2B (Sticky Call-To-Action)**
+    - [ ] 8.5.1: Transformar el Header NavBar para alojar una inyección en vivo asíncrona ("Solicitar Cotización"), una vez rebasado el umbral Y del Hero Image.
+    - [ ] 8.5.2: Investigar UX A/B para botón FAB (Floating Action Button) persistente que nunca abandone la órbita inferior derecha del usuario en páginas transaccionales largas.

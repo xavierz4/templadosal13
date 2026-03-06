@@ -24,10 +24,20 @@ export interface LeadClientResponse {
  * Encapsula la lógica de red, JSON parse y manejo genérico de error HTTP.
  */
 export async function submitLeadB2B(payload: CreateLeadPayload): Promise<LeadClientResponse> {
+  // Inyectar UTMs si existen en la sesión (Task 6.2.5)
+  const utmSource = typeof window !== 'undefined' ? sessionStorage.getItem('al13_utm_source') : null;
+  const utmCampaign = typeof window !== 'undefined' ? sessionStorage.getItem('al13_utm_campaign') : null;
+
+  const payloadWithUTM = {
+    ...payload,
+    ...(utmSource && { utmSource }),
+    ...(utmCampaign && { utmCampaign }),
+  };
+
   const response = await fetch('/api/leads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payloadWithUTM)
   });
   
   const result = await response.json();

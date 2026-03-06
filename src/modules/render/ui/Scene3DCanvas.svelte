@@ -18,8 +18,16 @@
   import AL13Model from './AL13Model.svelte';
 
   // ── Props ──────────────────────────────────────────────────────────────────
-  /** @type {{ width?: number, height?: number, class?: string, fallbackImageSrc?: string, fallbackImageAlt?: string }} */
-  let props = $props();
+  interface Props {
+    width?: number;
+    height?: number;
+    class?: string;
+    fallbackImageSrc?: string;
+    fallbackImageAlt?: string;
+    glassType?: string;
+    frameColor?: string;
+  }
+  let { width, height, class: className = '', fallbackImageSrc, fallbackImageAlt, glassType = 'clear', frameColor = 'anodizado' }: Props = $props();
 
   // ── Estado Svelte 5 Runes ──────────────────────────────────────────────────
   let isMounted = $state(false);
@@ -60,9 +68,9 @@
 
   // Estilo de contenedor responsivo
   const containerStyle = $derived(
-    props.width
-      ? `width:${props.width}px; height:${props.height ?? 500}px;`
-      : `width:100%; height:${props.height ?? 500}px;`
+    width
+      ? `width:${width}px; height:${height ?? 500}px;`
+      : `width:100%; height:${height ?? 500}px;`
   );
 </script>
 
@@ -71,10 +79,10 @@
   z-index gestionado por el padre (la isla Astro que lo consuma).
 -->
 <div
-  class="scene3d-container {props.class ?? ''}"
+  class="scene3d-container {className}"
   style={containerStyle}
   role="img"
-  aria-label={props.fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
+  aria-label={fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
 >
   {#if isMounted && webglSupported}
     <!--
@@ -88,6 +96,7 @@
       <T.DirectionalLight position={[5, 10, 7]} intensity={1.2} castShadow />
       <Environment
         url="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/royal_esplanade_1k.hdr"
+        format="hdr"
       />
 
       <!--
@@ -108,7 +117,7 @@
             </div>
           </HTML>
         {/snippet}
-        <AL13Model />
+        <AL13Model {glassType} {frameColor} />
       </Suspense>
 
       <!-- Cámara perspectiva estándar y Coreografía Orbital B2B -->
@@ -132,8 +141,8 @@
       Se muestra en dispositivos sin WebGL (iOS antiguo, navegadores headless, etc.)
     -->
     <img
-      src={props.fallbackImageSrc ?? '/images/vidrio-templado-3d-fallback.jpg'}
-      alt={props.fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
+      src={fallbackImageSrc ?? '/images/vidrio-templado-3d-fallback.jpg'}
+      alt={fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
       class="scene3d-fallback"
       loading="lazy"
       decoding="async"

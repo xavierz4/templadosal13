@@ -1,0 +1,73 @@
+---
+/**
+ * ClientObserver.astro — Task 6.2.4 (Frontend Observability)
+ * Se inyecta en el <head> de los Layouts para reportar errores
+ * síncronos y promesas rotas vía Fetch (Fire-and-Forget).
+ * Tiene límite de tasa (rate-limit) para no spammear.
+ */
+---
+<script is:inline>
+  (function() {
+    // Evitar múltiple inicialización
+    if (window.__AL13_OBSERVER_INIT__) return;
+    window.__AL13_OBSERVER_INIT__ = true;
+
+    // Límite estricto de reportes por carga de página
+    let errorCount = 0;
+    const MAX_ERRORS = 5;
+
+    function sendLog(payload) {
+      if (errorCount >= MAX_ERRORS) return;
+      errorCount++;
+      
+      try {
+        // Enviar asíncronamente conservando el hilo
+        fetch('/api/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true // Prioritario para reportes right before unload
+        }).catch(function() { /* Fallo silencioso para evitar loop de errores */ });
+      } catch {
+        // Catch defensivo (JSON stringify timeout, etc)
+      }
+    }
+
+    // 1. Errores Síncronos y Globales
+    window.addEventListener('error', function(event) {
+      sendLog({
+        level: 'error',
+        message: event.message || 'Unknown Global Error',
+        source: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error_stack: event.error && event.error.stack ? event.error.stack.toString() : undefined,
+        url: window.location.href
+      });
+    });
+
+    // 2. Promesas Rechazadas No Controladas (Threlte/WebGL a menudo crashea aquí)
+    window.addEventListener('unhandledrejection', function(event) {
+      let message = 'Unhandled Rejection';
+      let stack = undefined;
+
+      if (event.reason instanceof Error) {
+        message = event.reason.message;
+        stack = event.reason.stack;
+      } else if (typeof event.reason === 'string') {
+        message = event.reason;
+      } else if (event.reason !== undefined && event.reason !== null) {
+        try {
+          message = JSON.stringify(event.reason);
+        } catch {}
+      }
+
+      sendLog({
+        level: 'error',
+        message: message,
+        error_stack: stack ? stack.toString() : undefined,
+        url: window.location.href
+      });
+    });
+  })();
+</script>

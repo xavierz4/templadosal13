@@ -1,15 +1,18 @@
 ---
 import '@core/theme/global.css';
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
+import ClientObserver from './ClientObserver.astro';
 
 interface Props {
   title?: string;
   description?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
 const { 
   title = "Templados AL13 - Boutique Industrial en Vidrio Templado", 
-  description = "Redefiniendo el estándar arquitectónico en cristal templado y estructuras de aluminio. Preparados para la revolución B2B de 2026."
+  description = "Redefiniendo el estándar arquitectónico en cristal templado y estructuras de aluminio. Preparados para la revolución B2B de 2026.",
+  jsonLd
 } = Astro.props;
 ---
 
@@ -21,15 +24,32 @@ const {
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<ClientObserver />
+		
+		<!-- UTM Attribution Tracker (Task 6.2.5) -->
+		<script is:inline>
+			(function() {
+				const params = new URLSearchParams(window.location.search);
+				const source = params.get('utm_source');
+				const campaign = params.get('utm_campaign');
+				if (source) sessionStorage.setItem('al13_utm_source', source.substring(0, 255));
+				if (campaign) sessionStorage.setItem('al13_utm_campaign', campaign.substring(0, 255));
+			})();
+		</script>
+
 		
 		<!-- Open Graph / SEO Dinámico -->
 		<title>{title}</title>
-		<ViewTransitions />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
+		
+		<!-- Structured Data / JSON-LD -->
+		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+		
+		<ClientRouter />
 	</head>
-	<body class="antialiased min-h-screen flex flex-col selection:bg-al13-gold/30 selection:text-al13-gold">
+	<body class="antialiased min-h-screen flex flex-col selection:bg-al13-cyan/30 selection:text-al13-cyan">
 		<slot />
 	</body>
 </html>

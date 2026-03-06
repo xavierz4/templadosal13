@@ -16,7 +16,7 @@ export const prerender = false;
 
 // Auth guard heredado del AdminLayout — si no hay sesión, redirige a /admin/login
 // Aquí solo construimos el repositorio con el client SSR para respetar RLS
-const supabase = createSupabaseServerClient(Astro.cookies);
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
 const leadRepository = new SupabaseLeadRepository(supabase);
 
 let leads: AdminLead[] = [];

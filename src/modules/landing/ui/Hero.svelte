@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Scene3DCanvas } from '@modules/render';
 
   // Bank of generated ultra-wide horizontal cinematic B2B images passed from Astro
   let { backgroundImages = [] } = $props<{ backgroundImages: { src: string; srcset: string }[] }>();
@@ -78,13 +77,8 @@
       <div
         class="relative w-full max-w-sm lg:max-w-md aspect-[3/4.5] rounded-2xl flex items-center justify-center overflow-hidden transition-transform duration-700 hover:scale-[1.02] bg-white/5 backdrop-blur-[12px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
       >
-        <!-- Render Engine 3D B2C incrustado en la tarjeta -->
-        <div class="absolute inset-0 z-0">
-          <Scene3DCanvas
-            class="w-full h-full rounded-2xl"
-            fallbackImageSrc={backgroundImages[0]?.src}
-          />
-        </div>
+        <!-- Contenedor vacío para mantener la estética Glassmorphism sin malla 3D -->
+        <div class="absolute inset-0 z-0 bg-black/10 rounded-2xl"></div>
 
         <!-- Borde Iluminado Superior sutil -->
         <div

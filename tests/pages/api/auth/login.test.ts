@@ -17,7 +17,8 @@ vi.mock('@core/infrastructure/supabaseServer', () => {
   };
 });
 
-import { POST } from './login';
+// eslint-disable-next-line no-restricted-syntax
+import { POST } from '../../../../src/pages/api/auth/login';
 
 // Helper para crear mock de Request + cookies
 function createMockContext(body: Record<string, unknown>) {

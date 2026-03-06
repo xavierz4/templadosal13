@@ -1,4 +1,5 @@
 INSTRUCCIÓN OBLIGATORIA DE INICIO:
+lee C:\Users\xavie\Desktop\dev\work\emprendimientos\templados\docs
 1. Lee el archivo AGENTS.md completo (incluye las 16 reglas + MANDATORY WORKFLOW + mapa de documentación)
 2. Lee docs/product/07_Granular_Backlog_Execution.md para conocer qué está hecho y qué falta
 3. Lee docs/architecture/01_Architecture_Document.md para entender la estructura del código
@@ -10,7 +11,7 @@ ESTADO ACTUAL:
 - Arquitectura: HSA (Hexagonal) con SOLID 5/5 implementado
 - Patrones: Repository (ILeadRepository → Supabase), Strategy (IPhysicsStrategy → 4 productos), Dependency Inversion
 - CI/CD: commitlint + ESLint REGLA 0 (bloquea ../../) + Vitest 80% coverage + GitHub Actions
-- Épicas completadas: 1, 2, 3 | Pendientes: 4 (Admin), 5 (3D WebGL), 6 (SEO)
+
 
 DOCUMENTOS ADICIONALES (leer si la tarea lo requiere):
 - Product Vision: docs/product/01_Product_Vision_Document_(PVD).md
@@ -21,4 +22,5 @@ DOCUMENTOS ADICIONALES (leer si la tarea lo requiere):
 - Security: docs/security/
 - Manual del agente: docs/training/arquitectura/13_Manual_de_Uso_del_Agente.md
 
-MI TAREA: [ 4.1.2: Implementar SSR Layout `AdminLayout.astro` que intercepte Cookies JWT de Supabase en cada request.]"Haz /code_review de los últimos cambios"
+MI TAREA:    6.2.6: [ADD] Webhooks de Emisión (Realtime B2B): Implementar un Triggers en PostgreSQL (Supabase) que, al insertar un nuevo Lead, dispare un Webhook saliente hacia Zapier/Make. Esto habilitará notificaciones instantáneas a WhatsApp, Slack o la ingesta en CRMs externos (Salesforce/Hubspot) sin tocar el código base.
+  Haz /code_review de los últimos cambios"  por ultimo siempre actualiza 07_Granular_Backlog_Execution

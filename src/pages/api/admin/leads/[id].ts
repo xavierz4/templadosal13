@@ -16,7 +16,7 @@ export const prerender = false;
  */
 export const PATCH: APIRoute = async ({ params, request, cookies }) => {
   // ── Auth Guard (mismo patrón que AdminLayout) ─────────────
-  const supabaseClient = createSupabaseServerClient(cookies);
+  const supabaseClient = createSupabaseServerClient(request, cookies);
   const {
     data: { session },
   } = await supabaseClient.auth.getSession();

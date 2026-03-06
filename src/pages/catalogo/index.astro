@@ -1,24 +1,133 @@
 ---
+export const prerender = false;
+
 import PublicLayout from '@shared/ui/PublicLayout.astro';
 import Navbar from '@shared/ui/Navbar.svelte';
 import Footer from '@shared/ui/Footer.astro';
+import PublicCatalogCard from '@modules/catalog/ui/PublicCatalogCard.astro';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseCatalogRepository } from '@core/infrastructure/repositories/SupabaseCatalogRepository';
+import type { CatalogProject } from '@core/domain/catalogSchema';
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const catalogRepository = new SupabaseCatalogRepository(supabase);
+
+let projects: CatalogProject[] = [];
+let fetchError = '';
+
+try {
+  const allProjects = await catalogRepository.getAll();
+  projects = allProjects.filter(p => p.is_published);
+} catch (error: unknown) {
+  fetchError = error instanceof Error ? error.message : String(error);
+  console.error('[Public Catalog] Fetch Error:', error);
+}
+
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
+);
 ---
 
-<PublicLayout title="Catálogo | Templados AL13" description="Catálogo de diseño y estructuras en aluminio y vidrio.">
+<PublicLayout title="Catálogo B2B | Templados AL13" description="Explora nuestros sistemas de cristal templado y aluminio estructural.">
   <Navbar client:load />
   
-  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center justify-center text-center">
-    <div class="max-w-3xl mx-auto space-y-6">
-      <h1 class="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight">Catálogo B2B</h1>
-      <p class="text-zinc-400 text-lg">Estamos preparando la experiencia inmersiva del catálogo en 3D. Pronto podrás interactuar con nuestras soluciones.</p>
+  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 bg-[#0A0A0A] relative overflow-hidden">
+    <!-- Texture overlay ultra-light (CSS Base64) to prevent CPU/GPU drops on feTurbulence -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03] z-0" style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
       
-      <div class="pt-8">
-        <a href="/" class="inline-flex items-center gap-2 text-al13-gold hover:text-white transition-colors">
-          <span>&larr;</span> Volver al Inicio
-        </a>
+      <!-- Headers -->
+      <div class="mb-16">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-sans font-bold text-white tracking-tight mb-4">Catálogo <span class="text-zinc-500">B2B</span></h1>
+        <p class="text-zinc-400 text-lg max-w-2xl">Explora nuestros sistemas arquitectónicos en detalle. Selecciona un producto para iniciar la experiencia inmersiva.</p>
+        
+        {fetchError && (
+          <p class="text-red-400 mt-4 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20 inline-block">{fetchError}</p>
+        )}
+
+        <!-- Category Filters (US-304) -->
+        {!fetchError && projects.length > 0 && (
+          <div class="mt-8 flex flex-wrap gap-3" id="catalog-filters">
+            <button class="filter-btn active px-5 py-2 rounded-full border border-white/20 bg-white/10 text-white text-sm font-medium transition-colors hover:bg-white/20" data-filter="all">Todos</button>
+            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="cabina_ducha">Sistemas de Ducha</button>
+            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="puerta_pivotante">Puertas Batientes</button>
+            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="divisor_oficina">Divisiones de Oficina</button>
+            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="fachada_monumental">Fachadas Monumentales</button>
+          </div>
+        )}
       </div>
+      
+      <!-- CSS Grid para las tarjetas -->
+      {projects.length === 0 && !fetchError ? (
+        <div class="py-20 text-center border border-white/5 rounded-2xl bg-white/5 backdrop-blur-sm">
+          <p class="text-zinc-500">No hay proyectos publicados en este momento.</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+          {projects.map(project => (
+            <PublicCatalogCard project={project} />
+          ))}
+        </div>
+      )}
+
     </div>
   </main>
 
   <Footer />
 </PublicLayout>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const filters = document.querySelectorAll('.filter-btn') as NodeListOf<HTMLButtonElement>;
+    const cards = document.querySelectorAll('.catalog-card') as NodeListOf<HTMLElement>;
+
+    // Sync UI with URL parameters on mount
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCat = urlParams.get('categoria') || 'all';
+
+    function applyFilter(category: string) {
+      // Toggle Active Classes
+      filters.forEach(btn => {
+        if (btn.dataset.filter === category) {
+          btn.classList.add('bg-white/10', 'border-white/20', 'text-white', 'active');
+          btn.classList.remove('bg-zinc-900/50', 'border-zinc-800', 'text-zinc-400');
+        } else {
+          btn.classList.remove('bg-white/10', 'border-white/20', 'text-white', 'active');
+          btn.classList.add('bg-zinc-900/50', 'border-zinc-800', 'text-zinc-400');
+        }
+      });
+
+      // Show/Hide Elements
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+          // Force reflow for opacity transition if needed
+          setTimeout(() => card.style.opacity = '1', 50);
+        } else {
+          card.style.opacity = '0';
+          setTimeout(() => card.style.display = 'none', 300); // Wait for fade-out
+        }
+      });
+
+      // Update Native History API to avoid a hard page reload
+      const newUrl = new URL(window.location.href);
+      if (category === 'all') {
+        newUrl.searchParams.delete('categoria');
+      } else {
+        newUrl.searchParams.set('categoria', category);
+      }
+      window.history.pushState({}, '', newUrl);
+    }
+
+    applyFilter(initialCat);
+
+    filters.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        applyFilter(target.dataset.filter || 'all');
+      });
+    });
+  });
+</script>

@@ -12,8 +12,8 @@ export const prerender = false;
  */
 
 // ── Shared Auth Guard ─────────────────────────────────────────────────────
-async function getAuthenticatedClient(cookies: Parameters<APIRoute>[0]['cookies']) {
-  const client = createSupabaseServerClient(cookies);
+async function getAuthenticatedClient(request: Request, cookies: Parameters<APIRoute>[0]['cookies']) {
+  const client = createSupabaseServerClient(request, cookies);
   const {
     data: { session },
   } = await client.auth.getSession();
@@ -27,7 +27,7 @@ const UNAUTHORIZED = new Response(JSON.stringify({ error: 'No autorizado.' }), {
 
 // ── PATCH — Toggle is_published ───────────────────────────────────────────
 export const PATCH: APIRoute = async ({ params, request, cookies }) => {
-  const { client, session } = await getAuthenticatedClient(cookies);
+  const { client, session } = await getAuthenticatedClient(request, cookies);
   if (!session) return UNAUTHORIZED;
 
   const { id } = params;
@@ -72,7 +72,7 @@ export const PATCH: APIRoute = async ({ params, request, cookies }) => {
 
 // ── DELETE — Elimina proyecto + imagen del bucket ─────────────────────────
 export const DELETE: APIRoute = async ({ params, request, cookies }) => {
-  const { client, session } = await getAuthenticatedClient(cookies);
+  const { client, session } = await getAuthenticatedClient(request, cookies);
   if (!session) return UNAUTHORIZED;
 
   const { id } = params;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import { validateStructuralFeasibility } from '@core/domain/physicsEngine';
+  import type { ProductType } from '@core/domain/physicsEngine';
   import { submitLeadB2B } from '../api/leadClient';
   
   // State Machine (Svelte 5 Runes)
@@ -37,6 +38,18 @@
     { id: 'puerta_pivotante', label: 'Puerta Pivotante Frontal', icon: '🚪' }
   ];
 
+  // Inyección Omnicanal: Preselección desde URL (?product=x)
+  $effect(() => {
+    // Protección estricta: Solo corremos en el navegador (Bypassing Astro SSR)
+    if (typeof window !== 'undefined') {
+      const pData = new URLSearchParams(window.location.search).get('product');
+      if (pData && products.some(p => p.id === pData) && quoteData.productType === '') {
+        quoteData.productType = pData;
+        currentStep = 2; // Salto instantáneo y fluido para UX comercial
+      }
+    }
+  });
+
   function nextStep() {
     if (currentStep < 4) currentStep++;
   }
@@ -50,7 +63,7 @@
     physicsFeedback = validateStructuralFeasibility({
       width: Number(quoteData.width),
       height: Number(quoteData.height),
-      productType: quoteData.productType
+      productType: quoteData.productType as ProductType
     });
     nextStep(); // Ir al paso 4
   }
@@ -71,15 +84,17 @@
       
       console.warn("[TechnicalValidator] Lead B2B enviado exitosamente:", result);
       submitSuccess = true;
-    } catch (err) {
-      console.error("Error al enviar Lead:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Error al enviar Lead:", err.message);
+      }
       // Aqui podrías mostrar un toast de error en el UI
     } finally {
       isSubmitting = false;
     }
   }
 
-  function selectProduct(id) {
+  function selectProduct(id: string) {
     quoteData.productType = id;
     setTimeout(nextStep, 300); // Flow automático suave
   }
@@ -102,7 +117,7 @@
       <div class="flex flex-col items-center gap-3 relative">
         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500
           {currentStep >= i + 1 
-            ? 'bg-gradient-to-br from-al13-gold to-yellow-600 text-al13-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' 
+            ? 'bg-gradient-to-br from-al13-cyan to-al13-emerald text-al13-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' 
             : 'bg-[#111] text-zinc-500 border border-white/10'}"
         >
           {i + 1}
@@ -131,7 +146,7 @@
               onclick={() => selectProduct(product.id)}
               class="group relative flex items-center p-6 border rounded-xl text-left transition-all duration-300
                 {quoteData.productType === product.id 
-                  ? 'bg-white/10 border-al13-gold' 
+                  ? 'bg-white/10 border-al13-cyan' 
                   : 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20'}"
             >
               <span class="text-3xl mr-4 grayscale group-hover:grayscale-0 transition-all">{product.icon}</span>
@@ -160,14 +175,14 @@
                 type="number" 
                 bind:value={quoteData.width}
                 placeholder="Ej. 1200" 
-                class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded-lg px-4 py-3 text-white font-mono focus:outline-none focus:border-al13-gold focus:ring-1 focus:ring-al13-gold transition-all"
+                class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded-lg px-4 py-3 text-white font-mono focus:outline-none focus:border-al13-cyan focus:ring-1 focus:ring-al13-cyan transition-all"
               />
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-sm">mm</span>
             </div>
           </div>
 
           <!-- Cruz Separadora -->
-          <div class="hidden md:flex text-al13-gold font-bold mt-6">X</div>
+          <div class="hidden md:flex text-al13-cyan font-bold mt-6">X</div>
 
           <!-- Input Alto -->
           <div class="w-full">
@@ -178,7 +193,7 @@
                 type="number" 
                 bind:value={quoteData.height}
                 placeholder="Ej. 2100" 
-                class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded-lg px-4 py-3 text-white font-mono focus:outline-none focus:border-al13-gold focus:ring-1 focus:ring-al13-gold transition-all"
+                class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded-lg px-4 py-3 text-white font-mono focus:outline-none focus:border-al13-cyan focus:ring-1 focus:ring-al13-cyan transition-all"
               />
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-sm">mm</span>
             </div>
@@ -190,7 +205,7 @@
           <button 
             onclick={nextStep} 
             disabled={!quoteData.width || !quoteData.height}
-            class="px-6 py-2 rounded bg-al13-gold text-black font-bold hover:bg-yellow-500 transition shadow-[0_0_10px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+            class="px-6 py-2 rounded bg-al13-cyan text-black font-bold hover:bg-al13-emerald transition shadow-[0_0_10px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
           >
             Continuar
           </button>
@@ -212,7 +227,7 @@
               onclick={() => quoteData.glassColor = color}
               class="flex flex-col items-center p-4 border rounded-xl transition-all duration-300
                 {quoteData.glassColor === color 
-                  ? 'bg-white/10 border-al13-gold shadow-[0_0_15px_rgba(212,175,55,0.2)]' 
+                  ? 'bg-white/10 border-al13-cyan shadow-[0_0_15px_rgba(212,175,55,0.2)]' 
                   : 'bg-black/20 border-white/5 hover:border-white/20'}"
             >
               <div class="w-12 h-12 rounded-full mb-3 border border-white/10 shadow-inner
@@ -231,7 +246,7 @@
           <button 
             onclick={runPhysicsEngine} 
             disabled={!quoteData.glassColor}
-            class="px-6 py-2 rounded bg-al13-gold text-black font-bold hover:bg-yellow-500 transition shadow-[0_0_10px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+            class="px-6 py-2 rounded bg-al13-cyan text-black font-bold hover:bg-al13-emerald transition shadow-[0_0_10px_rgba(212,175,55,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
           >
             Obtener Diagnóstico Físico
           </button>
@@ -259,14 +274,14 @@
           <!-- ESTADO ACEPTADO CONDICIONADO -->
           <div class="w-full max-w-2xl bg-black/40 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
             <!-- Cabecera Diagnóstico -->
-            <div class="bg-gradient-to-r from-al13-gold/20 to-transparent p-6 border-b border-al13-gold/30 flex justify-between items-start">
+            <div class="bg-gradient-to-r from-al13-cyan/20 to-transparent p-6 border-b border-al13-cyan/30 flex justify-between items-start">
               <div>
-                <h3 class="text-xl font-bold text-al13-gold mb-1">Diagnóstico AL13 Completado</h3>
+                <h3 class="text-xl font-bold text-al13-cyan mb-1">Diagnóstico AL13 Completado</h3>
                 <p class="text-zinc-300 text-sm">Validación matemática y estructural aprobada.</p>
               </div>
               <div class="text-right">
                 <span class="block text-xs uppercase text-zinc-500 tracking-wider">Espesor Exigido</span>
-                <span class="text-3xl font-heading font-bold text-white">{physicsFeedback.recommendedThickness}<span class="text-lg text-al13-gold">mm</span></span>
+                <span class="text-3xl font-heading font-bold text-white">{physicsFeedback.recommendedThickness}<span class="text-lg text-al13-cyan">mm</span></span>
               </div>
             </div>
 
@@ -299,7 +314,7 @@
                </p>
 
                <!-- Lead Form Call to Action -->
-               <div class="mt-8 p-6 bg-gradient-to-br from-al13-gold/10 to-[#111] rounded-xl border border-al13-gold/30 text-center">
+               <div class="mt-8 p-6 bg-gradient-to-br from-al13-cyan/10 to-[#111] rounded-xl border border-al13-cyan/30 text-center">
                  {#if submitSuccess}
                    <div in:fade class="py-4">
                      <div class="w-16 h-16 mx-auto bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4 text-3xl">✓</div>
@@ -312,17 +327,17 @@
                    <form class="space-y-4 text-left max-w-sm mx-auto mb-6" onsubmit={(e) => { e.preventDefault(); submitLead(); }}>
                      <div>
                        <label class="block text-xs font-semibold text-zinc-400 mb-1" for="name">Nombre Completo *</label>
-                       <input bind:value={quoteData.contactName} required type="text" id="name" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-gold focus:ring-1 focus:ring-al13-gold" placeholder="Ej. Arquitecto Juan Pérez" />
+                       <input bind:value={quoteData.contactName} required type="text" id="name" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-cyan focus:ring-1 focus:ring-al13-cyan" placeholder="Ej. Arquitecto Juan Pérez" />
                      </div>
                      <div>
                        <label class="block text-xs font-semibold text-zinc-400 mb-1" for="company">Empresa / Firma</label>
-                       <input bind:value={quoteData.companyName} type="text" id="company" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-gold focus:ring-1 focus:ring-al13-gold" placeholder="Opcional" />
+                       <input bind:value={quoteData.companyName} type="text" id="company" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-cyan focus:ring-1 focus:ring-al13-cyan" placeholder="Opcional" />
                      </div>
                      <div>
                        <label class="block text-xs font-semibold text-zinc-400 mb-1" for="phone">Teléfono de Contacto *</label>
-                       <input bind:value={quoteData.phone} required type="tel" id="phone" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-gold focus:ring-1 focus:ring-al13-gold" placeholder="Ej. 300 123 4567" />
+                       <input bind:value={quoteData.phone} required type="tel" id="phone" class="w-full bg-[#0A0A0A]/50 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-al13-cyan focus:ring-1 focus:ring-al13-cyan" placeholder="Ej. 300 123 4567" />
                      </div>
-                     <button type="submit" disabled={isSubmitting || !quoteData.contactName || !quoteData.phone} class="w-full mt-4 py-3 rounded bg-al13-gold text-black font-bold hover:bg-yellow-500 transition shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
+                     <button type="submit" disabled={isSubmitting || !quoteData.contactName || !quoteData.phone} class="w-full mt-4 py-3 rounded bg-al13-cyan text-black font-bold hover:bg-al13-emerald transition shadow-[0_0_15px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
                        {#if isSubmitting}
                          <span class="animate-spin h-5 w-5 mr-2 border-2 border-black border-t-transparent rounded-full"></span> Procesando...
                        {:else}

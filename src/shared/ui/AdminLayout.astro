@@ -15,6 +15,7 @@
  */
 import '@core/theme/global.css';
 import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import ClientObserver from './ClientObserver.astro';
 
 // SSR obligatorio — nunca pre-renderizar el admin panel
 export const prerender = false;
@@ -26,19 +27,13 @@ interface Props {
 
 const { title = 'Admin Panel', section = 'Dashboard' } = Astro.props;
 
-// ─── Auth Guard (REGLA 2 — Orquestación pura: cookies → supabase → redirect) ───
-const supabase = createSupabaseServerClient(Astro.cookies);
+// ─── Obtener Email del Administrador (Auth Guard en middleware.ts) ───
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
 const {
   data: { session },
 } = await supabase.auth.getSession();
 
-if (!session) {
-  // Sesión inexpirada o cookie ausente → bouncer estricto
-  console.warn('[AdminLayout] Unauthenticated access attempt. Redirecting to /admin/login.');
-  return Astro.redirect('/admin/login', 302);
-}
-
-const adminEmail = session.user.email ?? 'Admin';
+const adminEmail = session?.user?.email ?? 'Admin';
 ---
 
 <!doctype html>
@@ -51,6 +46,7 @@ const adminEmail = session.user.email ?? 'Admin';
     <meta name="description" content="Panel de Administración — Templados AL13" />
     <title>{title} | Admin — Templados AL13</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <ClientObserver />
 
     <style>
       *,
@@ -97,8 +93,8 @@ const adminEmail = session.user.email ?? 'Admin';
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #d4af37;
-        box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+        background: #38bdf8;
+        box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
       }
 
       .brand-name {
@@ -175,13 +171,13 @@ const adminEmail = session.user.email ?? 'Admin';
       .nav-item:hover {
         color: rgba(255, 255, 255, 0.8);
         background: rgba(255, 255, 255, 0.04);
-        border-left-color: rgba(212, 175, 55, 0.4);
+        border-left-color: rgba(56, 189, 248, 0.4);
       }
 
       .nav-item.active {
-        color: #d4af37;
-        background: rgba(212, 175, 55, 0.06);
-        border-left-color: #d4af37;
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.06);
+        border-left-color: #38bdf8;
         font-weight: 500;
       }
 
@@ -290,6 +286,27 @@ const adminEmail = session.user.email ?? 'Admin';
           ></path>
         </svg>
         Leads B2B
+      </a>
+
+      <a
+        href="/admin/analytics"
+        class={`nav-item ${section === 'Analytics' ? 'active' : ''}`}
+        aria-current={section === 'Analytics' ? 'page' : 'false'}
+      >
+        <!-- Icon: PieChart -->
+        <svg
+          class="nav-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+        </svg>
+        Telemetría B.I.
       </a>
 
       <div class="nav-divider"></div>

@@ -13,14 +13,14 @@ import type { Database } from '@core/types/database.types';
  * 
  * REGLA 6: Variables de entorno solo desde @core/config/env
  */
-export function createSupabaseServerClient(cookies: AstroCookies) {
+export function createSupabaseServerClient(request: Request, cookies: AstroCookies) {
   return createServerClient<Database>(
     config.PUBLIC_SUPABASE_URL,
     config.PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
-          return parseCookieHeader(cookies.get('sb-access-token')?.value ?? '').map(c => ({
+          return parseCookieHeader(request.headers.get('Cookie') ?? '').map(c => ({
             name: c.name,
             value: c.value ?? '',
           }));

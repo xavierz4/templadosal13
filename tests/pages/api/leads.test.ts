@@ -17,7 +17,8 @@ vi.mock('@core/infrastructure/services/ResendEmailService', () => {
   };
 });
 
-import { POST } from './leads';
+// eslint-disable-next-line no-restricted-syntax
+import { POST } from '../../../src/pages/api/leads';
 
 // Vitest Polyfill para Request nativo
 // Normalmente Astro lo provee, pero para unit tests directos armamos Mocks

@@ -4,20 +4,120 @@ import Navbar from '@shared/ui/Navbar.svelte';
 import Footer from '@shared/ui/Footer.astro';
 ---
 
-<PublicLayout title="Filosofía | Templados AL13" description="Filosofía y estándar detrás de AL13.">
+<PublicLayout title="Nosotros | Filosofía y Estándar | Templados AL13" description="Conoce la historia de AL13, nuestra propuesta de valor B2B y la ventaja competitiva del cristal templado estructural en Colombia.">
   <Navbar client:load />
   
-  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 flex flex-col items-center justify-center text-center">
-    <div class="max-w-3xl mx-auto space-y-6">
-      <h1 class="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight">Nuestra Filosofía</h1>
-      <p class="text-zinc-400 text-lg">Forjamos arquitectura elevando el estándar del vidrio y aluminio al segmento boutique industrial.</p>
+  <main class="min-h-screen bg-al13-background">
+    
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 px-6 md:px-12 overflow-hidden border-b border-white/5">
+      <!-- Glow effect -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-al13-cyan/20 blur-[120px] rounded-full pointer-events-none"></div>
       
-      <div class="pt-8">
-        <a href="/" class="inline-flex items-center gap-2 text-al13-gold hover:text-white transition-colors">
-          <span>&larr;</span> Volver al Inicio
-        </a>
+      <div class="max-w-4xl mx-auto text-center relative z-10">
+        <h1 class="text-4xl md:text-6xl font-heading font-bold text-white tracking-tight mb-6">
+          Más allá del vidrio.<br/>
+          <span class="text-gradient">Forjamos Arquitectura.</span>
+        </h1>
+        <p class="text-zinc-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+          Templados AL13 nace en La Guajira con una misión inquebrantable: elevar el estándar del cristal y aluminio al segmento boutique industrial, garantizando precisión milimétrica y seguridad absoluta.
+        </p>
       </div>
-    </div>
+    </section>
+
+    <!-- Brand Story & Value Proposition -->
+    <section class="py-20 md:py-32 px-6 md:px-12">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- Story Text -->
+        <div class="space-y-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border-al13-emerald/30 text-al13-emerald text-sm font-medium">
+            <span class="w-2 h-2 rounded-full bg-al13-emerald animate-pulse"></span>
+            Nuestra Historia
+          </div>
+          <h2 class="text-3xl md:text-4xl font-heading font-bold text-white">
+            Ingeniería que respira elegancia.
+          </h2>
+          <div class="space-y-4 text-zinc-400 leading-relaxed">
+            <p>
+              Durante años, el mercado local se conformó con soluciones artesanales frágiles e impredecibles. Templados AL13 emergió para llenar el vacío de la exigencia corporativa y residencial de alto nivel.
+            </p>
+            <p>
+              No somos simplemente instaladores; somos consultores paramétricos. Validamos cada vano, cada inercia y cada componente bajo normativa, asegurando que su proyecto no solo se vea impecable, sino que perdure décadas.
+            </p>
+          </div>
+        </div>
+
+        <!-- Value Proposition Visual (Glassmorphism Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+          <!-- Ambient glow -->
+          <div class="absolute inset-0 bg-al13-cyan/10 blur-[80px] rounded-full pointer-events-none"></div>
+          
+          <div class="glass-panel p-8 rounded-2xl border border-white/5 relative z-10 transform translate-y-0 sm:translate-y-8">
+            <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 text-al13-cyan">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Zero-Trust Carga</h3>
+            <p class="text-zinc-400 text-sm">Validamos la presión de viento y deflexión antes de enviar un solo cristal a producción.</p>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border border-white/5 relative z-10 transition-transform">
+            <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 text-al13-emerald">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Ajuste Milimétrico</h3>
+            <p class="text-zinc-400 text-sm">Tolerancias estructurales estrictas. Si no cuadra en el plano 3D, no se ensambla.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ventaja Competitiva: Cristal Templado -->
+    <section class="py-20 md:py-32 px-6 md:px-12 bg-zinc-900/50 border-y border-white/5">
+      <div class="max-w-4xl mx-auto text-center space-y-12">
+        <div class="space-y-4">
+          <h2 class="text-3xl md:text-4xl font-heading font-bold text-white">La Ventaja del Cristal Templado Estructural</h2>
+          <p class="text-zinc-400 text-lg">Por qué los líderes de obra confían ciegamente en nuestro ecosistema de manufactura.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          <div class="space-y-4">
+            <div class="text-al13-cyan font-bold text-6xl opacity-20">01</div>
+            <h4 class="text-lg font-bold text-white">Resistencia x5</h4>
+            <p class="text-zinc-400 text-sm">Sometido a choque térmico de 600°C, nuestro vidrio triplica la resistencia al impacto comparado con el cristal crudo comercial.</p>
+          </div>
+          <div class="space-y-4">
+            <div class="text-al13-emerald font-bold text-6xl opacity-20">02</div>
+            <h4 class="text-lg font-bold text-white">Fractura Segura</h4>
+            <p class="text-zinc-400 text-sm">Regulación NSR-10 garantizada. En caso de colapso crítico, se granula en fragmentos sin filo protegiendo la vida humana.</p>
+          </div>
+          <div class="space-y-4">
+            <div class="text-al13-cyan font-bold text-6xl opacity-20">03</div>
+            <h4 class="text-lg font-bold text-white">Óptica PBR</h4>
+            <p class="text-zinc-400 text-sm">Transmisión de luz inalterada. Trabajamos con espectros ultra-claros que elevan la iluminación natural reduciendo el costo energético.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="py-24 px-6 md:px-12 text-center">
+      <div class="max-w-2xl mx-auto glass-panel p-12 rounded-3xl border border-white/10 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-al13-cyan/10 to-transparent pointer-events-none"></div>
+        <div class="relative z-10 space-y-8">
+          <h2 class="text-3xl font-heading font-bold text-white">¿Construyendo un proyecto B2B?</h2>
+          <p class="text-zinc-400">Descubre por qué las constructoras top delegan sus fachadas y divisiones internas al rigor de Templados AL13.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <a href="/catalogo" class="px-8 py-4 bg-white text-black font-semibold rounded-xl hover:scale-105 transition-transform duration-300">
+              Ir al Catálogo 3D
+            </a>
+            <a href="/contacto" class="px-8 py-4 glass-panel text-white font-semibold rounded-xl border border-white/20 hover:bg-white/5 transition-colors">
+              Hablar con Ventas
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <Footer />

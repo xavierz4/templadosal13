@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { LeadPayloadSchema } from '@core/domain/leadSchema';
 import { validateStructuralFeasibility } from '@core/domain/physicsEngine';

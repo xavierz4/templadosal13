@@ -1,4 +1,5 @@
 import type { LeadPayload } from '../leadSchema';
+import type { ContactPayload } from '../contactSchema';
 import type { PhysicsResult } from '../physicsEngine';
 
 /**

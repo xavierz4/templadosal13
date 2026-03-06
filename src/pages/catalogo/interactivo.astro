@@ -1,17 +1,14 @@
 ---
 import PublicLayout from '@shared/ui/PublicLayout.astro';
-import { Scene3DCanvas } from '@modules/render';
+import CatalogInteractiveViewer from '@modules/render/ui/CatalogInteractiveViewer.svelte';
 ---
 
 <PublicLayout
   title="Catálogo Interactivo 3D | Templados AL13"
   description="Explora nuestros productos arquitectónicos en 3D. Rota, acerca y visualiza los detalles de nuestro vidrio templado y aluminio anonizado AL13."
 >
-  <!-- Background Noise & Global Texture -->
-  <div
-    class="fixed inset-0 pointer-events-none opacity-20 z-0 bg-[url('/noise.webp')] mix-blend-overlay"
-  >
-  </div>
+  <!-- Texture overlay ultra-light (CSS Base64) to prevent CPU/GPU drops on feTurbulence -->
+  <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"></div>
 
   <!-- Main Container: 100vh split into 60/40 on large screens -->
   <main
@@ -26,9 +23,9 @@ import { Scene3DCanvas } from '@modules/render';
       >
       </div>
 
-      <!-- Threlte 3D Canvas -->
+      <!-- Interactive Svelte Island Engine -->
       <div class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
-        <Scene3DCanvas client:load fallbackImageSrc="/hero_placeholder.jpg" class="w-full h-full" />
+        <CatalogInteractiveViewer client:load />
       </div>
 
       <!-- UX Hint for dragging -->
@@ -105,7 +102,8 @@ import { Scene3DCanvas } from '@modules/render';
       </div>
 
       <!-- Call to Action B2B -->
-      <button
+      <a
+        href="/?product=divisor_oficina#cotizador"
         class="w-full relative px-8 py-4 rounded-xl bg-white text-black font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:bg-zinc-200 hover:scale-[1.02] shadow-[0_4px_20px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2 group"
       >
         <span>Cotizar Este Sistema</span>
@@ -122,7 +120,7 @@ import { Scene3DCanvas } from '@modules/render';
           class="transition-transform group-hover:translate-x-1"
           ><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
         >
-      </button>
+      </a>
 
       <!-- Security / Guarantee seal -->
       <div class="mt-8 flex items-center justify-center gap-2 text-zinc-600">
