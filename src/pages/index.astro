@@ -4,27 +4,6 @@ import Navbar from '@shared/ui/Navbar.svelte';
 import { Hero, ValueProposition } from '@modules/landing';
 import { TechnicalValidator } from '@modules/quoter';
 import Footer from '@shared/ui/Footer.astro';
-import { getImage, type ImageMetadata } from 'astro:assets';
-
-import heroImgBase from '../assets/gallery/vidrio.jpeg';
-
-// Estrategia de Imágenes Responsive Optimizada (FHD)
-// Generar un 4K (3840px) por cada imagen estancaba el servidor local durante +20 segundos.
-// Para AL13, una base estable en Full HD (1920px) con fallback a HD (1280px) es el balance
-// perfecto entre asombro visual B2C y rendimiento impecable tanto en Dev como en Producción.
-
-const getResponsive = async (img: ImageMetadata) => {
-  const opt2K = await getImage({ src: img, format: 'webp', width: 2560, quality: 90 });
-  const optFHD = await getImage({ src: img, format: 'webp', width: 1920, quality: 90 });
-  const optHD = await getImage({ src: img, format: 'webp', width: 1280, quality: 85 });
-  return {
-    src: opt2K.src, // Fallback nativo 2K
-    srcset: `${optHD.src} 1280w, ${optFHD.src} 1920w, ${opt2K.src} 2560w`,
-  };
-};
-const responsiveHero = await getResponsive(heroImgBase);
-
-const bgImages = [responsiveHero, responsiveHero, responsiveHero];
 ---
 
 <PublicLayout
@@ -36,7 +15,7 @@ const bgImages = [responsiveHero, responsiveHero, responsiveHero];
 
   <main>
     <!-- Sección 1: El Escaparate (Hero Cine) -->
-    <Hero client:idle backgroundImages={bgImages} />
+    <Hero client:idle />
 
     <!-- Sección 2: Propuesta de Valor (Feature List) -->
     <ValueProposition client:visible />

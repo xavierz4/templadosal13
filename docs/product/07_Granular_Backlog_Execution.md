@@ -262,14 +262,14 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 **Objetivo:** Elevar la experiencia estética B2B a un estándar internacional estelar mediante cinetismo, prueba social persuasiva y micro-interacciones web inmersivas.
 
 - **Task 8.1: Hero Section Inmersivo (Magnetic UI)**
-    - [ ] 8.1.1: Implementar efecto Tilt 3D (Parallax Inverso) en el panel derecho (Glassmorphism), logrando que el cristal siga el movimiento interactivo del cursor.
-    - [ ] 8.1.2: Sustituir el actual slider estático de imágenes por un Hero cinemático con Video Loop en segundo plano, ultra-comprimido (WebM), enseñando reflejos y cortes industriales.
-    - [ ] 8.1.3: Refinar overlay y gradientes CSS para preservar el Local Contrast y la legibilidad absoluta del Copy Principal SEO.
+    - [x] 8.1.1: Implementar efecto Tilt 3D (Parallax Inverso) en el panel derecho (Glassmorphism), logrando que el cristal siga el movimiento interactivo del cursor.
+    - [x] 8.1.2: Sustituir el actual slider estático de imágenes por un Hero cinemático con Video Loop en segundo plano, ultra-comprimido (WebM), enseñando reflejos y cortes industriales.
+    - [x] 8.1.3: Refinar overlay y gradientes CSS para preservar el Local Contrast y la legibilidad absoluta del Copy Principal SEO.
 
 - **Task 8.2: Propuesta de Valor Editorial (Storytelling Z-Pattern)**
-    - [ ] 8.2.1: Desechar la cuadrícula estandarizada y reconstruir `ValueProposition.svelte` usando un patrón de zig-zag "Z-Pattern" (flujo óptico asimétrico de revista).
-    - [ ] 8.2.2: Reemplazar los iconos genéricos Lucide por Macrofotografía hiperrealista (acercamientos milimétricos al aluminio anodizado y biseles PBR).
-    - [ ] 8.2.3: Programar Tipografía Cinética (Staggered Reveal) atada al ScrollSpy para hacer aparecer los textos como cortina abriéndose fluido tras hacer scroll.
+    - [x] 8.2.1: Desechar la cuadrícula estandarizada y reconstruir `ValueProposition.svelte` usando un patrón de zig-zag "Z-Pattern" (flujo óptico asimétrico de revista).
+    - [x] 8.2.2: Implementar transiciones de Stagger Parallax en cada bloque de la Z, donde la imagen suba más despacio que el texto al hacer scroll (CSS Houdini o Svelte Scroll).
+    - [x] 8.2.3: Reemplazar íconos abstractos por un sistema de *Trust Badges* hiper-realistas en las imágenes.
 
 - **Task 8.3: Validador Paramétrico Sensorial (Geometry Feedback)**
     - [ ] 8.3.1: Diseñar Componente interactivo SVG de Plano Arquitectónico junto al Input de Medidas en el Cotizador Ducha/Baño B2C.

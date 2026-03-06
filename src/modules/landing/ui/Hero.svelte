@@ -1,42 +1,56 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { spring } from 'svelte/motion';
 
-  // Bank of generated ultra-wide horizontal cinematic B2B images passed from Astro
-  let { backgroundImages = [] } = $props<{ backgroundImages: { src: string; srcset: string }[] }>();
+  // Magnetic UI State (Tilt 3D)
+  let container: HTMLDivElement;
+  const magneticProps = spring({ x: 0, y: 0, scale: 1 }, { stiffness: 0.05, damping: 0.25 });
 
-  let currentImageIndex = $state(0);
+  function handleMouseMove(e: MouseEvent) {
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
 
-  onMount(() => {
-    // Rotar imágenes cada 5 segundos (Motion Fading)
-    const interval = setInterval(() => {
-      currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-    }, 5000);
+    // Distancia relativa del ratón respecto al centro del panel
+    const xInfo = e.clientX - rect.left - rect.width / 2;
+    const yInfo = e.clientY - rect.top - rect.height / 2;
 
-    return () => clearInterval(interval);
-  });
+    // Límite de grados de rotación (Tilt Inverso)
+    const factor = 12;
+
+    magneticProps.set({
+      x: (yInfo / rect.height) * -factor,
+      y: (xInfo / rect.width) * factor,
+      scale: 1.02,
+    });
+  }
+
+  function handleMouseLeave() {
+    magneticProps.set({ x: 0, y: 0, scale: 1 });
+  }
 </script>
 
 <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
   <!-- Fondo Oscuro de Estudio Principal -->
   <div class="absolute inset-0 bg-[#0A0A0A] z-0"></div>
 
-  <!-- Sistema de Contención 16:9 con IMG Nativo (Anti-Pixelación 4K) -->
-  {#each backgroundImages as image, i}
-    <img
-      src={image.src}
-      srcset={image.srcset}
-      sizes="100vw"
-      decoding="async"
-      loading={i === 0 ? 'eager' : 'lazy'}
-      alt="Fondo Arquitectónico AL13"
-      class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-2000 ease-in-out pointer-events-none filter contrast-105 brightness-[0.85]"
-      style="opacity: {i === currentImageIndex ? 1 : 0};"
+  <!-- Cinematic B2B Background Video Loop (Optimizado para WebM/MP4 local + Fallback) -->
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-2000 ease-in-out pointer-events-none filter contrast-105 brightness-[0.50]"
+  >
+    <source src="/videos/hero-bg.webm" type="video/webm" />
+    <source src="/videos/hero-bg.mp4" type="video/mp4" />
+    <source
+      src="https://cdn.pixabay.com/video/2021/08/21/85806-591741703_large.mp4"
+      type="video/mp4"
     />
-  {/each}
+  </video>
 
   <!-- Overlay de oscuridad profunda detrás de los textos (Solapamiento lateral) -->
   <div
-    class="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/90 via-[#0A0A0A]/50 to-transparent z-10 pointer-events-none w-full lg:w-[75%]"
+    class="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none w-full lg:w-[75%]"
   ></div>
 
   <!-- Fundido Suave en el borde inferior (Soft Cut/Fade a la siguiente sección) -->
@@ -52,7 +66,7 @@
     <div class="flex-1 flex flex-col items-start text-left space-y-6 max-w-2xl pl-0 lg:pl-10">
       <!-- Titular SEO Impactante (Tipografía gruesa blanca) -->
       <h1
-        class="text-5xl md:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-white leading-[1.1] animate-fade-in-up"
+        class="text-5xl md:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-white leading-[1.1] animate-fade-in-up drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
       >
         CRISTAL Y<br />
         ALUMINIO<br />
@@ -61,7 +75,7 @@
 
       <!-- Párrafo Subtitular (Minimalista) -->
       <p
-        class="text-xl md:text-2xl text-zinc-300 font-sans font-light tracking-wide animate-fade-in-up"
+        class="text-xl md:text-2xl text-zinc-300 font-sans font-light tracking-wide animate-fade-in-up drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
         style="animation-delay: 200ms;"
       >
         Diseño. Precisión. Lujo.
@@ -71,23 +85,29 @@
     <!-- Panel de Cristal Interactivo (Mitad Derecha) -->
     <div
       class="flex-1 w-full relative flex items-center justify-center animate-fade-in-up"
-      style="animation-delay: 400ms;"
+      style="animation-delay: 400ms; perspective: 1200px;"
     >
       <!-- Cubo/Panel Glassmorphism Translúcido Puro (Escarcha Blanca a lo UI Concept) -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
-        class="relative w-full max-w-sm lg:max-w-md aspect-[3/4.5] rounded-2xl flex items-center justify-center overflow-hidden transition-transform duration-700 hover:scale-[1.02] bg-white/5 backdrop-blur-[12px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
+        bind:this={container}
+        onmousemove={handleMouseMove}
+        onmouseleave={handleMouseLeave}
+        class="relative w-full max-w-sm lg:max-w-md aspect-[3/4.5] rounded-2xl flex items-center justify-center bg-white/5 backdrop-blur-[12px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:shadow-[0_16px_60px_rgba(56,189,248,0.15)] transition-shadow duration-500 will-change-transform"
+        style="transform: rotateX({$magneticProps.x}deg) rotateY({$magneticProps.y}deg) scale({$magneticProps.scale}); transform-style: preserve-3d;"
       >
         <!-- Contenedor vacío para mantener la estética Glassmorphism sin malla 3D -->
-        <div class="absolute inset-0 z-0 bg-black/10 rounded-2xl"></div>
+        <div class="absolute inset-0 z-0 bg-black/10 rounded-2xl pointer-events-none"></div>
 
         <!-- Borde Iluminado Superior sutil -->
         <div
-          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-10"
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-10 pointer-events-none"
         ></div>
 
         <!-- Botón B2B: Cotizar Proyecto con borde glowing naranja/azul -->
         <button
           class="group relative px-8 py-3.5 rounded-lg bg-white/5 text-white font-bold text-sm tracking-widest uppercase backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:scale-105 shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-20"
+          style="transform: translateZ(40px);"
         >
           <!-- Borde simulado (Glow naranja-azul claro estilo UI Concept) -->
           <div
