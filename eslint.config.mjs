@@ -23,6 +23,10 @@ export default [
       'src/modules/admin/ui/KanbanCard.svelte',
       'src/modules/admin/ui/ProjectUploadForm.svelte',
       'src/modules/admin/ui/CatalogGrid.svelte',
+      // Svelte 5 rune syntax + TypeScript type declarations in render module (Threlte components)
+      'src/modules/render/ui/Scene3DCanvas.svelte',
+      'src/modules/render/ui/CatalogInteractiveViewer.svelte',
+      'src/modules/render/ui/AL13Model.svelte',
     ],
   },
   {

@@ -6,19 +6,20 @@
    * Canvas maestro para el motor 3D Threlte (Epic 5 — Task 5.1.1).
    * Responsabilidades:
    *  1. Detectar soporte WebGL antes de montar el contexto Three.js.
-   *  2. Renderizar un placeholder (BoxGeometry) para validar el pipeline 3D.
+   *  2. Cargar el modelo GLTF dinámico pasado vía props desde el CMS.
    *  3. Degradar gracefully a un fallback 2D si el dispositivo no soporta WebGL.
+   *  4. (Epic 5.x) Pasar metalNodes del CMS a AL13Model para material mapping preciso.
    *
    * REGLA 4: Presentación pura. Sin fetch(), sin SDKs externos, sin lógica de negocio.
    * REGLA 0: Imports usan alias @modules/* o rutas relativas dentro del módulo.
    */
   import { Canvas, T } from '@threlte/core';
-  import { Suspense, HTML, Environment, OrbitControls } from '@threlte/extras';
+  import { Suspense, HTML, Environment, OrbitControls, Grid } from '@threlte/extras';
   import { onMount } from 'svelte';
   import AL13Model from './AL13Model.svelte';
 
   // ── Props ──────────────────────────────────────────────────────────────────
-  interface Props {
+  type Props = {
     width?: number;
     height?: number;
     class?: string;
@@ -26,8 +27,20 @@
     fallbackImageAlt?: string;
     glassType?: string;
     frameColor?: string;
-  }
-  let { width, height, class: className = '', fallbackImageSrc, fallbackImageAlt, glassType = 'clear', frameColor = 'anodizado' }: Props = $props();
+    modelUrl?: string;
+    metalNodes?: string[];
+  };
+  let {
+    width,
+    height,
+    class: className = '',
+    fallbackImageSrc,
+    fallbackImageAlt,
+    glassType = 'clear',
+    frameColor = 'anodizado',
+    modelUrl = '/models/aluminio_draco.glb',
+    metalNodes = ['frame', 'perfil', 'marco', 'metal'],
+  }: Props = $props();
 
   // ── Estado Svelte 5 Runes ──────────────────────────────────────────────────
   let isMounted = $state(false);
@@ -93,10 +106,24 @@
     <Canvas>
       <!-- Iluminación base y Entorno HDRI (necesario para la refracción del cristal PBR) -->
       <T.AmbientLight intensity={0.6} />
-      <T.DirectionalLight position={[5, 10, 7]} intensity={1.2} castShadow />
+      <T.DirectionalLight position={[5, 10, 7]} intensity={1.2} />
       <Environment
         url="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/royal_esplanade_1k.hdr"
-        format="hdr"
+      />
+
+      <!--
+        Rejilla de piso estilo plano arquitectónico.
+        Cada celda = 1 metro. Da percepción de escala real al ingeniero B2B.
+        Epic 5.x Task 5.x.3 — UX Polish & Context Scale.
+      -->
+      <Grid
+        position={[0, -1.01, 0]}
+        cellSize={1}
+        sectionSize={5}
+        cellColor="rgba(255,255,255,0.06)"
+        sectionColor="rgba(255,255,255,0.15)"
+        fadeDistance={20}
+        infiniteGrid={false}
       />
 
       <!--
@@ -117,13 +144,14 @@
             </div>
           </HTML>
         {/snippet}
-        <AL13Model {glassType} {frameColor} />
+        <!-- Epic 5.x: modelUrl y metalNodes provienen del CMS (Astro Content Collections) -->
+        <AL13Model {glassType} {frameColor} {modelUrl} {metalNodes} />
       </Suspense>
 
       <!-- Cámara perspectiva estándar y Coreografía Orbital B2B -->
-      <T.PerspectiveCamera makeDefault position={[5, 2, 5]} fov={45}>
+      <T.PerspectiveCamera makeDefault={true} position={[5, 2, 5]} fov={45}>
         <OrbitControls
-          enableDamping
+          enableDamping={true}
           dampingFactor={0.05}
           autoRotate={true}
           autoRotateSpeed={0.5}
