@@ -70,13 +70,9 @@ const ctaUrl = `/?product=${data.product_type}#cotizador`;
       >
       </div>
 
-      <!-- Interactive Svelte Island Engine — ahora recibe props del CMS -->
+      <!-- Interactive Svelte Island Engine — ProceduralScene por productType del CMS -->
       <div class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
-        <CatalogInteractiveViewer
-          client:load
-          modelUrl={data.model_url}
-          metalNodes={data.metal_nodes}
-        />
+        <CatalogInteractiveViewer client:only="svelte" productType={data.product_type} />
       </div>
 
       <!-- UX Hint for dragging -->

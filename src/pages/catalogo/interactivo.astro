@@ -29,11 +29,7 @@ import CatalogInteractiveViewer from '@modules/render/ui/CatalogInteractiveViewe
 
       <!-- Interactive Svelte Island Engine -->
       <div class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
-        <CatalogInteractiveViewer
-          client:load
-          modelUrl="/models/aluminio_draco.glb"
-          metalNodes={['frame', 'perfil', 'marco', 'metal']}
-        />
+        <CatalogInteractiveViewer client:only="svelte" productType="divisor_oficina" />
       </div>
 
       <!-- UX Hint for dragging -->

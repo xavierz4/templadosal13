@@ -3,21 +3,18 @@
    * CatalogInteractiveViewer.svelte
    * @module render/ui
    *
-   * Isla Reactiva (Svelte 5) que orquesta la configuración del Gemelo Digital 3D.
-   * Contiene los selectores B2C (Vidrio y Perfil) y encapsula a Scene3DCanvas
-   * para re-transmitir el estado al motor.
+   * Isla Reactiva (Svelte 5) que orquesta la configuración 3D del catálogo.
+   * Recibe el `productType` del CMS (Astro Content Collections) y controla
+   * los selectores de material (Vidrio y Perfil) para mutar el render 3D en tiempo real.
    *
-   * REFACTOR Epic 5.x: Ahora acepta `modelUrl` y `metalNodes` como props dinámicas
-   * provenientes de la CMS (Astro Content Collections) en lugar de valores hardcodeados.
+   * REFACTOR Epic 5.x: Eliminada dependencia de .glb. Usa ProceduralScene.
    */
   import Scene3DCanvas from './Scene3DCanvas.svelte';
 
-  // ── Props dinámicas desde el route [slug].astro ────────────────────────────
   type Props = {
-    modelUrl: string;
-    metalNodes?: string[];
+    productType: string;
   };
-  let { modelUrl, metalNodes = ['frame', 'perfil', 'marco', 'metal'] }: Props = $props();
+  let { productType = 'divisor_oficina' }: Props = $props();
 
   // ── Runes: Estado Local del Configurador Visual ────────────────────────────
   let glassType = $state('clear'); // clear | smoke | frosted
@@ -25,24 +22,23 @@
 </script>
 
 <div class="relative w-full h-full">
-  <!-- 3D Engine Instance — recibe modelUrl y metalNodes del CMS -->
+  <!-- 3D Engine Instance — usa escena procedural por productType -->
   <Scene3DCanvas
     class="w-full h-full"
     {glassType}
     {frameColor}
-    {modelUrl}
-    {metalNodes}
+    {productType}
     fallbackImageSrc="/hero_placeholder.jpg"
-    fallbackImageAlt="Vidrio 3D"
+    fallbackImageAlt="Vidrio 3D Templados AL13"
     width={undefined}
     height={undefined}
   />
 
-  <!-- Overlay de Controles (Zero-UI Glassmorphism) -->
+  <!-- Overlay de Controles Glassmorphism -->
   <div class="absolute top-6 right-6 flex flex-col gap-4 z-40">
-    <!-- Config Vidrio -->
+    <!-- Config Cristal PBR -->
     <div
-      class="bg-[#0A0A0A]/60 backdrop-blur-md rounded-2xl border border-white/5 p-3 flex flex-col gap-2 pointer-events-auto"
+      class="bg-[#0A0A0A]/70 backdrop-blur-md rounded-2xl border border-white/8 p-3 flex flex-col gap-2 pointer-events-auto"
     >
       <span class="text-[10px] text-zinc-400 font-bold tracking-widest uppercase ml-1"
         >Cristal PBR</span
@@ -75,15 +71,14 @@
       </div>
     </div>
 
-    <!-- Config Perfiles -->
+    <!-- Config Perfilería Anodizada -->
     <div
-      class="bg-[#0A0A0A]/60 backdrop-blur-md rounded-2xl border border-white/5 p-3 flex flex-col gap-2 pointer-events-auto"
+      class="bg-[#0A0A0A]/70 backdrop-blur-md rounded-2xl border border-white/8 p-3 flex flex-col gap-2 pointer-events-auto"
     >
       <span class="text-[10px] text-zinc-400 font-bold tracking-widest uppercase ml-1"
         >Perfíleria (Anodizados)</span
       >
       <div class="flex gap-2">
-        <!-- Plata -->
         <button
           onclick={() => (frameColor = 'anodizado')}
           aria-label="Plata Anodizado"
@@ -94,8 +89,6 @@
         >
           <div class="w-full h-full rounded-full bg-gradient-to-br from-zinc-300 to-zinc-500"></div>
         </button>
-
-        <!-- Negro -->
         <button
           onclick={() => (frameColor = 'black')}
           aria-label="Negro Mate"
@@ -106,8 +99,6 @@
         >
           <div class="w-full h-full rounded-full bg-gradient-to-br from-zinc-700 to-zinc-950"></div>
         </button>
-
-        <!-- Bronce/Oro -->
         <button
           onclick={() => (frameColor = 'gold')}
           aria-label="Bronce Arquitectónico"

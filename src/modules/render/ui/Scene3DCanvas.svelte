@@ -3,22 +3,17 @@
    * Scene3DCanvas.svelte
    * @module render/ui
    *
-   * Canvas maestro para el motor 3D Threlte (Epic 5 — Task 5.1.1).
-   * Responsabilidades:
-   *  1. Detectar soporte WebGL antes de montar el contexto Three.js.
-   *  2. Cargar el modelo GLTF dinámico pasado vía props desde el CMS.
-   *  3. Degradar gracefully a un fallback 2D si el dispositivo no soporta WebGL.
-   *  4. (Epic 5.x) Pasar metalNodes del CMS a AL13Model para material mapping preciso.
+   * Canvas maestro para el motor 3D Threlte.
+   * Usa geometría procedural premium (ProceduralScene) en lugar de .glb para garantizar
+   * renders instantáneos sin dependencia de assets externos ni latencia de red.
    *
-   * REGLA 4: Presentación pura. Sin fetch(), sin SDKs externos, sin lógica de negocio.
-   * REGLA 0: Imports usan alias @modules/* o rutas relativas dentro del módulo.
+   * REGLA 4: Solo presentación 3D. Sin fetch(), sin SDKs externos.
    */
   import { Canvas, T } from '@threlte/core';
-  import { Suspense, HTML, Environment, OrbitControls, Grid } from '@threlte/extras';
+  import { HTML, OrbitControls, Grid } from '@threlte/extras';
   import { onMount } from 'svelte';
-  import AL13Model from './AL13Model.svelte';
+  import ProceduralScene from './ProceduralScene.svelte';
 
-  // ── Props ──────────────────────────────────────────────────────────────────
   type Props = {
     width?: number;
     height?: number;
@@ -27,9 +22,9 @@
     fallbackImageAlt?: string;
     glassType?: string;
     frameColor?: string;
-    modelUrl?: string;
-    metalNodes?: string[];
+    productType?: string;
   };
+
   let {
     width,
     height,
@@ -38,20 +33,12 @@
     fallbackImageAlt,
     glassType = 'clear',
     frameColor = 'anodizado',
-    modelUrl = '/models/aluminio_draco.glb',
-    metalNodes = ['frame', 'perfil', 'marco', 'metal'],
+    productType = 'divisor_oficina',
   }: Props = $props();
 
-  // ── Estado Svelte 5 Runes ──────────────────────────────────────────────────
   let isMounted = $state(false);
   let webglSupported = $state(false);
 
-  /**
-   * Detecta soporte WebGL v2 (preferido) o WebGL v1.
-   * Se ejecuta en onMount para asegurar que corremos en el cliente (CSR island).
-   * Adelanto de Task 5.4.1 — WebGL capability guard.
-   * @returns {boolean}
-   */
   function detectWebGL() {
     if (typeof window === 'undefined' || import.meta.env?.TEST) return false;
     try {
@@ -73,13 +60,11 @@
   onMount(() => {
     isMounted = true;
     webglSupported = detectWebGL();
-
     if (!webglSupported) {
-      console.warn('[Scene3DCanvas] WebGL no disponible — mostrando fallback 2D. (Task 5.4.2)');
+      console.warn('[Scene3DCanvas] WebGL no disponible — mostrando fallback 2D.');
     }
   });
 
-  // Estilo de contenedor responsivo
   const containerStyle = $derived(
     width
       ? `width:${width}px; height:${height ?? 500}px;`
@@ -87,10 +72,6 @@
   );
 </script>
 
-<!--
-  Contenedor principal.
-  z-index gestionado por el padre (la isla Astro que lo consuma).
--->
 <div
   class="scene3d-container {className}"
   style={containerStyle}
@@ -98,83 +79,66 @@
   aria-label={fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
 >
   {#if isMounted && webglSupported}
-    <!--
-      Canvas Threlte (Task 5.1.1 scaffold).
-      Escena mínima de validación: luz ambiental + luz direccional + cubo placeholder.
-      Task 5.2.x reemplazará el BoxGeometry con el modelo .glb de cabina/fachada.
-    -->
     <Canvas>
-      <!-- Iluminación base y Entorno HDRI (necesario para la refracción del cristal PBR) -->
-      <T.AmbientLight intensity={0.6} />
-      <T.DirectionalLight position={[5, 10, 7]} intensity={1.2} />
-      <Environment
-        url="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/royal_esplanade_1k.hdr"
-      />
+      <!-- Iluminación premium: Ambiente suave + Directional fuerte para el vidrio PBR -->
+      <T.AmbientLight intensity={0.5} color="#e8f0ff" />
+      <T.DirectionalLight position={[6, 10, 6]} intensity={2.5} color="#ffffff" />
+      <T.DirectionalLight position={[-4, 3, -6]} intensity={0.8} color="#b0d0ff" />
+      <T.PointLight position={[0, 4, 3]} intensity={1.2} color="#ffffff" distance={10} />
 
-      <!--
-        Rejilla de piso estilo plano arquitectónico.
-        Cada celda = 1 metro. Da percepción de escala real al ingeniero B2B.
-        Epic 5.x Task 5.x.3 — UX Polish & Context Scale.
-      -->
+      <!-- Rejilla de piso arquitectónica: cada celda = 1 metro de escala real -->
       <Grid
-        position={[0, -1.01, 0]}
+        position={[0, -1.6, 0]}
         cellSize={1}
         sectionSize={5}
         cellColor="rgba(255,255,255,0.06)"
-        sectionColor="rgba(255,255,255,0.15)"
-        fadeDistance={20}
+        sectionColor="rgba(100,180,255,0.18)"
+        fadeDistance={18}
         infiniteGrid={false}
       />
 
-      <!--
-        Carga asíncrona del modelo 3D B2C (Draco).
-        La prop 'fallback' inyecta un HTML Overlay en el canvas 
-        sin detener el hilo principal de Svelte SRE.
-      -->
-      <Suspense>
-        {#snippet fallback()}
-          <HTML position={[0, 0, 0]} center>
-            <div class="flex flex-col items-center gap-3">
-              <div
-                class="w-8 h-8 rounded-full border-4 border-zinc-700 border-t-amber-500 animate-spin"
-              ></div>
-              <span class="text-xs font-semibold tracking-widest text-zinc-300 uppercase"
-                >Cargando 3D...</span
-              >
-            </div>
-          </HTML>
-        {/snippet}
-        <!-- Epic 5.x: modelUrl y metalNodes provienen del CMS (Astro Content Collections) -->
-        <AL13Model {glassType} {frameColor} {modelUrl} {metalNodes} />
-      </Suspense>
+      <!-- Escena 3D procedural específica por tipo de producto -->
+      <T.Group position={[0, -0.3, 0]}>
+        <ProceduralScene {productType} {glassType} {frameColor} />
+      </T.Group>
 
-      <!-- Cámara perspectiva estándar y Coreografía Orbital B2B -->
-      <T.PerspectiveCamera makeDefault={true} position={[5, 2, 5]} fov={45}>
+      <!-- Cámara con órbita libre y auto-rotación suave -->
+      <T.PerspectiveCamera makeDefault={true} position={[4, 1.5, 5]} fov={38}>
         <OrbitControls
           enableDamping={true}
-          dampingFactor={0.05}
+          dampingFactor={0.04}
           autoRotate={true}
-          autoRotateSpeed={0.5}
+          autoRotateSpeed={0.6}
           enableZoom={true}
-          minDistance={3}
-          maxDistance={15}
+          minDistance={2.5}
+          maxDistance={12}
           enablePan={false}
-          maxPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI / 1.9}
+          target={[0, 0.2, 0]}
         />
       </T.PerspectiveCamera>
     </Canvas>
-  {:else}
-    <!--
-      Fallback 2D — Tarea 5.4.2 SRE Degradation.
-      Se muestra en dispositivos sin WebGL (iOS antiguo, navegadores headless, etc.)
-    -->
+  {:else if isMounted && !webglSupported}
+    <!-- Fallback 2D — Solo para dispositivos sin WebGL -->
     <img
-      src={fallbackImageSrc ?? '/images/vidrio-templado-3d-fallback.jpg'}
+      src={fallbackImageSrc ?? '/hero_placeholder.jpg'}
       alt={fallbackImageAlt ?? 'Vidrio templado Templados AL13 — vista 3D'}
       class="scene3d-fallback"
       loading="lazy"
       decoding="async"
     />
+  {:else}
+    <!-- Skeleton loader mientras hydrata -->
+    <div class="scene3d-skeleton">
+      <div class="skeleton-inner">
+        <div
+          class="w-8 h-8 rounded-full border-4 border-zinc-700 border-t-blue-400 animate-spin"
+        ></div>
+        <span class="text-xs font-semibold tracking-widest text-zinc-400 uppercase mt-3"
+          >Cargando 3D...</span
+        >
+      </div>
+    </div>
   {/if}
 </div>
 
@@ -183,9 +147,9 @@
     position: relative;
     overflow: hidden;
     border-radius: 0.75rem;
+    background: #050508;
   }
 
-  /* El canvas de Threlte ocupa el 100% del contenedor automáticamente */
   .scene3d-container :global(canvas) {
     display: block;
     width: 100% !important;
@@ -197,5 +161,20 @@
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  .scene3d-skeleton {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #0a0a18 0%, #050508 80%);
+  }
+
+  .skeleton-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>

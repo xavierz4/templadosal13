@@ -27,6 +27,7 @@ export default [
       'src/modules/render/ui/Scene3DCanvas.svelte',
       'src/modules/render/ui/CatalogInteractiveViewer.svelte',
       'src/modules/render/ui/AL13Model.svelte',
+      'src/modules/render/ui/ProceduralScene.svelte',
     ],
   },
   {
