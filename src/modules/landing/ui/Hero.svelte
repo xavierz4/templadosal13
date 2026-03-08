@@ -1,45 +1,35 @@
 <script lang="ts">
   import { spring } from 'svelte/motion';
 
-  // Magnetic UI State (Tilt 3D)
-  let container: HTMLDivElement;
-  const magneticProps = spring({ x: 0, y: 0, scale: 1 }, { stiffness: 0.05, damping: 0.25 });
+  // Magnetic effect on CTA button
+  let ctaBtn: HTMLButtonElement;
+  const btnSpring = spring({ x: 0, y: 0, scale: 1 }, { stiffness: 0.08, damping: 0.3 });
 
-  function handleMouseMove(e: MouseEvent) {
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-
-    // Distancia relativa del ratón respecto al centro del panel
-    const xInfo = e.clientX - rect.left - rect.width / 2;
-    const yInfo = e.clientY - rect.top - rect.height / 2;
-
-    // Límite de grados de rotación (Tilt Inverso)
-    const factor = 12;
-
-    magneticProps.set({
-      x: (yInfo / rect.height) * -factor,
-      y: (xInfo / rect.width) * factor,
-      scale: 1.02,
-    });
+  function handleBtnMove(e: MouseEvent) {
+    if (!ctaBtn) return;
+    const rect = ctaBtn.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+    const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+    btnSpring.set({ x: y * -8, y: x * 8, scale: 1.05 });
   }
 
-  function handleMouseLeave() {
-    magneticProps.set({ x: 0, y: 0, scale: 1 });
+  function handleBtnLeave() {
+    btnSpring.set({ x: 0, y: 0, scale: 1 });
   }
 </script>
 
-<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-  <!-- Fondo Oscuro de Estudio Principal -->
+<section class="relative min-h-[90vh] flex items-center overflow-hidden">
+  <!-- Fondo Oscuro Base (visible antes de que cargue video) -->
   <div class="absolute inset-0 bg-[#0A0A0A] z-0"></div>
 
-  <!-- Cinematic B2B Background Video Loop (Optimizado para WebM/MP4 local + Fallback) -->
+  <!-- Cinematic Background Video -->
   <video
     autoplay
     loop
     muted
     playsinline
     poster="/hero_placeholder.jpg"
-    class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-2000 ease-in-out pointer-events-none filter contrast-105 brightness-[0.50]"
+    class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none filter contrast-[1.05] brightness-[0.55]"
   >
     <source src="/videos/hero-bg.webm" type="video/webm" />
     <source src="/videos/hero-bg.mp4" type="video/mp4" />
@@ -49,78 +39,75 @@
     />
   </video>
 
-  <!-- Overlay de oscuridad profunda detrás de los textos (Solapamiento lateral) -->
+  <!-- Overlay lateral: gradiente oscuro izquierda para legibilidad del texto -->
   <div
-    class="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none w-full lg:w-[75%]"
+    class="absolute inset-0 z-[2] pointer-events-none bg-gradient-to-r from-[#0A0A0A]/90 via-[#0A0A0A]/50 to-transparent"
   ></div>
 
-  <!-- Fundido Suave en el borde inferior (Soft Cut/Fade a la siguiente sección) -->
+  <!-- Overlay superior sutil (oscurece zona del navbar) -->
   <div
-    class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10 pointer-events-none"
+    class="absolute inset-x-0 top-0 h-32 z-[2] pointer-events-none bg-gradient-to-b from-[#0A0A0A]/60 to-transparent"
   ></div>
 
-  <!-- Contenedor Principal Limitado -->
+  <!-- Fundido inferior (transición suave a la siguiente sección) -->
   <div
-    class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24"
-  >
-    <!-- Texto (Mitad Izquierda) -->
-    <div class="flex-1 flex flex-col items-start text-left space-y-6 max-w-2xl pl-0 lg:pl-10">
-      <!-- Titular SEO Impactante (Tipografía gruesa blanca) -->
+    class="absolute inset-x-0 bottom-0 h-44 z-[2] pointer-events-none bg-gradient-to-t from-[#0A0A0A] to-transparent"
+  ></div>
+
+  <!-- Contenido Principal -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full pt-24 pb-20">
+    <div class="max-w-3xl flex flex-col items-start text-left space-y-8">
+      <!-- Titular SEO (Tipografía blanca sobre video) -->
       <h1
-        class="text-5xl md:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-white leading-[1.1] animate-fade-in-up drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
+        class="text-5xl md:text-6xl lg:text-[5.5rem] font-sans font-bold tracking-tight text-white leading-[1.05] animate-fade-in-up"
+        style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6);"
       >
         CRISTAL Y<br />
         ALUMINIO<br />
         ARQUITECTÓNICO
       </h1>
 
-      <!-- Párrafo Subtitular (Minimalista) -->
+      <!-- Subtítulo -->
       <p
-        class="text-xl md:text-2xl text-zinc-300 font-sans font-light tracking-wide animate-fade-in-up drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
-        style="animation-delay: 200ms;"
+        class="text-xl md:text-2xl text-zinc-200 font-sans font-light tracking-widest uppercase animate-fade-in-up"
+        style="animation-delay: 150ms; text-shadow: 0 2px 16px rgba(0,0,0,0.9);"
       >
-        Diseño. Precisión. Lujo.
+        Diseño · Precisión · Lujo
       </p>
-    </div>
 
-    <!-- Panel de Cristal Interactivo (Mitad Derecha) -->
-    <div
-      class="flex-1 w-full relative flex items-center justify-center animate-fade-in-up"
-      style="animation-delay: 400ms; perspective: 1200px;"
-    >
-      <!-- Panel Glassmorphism Translúcido Puro (Cristal Flotante) -->
-      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <!-- Línea decorativa (simula perfil de aluminio) -->
       <div
-        bind:this={container}
-        onmousemove={handleMouseMove}
-        onmouseleave={handleMouseLeave}
-        class="relative w-full max-w-sm lg:max-w-md aspect-[3/4.5] rounded-2xl flex items-center justify-center bg-white/5 backdrop-blur-[12px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:shadow-[0_16px_60px_rgba(56,189,248,0.15)] transition-shadow duration-500 will-change-transform"
-        style="transform: rotateX({$magneticProps.x}deg) rotateY({$magneticProps.y}deg) scale({$magneticProps.scale}); transform-style: preserve-3d;"
-      >
-        <!-- Tinted glass background -->
-        <div class="absolute inset-0 z-0 bg-black/10 rounded-2xl pointer-events-none"></div>
+        class="h-[2px] w-24 bg-gradient-to-r from-amber-400/80 via-white/40 to-transparent animate-fade-in-up"
+        style="animation-delay: 250ms;"
+      ></div>
 
-        <!-- Borde Iluminado Superior sutil -->
-        <div
-          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-10 pointer-events-none"
-        ></div>
-
-        <!-- Botón B2B: Cotizar Proyecto con borde glowing naranja/azul -->
+      <!-- CTA Principal con efecto magnético -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="animate-fade-in-up" style="animation-delay: 350ms;">
         <button
-          class="group relative px-8 py-3.5 rounded-lg bg-white/5 text-white font-bold text-sm tracking-widest uppercase backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:scale-105 shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-20"
-          style="transform: translateZ(40px);"
+          bind:this={ctaBtn}
+          onmousemove={handleBtnMove}
+          onmouseleave={handleBtnLeave}
+          class="group relative px-10 py-4 rounded-lg text-white font-bold text-sm tracking-[0.2em] uppercase transition-all duration-300 hover:scale-[1.02] will-change-transform"
+          style="transform: rotateX({$btnSpring.x}deg) rotateY({$btnSpring.y}deg) scale({$btnSpring.scale}); transform-style: preserve-3d;"
         >
-          <!-- Borde simulado (Glow naranja-azul claro estilo UI Concept) -->
+          <!-- Fondo sutil glass -->
           <div
-            class="absolute inset-0 rounded-lg border-[1.5px] border-transparent bg-gradient-to-r from-blue-400 via-white/60 to-orange-400 opacity-90 group-hover:opacity-100"
+            class="absolute inset-0 rounded-lg bg-white/[0.06] backdrop-blur-sm border border-white/15"
+          ></div>
+
+          <!-- Borde glow (azul → ámbar) -->
+          <div
+            class="absolute inset-0 rounded-lg border-[1.5px] border-transparent bg-gradient-to-r from-sky-400 via-white/50 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
             style="-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 1.5px;"
           ></div>
-          <!-- Glow exterior sutil naranja/azul -->
+
+          <!-- Glow exterior -->
           <div
-            class="absolute inset-0 rounded-lg opacity-40 bg-gradient-to-r from-blue-400/30 via-transparent to-orange-400/30 blur-md -z-10 group-hover:opacity-70 transition-opacity duration-300"
+            class="absolute inset-0 rounded-lg opacity-30 bg-gradient-to-r from-sky-400/20 via-transparent to-amber-500/20 blur-lg -z-10 group-hover:opacity-60 transition-opacity duration-300"
           ></div>
 
-          <span class="relative z-10 drop-shadow-md">Cotizar Proyecto</span>
+          <span class="relative z-10 drop-shadow-lg">Cotizar Proyecto</span>
         </button>
       </div>
     </div>
@@ -131,7 +118,7 @@
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(24px);
     }
     to {
       opacity: 1;
@@ -140,7 +127,7 @@
   }
 
   .animate-fade-in-up {
-    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
   }
 </style>
