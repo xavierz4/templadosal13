@@ -283,3 +283,54 @@ Las tareas marcadas con `[ ]` están pendientes. Las nuevas subtareas orgánicas
 - **Task 8.5: Enrutamiento de Embudo B2B (Sticky Call-To-Action)**
     - [x] 8.5.1: Transformar el Header NavBar para alojar una inyección en vivo asíncrona ("Solicitar Cotización"), una vez rebasado el umbral Y del Hero Image.
     - [x] 8.5.2: Investigar UX A/B para botón FAB (Floating Action Button) persistente que nunca abandone la órbita inferior derecha del usuario en páginas transaccionales largas.
+
+---
+
+## Epic 9: Auditoría UI/UX & Optimización CRO (Conversion Rate Optimization)
+> **Origen:** Auditoría Senior UI/UX realizada el 08-Marzo-2026. Score global: 6.1/10.
+> **Objetivo:** Eliminar fricciones de conversión, mejorar la percepción premium, y cerrar las brechas de CRO identificadas en la página principal.
+> **Prioridad:** Alta — Impacta directamente la tasa de conversión de leads B2B y la retención B2C.
+
+- **Task 9.1: Fallback Visual para Hero 3D (Anti-Container-Vacío)**
+    - [x] 9.1.1: Implementar imagen hero estática de alta calidad como fallback cuando WebGL no carga (GPU débil, red lenta, error de Three.js).
+    - [x] 9.1.2: Agregar skeleton loader / shimmer animation mientras el modelo 3D se inicializa, para evitar el rectángulo gris vacío.
+    - [x] 9.1.3: Verificar que el video loop del Hero (WebM) reproduce correctamente en todos los navegadores y tiene fallback poster.
+
+- **Task 9.2: Unificación de CTAs (Eliminar Confusión de Embudo)**
+    - [ ] 9.2.1: Auditar y unificar los 3 CTAs actuales ("Solicitar Cotización" navbar, "COTIZAR PROYECTO" hero, "Cotizador B2B" FAB) bajo un solo verbo: **"Cotizar Proyecto"**.
+    - [ ] 9.2.2: Definir jerarquía visual clara — CTA primario (navbar) vs CTA secundario (FAB) vs CTA contextual (inline en secciones).
+
+- **Task 9.3: Scroll-Driven Animations System (Percepción Premium — Tendencia 2026)**
+    > Referencia visual: Apple.com, Linear.app, Stripe.com — elementos que "cobran vida" al hacer scroll.
+    - [ ] 9.3.1: Crear componente utilitario `ScrollReveal.svelte` usando CSS `animation-timeline: view()` (nativo Chrome/Edge 115+) con fallback `IntersectionObserver` para Safari/Firefox.
+    - [ ] 9.3.2: **Hero Section** — Animación de entrada `scale(0.95→1) + opacity(0→1)` en el título principal, efecto cinemático de "apertura". El contenedor 3D entra con `fade-in` retardado 200ms.
+    - [ ] 9.3.3: **Value Proposition** — Texto con `translateY(40px→0) + fade-in` al entrar en viewport desde abajo. El badge "EL ESTÁNDAR AL13" entra con `scale bounce` sutil.
+    - [ ] 9.3.4: **Z-Pattern Blocks** — Stagger editorial: las imágenes entran desde la izquierda (`translateX(-60px→0)`), el texto desde la derecha, **alternando en cada bloque** para simular lectura de revista.
+    - [ ] 9.3.5: **Stats Cuantitativos (10+, 2mm, 100%, 0.0%)** — Counter animation (números que cuentan desde 0 hasta su valor final en 1.5s) + efecto `blur(8px→0)` donde los números "se enfocan" al aparecer.
+    - [ ] 9.3.6: **Quoter Stepper** — El panel de cotización "materializa" con `scale(0.92→1) + opacity(0→1)` como si fuera cristal templado apareciendo. Glass panel glow sutil al completar la entrada.
+    - [ ] 9.3.7: **Parallax suave en imágenes** — Las fotos de proyectos (fachada, edificio de cristal) se mueven a velocidad diferente al texto (~0.8x vs 1x) durante el scroll, creando profundidad.
+    - [ ] 9.3.8: Garantizar que todas las animaciones respeten `prefers-reduced-motion: reduce` (accesibilidad W3C) — sin animación = aparición instantánea.
+    - [ ] 9.3.9: Performance budget: cada animación debe usar exclusivamente propiedades `transform` y `opacity` (composite-only) para garantizar 60fps sin repaints.
+
+- **Task 9.4: Reducción de Void Gaps (Anti-False-Floor)**
+    - [ ] 9.4.1: Auditar y reducir el padding/margin excesivo entre la Value Proposition y el bloque de Z-Pattern (~300px de vacío negro puro).
+    - [ ] 9.4.2: Agregar elementos visuales de transición entre secciones (líneas sutiles, gradientes, o separadores con micro-copy) para guiar el scroll.
+
+- **Task 9.5: Botón WhatsApp Flotante (Canal B2B Colombiano)**
+    - [ ] 9.5.1: Agregar botón WhatsApp flotante (verde estándar) con link `wa.me/57XXXXXXXXXX` en la esquina inferior izquierda (complementario al FAB "Cotizador B2B" en la derecha).
+    - [ ] 9.5.2: Implementar tracking UTM en el link de WhatsApp para atribución en CRM.
+
+- **Task 9.6: Sección de Social Proof (Trust Engine v2)**
+    - [ ] 9.6.1: Agregar sección de logos de clientes/aliados reales (constructoras, estudios de arquitectura) con hover reveal en color.
+    - [ ] 9.6.2: Implementar al menos 2-3 testimonios/quotes de clientes reales con nombre, empresa y foto.
+    - [ ] 9.6.3: Agregar contadores animados de proyectos entregados, metros cuadrados instalados, y ciudades atendidas.
+
+- **Task 9.7: Footer Profesional (Aprovechamiento de Cierre)**
+    - [ ] 9.7.1: Expandir footer con: enlaces a redes sociales (Instagram portfolio), WhatsApp directo, mapa de ubicación embebido.
+    - [ ] 9.7.2: Agregar badges de certificaciones, sellos de confianza, y logos de métodos de pago (si aplica futuro).
+    - [ ] 9.7.3: Incluir links a Política de Privacidad y Términos (verificar que ya existen y son accesibles).
+
+- **Task 9.8: Adaptación de Contenido B2C (Lenguaje Inclusivo)**
+    - [ ] 9.8.1: Revisar copy técnico de la landing y agregar tooltips o micro-copy explicativo para términos como "NSR-10", "calibre extrusión", "distorsión óptica".
+    - [ ] 9.8.2: Evaluar agregar una sección "Galería de Proyectos" con fotos reales de instalaciones terminadas (baños, oficinas, fachadas).
+    - [ ] 9.8.3: Considerar precios referenciales tipo "Desde $X" para reducir la barrera de primer contacto B2C.
