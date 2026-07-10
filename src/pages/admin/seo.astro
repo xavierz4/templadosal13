@@ -1,0 +1,78 @@
+---
+/**
+ * /admin/seo.astro — Panel SEO (Fase 6)
+ *
+ * Gestiona la matriz sistemas × ubicaciones que genera las rutas SEO
+ * programáticas /catalogo/[sistema]/[ubicacion].
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { SeoManager } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseSeoRepository } from '@core/infrastructure/repositories/SupabaseSeoRepository';
+import type { SeoSystem, SeoLocation } from '@core/domain/seoSchema';
+
+export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+if (!session) {
+  return Astro.redirect('/admin/login', 302);
+}
+
+let systems: SeoSystem[] = [];
+let locations: SeoLocation[] = [];
+let loadError = '';
+try {
+  const repo = new SupabaseSeoRepository(supabase);
+  [systems, locations] = await Promise.all([repo.getAllSystems(), repo.getAllLocations()]);
+} catch (error: unknown) {
+  loadError = error instanceof Error ? error.message : 'Error al cargar el panel SEO.';
+  console.error('[Admin SEO] Load error:', error);
+}
+---
+
+<AdminLayout title="Panel SEO" section="SEO">
+  <div class="intro">
+    <p>
+      Cada combinación de sistema × ubicación genera una página SEO (<code
+        >/catalogo/[sistema]/[ubicacion]</code
+      >) optimizada para búsquedas locales. Añade sistemas o ciudades para ampliar la cobertura; el
+      slug se deriva del nombre.
+    </p>
+  </div>
+
+  {loadError && <div class="fetch-error">⚠️ {loadError}</div>}
+
+  <SeoManager systems={systems} locations={locations} client:load />
+</AdminLayout>
+
+<style>
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+    max-width: 65ch;
+  }
+  .intro code {
+    font-family: 'Courier New', monospace;
+    color: var(--color-al13-cyan);
+    background: rgba(56, 189, 248, 0.08);
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+  }
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+</style>
