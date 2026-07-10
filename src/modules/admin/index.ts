@@ -11,3 +11,4 @@ export { default as KanbanCard } from './ui/KanbanCard.svelte';
 export { default as ProjectUploadForm } from './ui/ProjectUploadForm.svelte';
 export { default as CatalogGrid } from './ui/CatalogGrid.svelte';
 export { default as AnalyticsDashboard } from './ui/AnalyticsDashboard.svelte';
+export { default as UsersManager } from './ui/UsersManager.svelte';

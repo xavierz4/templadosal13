@@ -234,6 +234,18 @@ export type Database = {
       };
     };
     Functions: {
+      get_admin_users: {
+        Args: never;
+        Returns: {
+          company_name: string;
+          created_at: string;
+          email: string;
+          full_name: string;
+          id: string;
+          phone_number: string;
+          role: string;
+        }[];
+      };
       get_dashboard_analytics: {
         Args: never;
         Returns: {
