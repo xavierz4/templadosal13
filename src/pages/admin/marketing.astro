@@ -1,0 +1,93 @@
+---
+/**
+ * /admin/marketing.astro — Agente de contenido de redes con IA
+ *
+ * SSR con AdminLayout (auth guard heredado). Carga la taxonomía SEO
+ * (sistemas × ubicaciones) para los selects y el contenido existente, y los
+ * pasa al island MarketingGenerator.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { MarketingGenerator } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseSeoRepository } from '@core/infrastructure/repositories/SupabaseSeoRepository';
+import { SupabaseMarketingRepository } from '@core/infrastructure/repositories/SupabaseMarketingRepository';
+import type { MarketingContent } from '@core/domain/marketingSchema';
+
+export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+if (!session) {
+  return Astro.redirect('/admin/login', 302);
+}
+
+let systems: { slug: string; name: string }[] = [];
+let locations: { slug: string; name: string }[] = [];
+let content: MarketingContent[] = [];
+let loadError = '';
+
+try {
+  const seoRepo = new SupabaseSeoRepository(supabase);
+  const marketingRepo = new SupabaseMarketingRepository(supabase);
+  const [sys, locs, cont] = await Promise.all([
+    seoRepo.getAllSystems(),
+    seoRepo.getAllLocations(),
+    marketingRepo.getAll(),
+  ]);
+  systems = sys.map((s) => ({ slug: s.slug, name: s.name }));
+  locations = locs.map((l) => ({ slug: l.slug, name: l.name }));
+  content = cont;
+} catch (error: unknown) {
+  loadError = error instanceof Error ? error.message : 'Error al cargar el módulo.';
+  console.error('[Admin Marketing] Load error:', error);
+}
+---
+
+<AdminLayout title="Marketing IA" section="Marketing">
+  <div class="intro">
+    <p>
+      Genera contenido de redes on-brand que atrae tráfico al sitio. Cada pieza incluye un enlace
+      con UTMs hacia la landing correcta — así los leads que se capturen traen su atribución y el
+      embudo queda medido en <a href="/admin/analytics" class="link">Telemetría</a>.
+    </p>
+  </div>
+
+  {loadError && <div class="fetch-error">⚠️ {loadError}</div>}
+
+  <MarketingGenerator
+    systems={systems}
+    locations={locations}
+    initialContent={content}
+    client:load
+  />
+</AdminLayout>
+
+<style>
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+  .link {
+    color: var(--color-al13-cyan);
+    text-decoration: none;
+  }
+  .link:hover {
+    text-decoration: underline;
+  }
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+</style>

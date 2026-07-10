@@ -136,6 +136,57 @@ export type Database = {
           },
         ];
       };
+      marketing_content: {
+        Row: {
+          angle: string | null;
+          body: string;
+          channel: Database['public']['Enums']['marketing_channel'];
+          created_at: string;
+          created_by: string;
+          cta: string | null;
+          hashtags: string[] | null;
+          hook: string;
+          id: string;
+          location_slug: string | null;
+          scheduled_for: string | null;
+          status: Database['public']['Enums']['marketing_status'];
+          system_slug: string | null;
+          target_url: string | null;
+        };
+        Insert: {
+          angle?: string | null;
+          body: string;
+          channel: Database['public']['Enums']['marketing_channel'];
+          created_at?: string;
+          created_by?: string;
+          cta?: string | null;
+          hashtags?: string[] | null;
+          hook: string;
+          id?: string;
+          location_slug?: string | null;
+          scheduled_for?: string | null;
+          status?: Database['public']['Enums']['marketing_status'];
+          system_slug?: string | null;
+          target_url?: string | null;
+        };
+        Update: {
+          angle?: string | null;
+          body?: string;
+          channel?: Database['public']['Enums']['marketing_channel'];
+          created_at?: string;
+          created_by?: string;
+          cta?: string | null;
+          hashtags?: string[] | null;
+          hook?: string;
+          id?: string;
+          location_slug?: string | null;
+          scheduled_for?: string | null;
+          status?: Database['public']['Enums']['marketing_status'];
+          system_slug?: string | null;
+          target_url?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           company_name: string | null;
@@ -282,6 +333,8 @@ export type Database = {
     Enums: {
       lead_status: 'NUEVO' | 'CONTACTADO' | 'COTIZADO' | 'CERRADO_GANADO' | 'PERDIDO';
       log_level: 'error' | 'warn' | 'info';
+      marketing_channel: 'instagram' | 'facebook' | 'linkedin';
+      marketing_status: 'draft' | 'approved' | 'published' | 'discarded';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -409,6 +462,8 @@ export const Constants = {
     Enums: {
       lead_status: ['NUEVO', 'CONTACTADO', 'COTIZADO', 'CERRADO_GANADO', 'PERDIDO'],
       log_level: ['error', 'warn', 'info'],
+      marketing_channel: ['instagram', 'facebook', 'linkedin'],
+      marketing_status: ['draft', 'approved', 'published', 'discarded'],
     },
   },
 } as const;

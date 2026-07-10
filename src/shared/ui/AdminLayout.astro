@@ -337,6 +337,30 @@ const adminEmail = session?.user?.email ?? 'Admin';
 
       <div class="nav-divider"></div>
 
+      <p class="nav-section-title">Crecimiento</p>
+      <a
+        href="/admin/marketing"
+        class={`nav-item ${section === 'Marketing' ? 'active' : ''}`}
+        aria-current={section === 'Marketing' ? 'page' : 'false'}
+      >
+        <!-- Icon: Sparkles / megaphone -->
+        <svg
+          class="nav-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
+        </svg>
+        Marketing IA
+      </a>
+
+      <div class="nav-divider"></div>
+
       <p class="nav-section-title">Sistema</p>
       <a
         href="/admin/users"
