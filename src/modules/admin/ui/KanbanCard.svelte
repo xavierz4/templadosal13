@@ -12,9 +12,14 @@
   interface Props {
     lead: AdminLead;
     ondragstart: (leadId: string) => void;
+    onopen: (lead: AdminLead) => void;
   }
 
   const props: Props = $props();
+
+  // Distinguir click (abrir detalle) de drag (mover). Si hubo arrastre entre
+  // mousedown y click, se ignora el click para no abrir el drawer al soltar.
+  let didDrag = $state(false);
 
   // Format date nicely — $derived to stay reactive to props changes
   const formattedDate = $derived(
@@ -39,11 +44,26 @@
 <div
   class="kanban-card"
   draggable="true"
-  role="listitem"
-  aria-label={`Lead de ${props.lead.customer_name}`}
+  role="button"
+  tabindex="0"
+  aria-label={`Ver detalle del lead de ${props.lead.customer_name}`}
   ondragstart={(e) => {
+    didDrag = true;
     e.dataTransfer?.setData('text/plain', props.lead.id);
     props.ondragstart(props.lead.id);
+  }}
+  ondragend={() => {
+    // Reset tras el ciclo de drag para permitir clicks posteriores
+    setTimeout(() => (didDrag = false), 0);
+  }}
+  onclick={() => {
+    if (!didDrag) props.onopen(props.lead);
+  }}
+  onkeydown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      props.onopen(props.lead);
+    }
   }}
 >
   <!-- Header -->

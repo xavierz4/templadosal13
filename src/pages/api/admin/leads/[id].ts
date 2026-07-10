@@ -1,76 +1,80 @@
 import type { APIRoute } from 'astro';
-import { LeadStatusUpdateSchema } from '@core/domain/leadAdminSchema';
+import { LeadUpdateSchema } from '@core/domain/leadAdminSchema';
 import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
 import { SupabaseLeadRepository } from '@core/infrastructure/repositories/SupabaseLeadRepository';
 
 export const prerender = false;
 
-/**
- * PATCH /api/admin/leads/[id]
- *
- * Muta el status de un Lead en el Kanban CRM (Task 4.2).
- * Solo orquesta (REGLA 2):
- *   1. Auth guard — sesión JWT obligatoria
- *   2. Zod — valida { status: LeadStatus }
- *   3. Repositorio — updateStatus(id, status)
- */
-export const PATCH: APIRoute = async ({ params, request, cookies }) => {
-  // ── Auth Guard (mismo patrón que AdminLayout) ─────────────
+const json = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+/** Auth guard compartido: devuelve el client SSR o null si no hay sesión. */
+async function requireSession(request: Request, cookies: Parameters<APIRoute>[0]['cookies']) {
   const supabaseClient = createSupabaseServerClient(request, cookies);
   const {
     data: { session },
   } = await supabaseClient.auth.getSession();
+  return session ? supabaseClient : null;
+}
 
-  if (!session) {
-    return new Response(JSON.stringify({ error: 'No autorizado.' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+/**
+ * PATCH /api/admin/leads/[id]
+ *
+ * Edita campos de un lead (nombre, teléfono, producto, notas, valor, status).
+ * Sirve tanto para el drag&drop del Kanban ({status}) como para el drawer de
+ * detalle (campos completos). Solo orquesta (REGLA 2): auth → Zod → repo.
+ */
+export const PATCH: APIRoute = async ({ params, request, cookies }) => {
+  const supabaseClient = await requireSession(request, cookies);
+  if (!supabaseClient) return json({ error: 'No autorizado.' }, 401);
 
-  // ── Extraer y validar el ID del lead ─────────────────────
   const { id } = params;
-  if (!id) {
-    return new Response(JSON.stringify({ error: 'ID del lead requerido.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  if (!id) return json({ error: 'ID del lead requerido.' }, 400);
 
   try {
     const body = await request.json();
+    const patch = LeadUpdateSchema.parse(body);
 
-    // Zod: valida que status sea un enum válido (REGLA 5)
-    const { status } = LeadStatusUpdateSchema.parse(body);
-
-    // DI: repositorio con client SSR autenticado
     const leadRepository = new SupabaseLeadRepository(supabaseClient);
-    await leadRepository.updateStatus(id, status);
+    const lead = await leadRepository.update(id, patch);
 
-    return new Response(JSON.stringify({ success: true, id, status }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return json({ success: true, lead }, 200);
   } catch (error: unknown) {
     const isZodError =
       typeof error === 'object' &&
       error !== null &&
       (error as { name?: string }).name === 'ZodError';
 
-    if (isZodError) {
-      return new Response(JSON.stringify({ error: 'Status inválido.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    if (isZodError) return json({ error: 'Datos del lead inválidos.' }, 400);
 
     if (error instanceof Error) {
       console.error('[LeadsAdmin PATCH] Error:', { message: error.message, id });
     }
+    return json({ error: 'Error interno al actualizar el lead.' }, 500);
+  }
+};
 
-    return new Response(JSON.stringify({ error: 'Error interno al actualizar el lead.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+/**
+ * DELETE /api/admin/leads/[id] — elimina un lead del CRM.
+ */
+export const DELETE: APIRoute = async ({ params, request, cookies }) => {
+  const supabaseClient = await requireSession(request, cookies);
+  if (!supabaseClient) return json({ error: 'No autorizado.' }, 401);
+
+  const { id } = params;
+  if (!id) return json({ error: 'ID del lead requerido.' }, 400);
+
+  try {
+    const leadRepository = new SupabaseLeadRepository(supabaseClient);
+    await leadRepository.delete(id);
+    return json({ success: true, id }, 200);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('[LeadsAdmin DELETE] Error:', { message: error.message, id });
+    }
+    return json({ error: 'Error interno al eliminar el lead.' }, 500);
   }
 };

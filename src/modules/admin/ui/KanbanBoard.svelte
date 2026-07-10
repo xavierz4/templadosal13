@@ -9,9 +9,10 @@
 -->
 <script lang="ts">
   import { LEAD_STATUSES } from '@core/domain/leadAdminSchema';
-  import type { AdminLead, LeadStatus } from '@core/domain/leadAdminSchema';
-  import { updateLeadStatus } from '../api/leadsAdminClient';
+  import type { AdminLead, LeadStatus, LeadUpdate } from '@core/domain/leadAdminSchema';
+  import { updateLeadStatus, updateLead, deleteLead } from '../api/leadsAdminClient';
   import KanbanCard from './KanbanCard.svelte';
+  import LeadDetailDrawer from './LeadDetailDrawer.svelte';
   import { untrack } from 'svelte';
 
   const props: { leads: AdminLead[] } = $props();
@@ -23,12 +24,74 @@
   let draggingOverColumn: string = $state('');
   let errorMessage: string = $state('');
 
-  // Leads agrupados por status
+  // ─── Búsqueda y filtros ────────────────────────────────────────────────────
+  let searchQuery: string = $state('');
+  let productFilter: string = $state('all');
+
+  const PRODUCT_OPTIONS = [
+    { id: 'all', label: 'Todos los productos' },
+    { id: 'cabina_ducha', label: 'Cabina de Ducha' },
+    { id: 'divisor_oficina', label: 'Divisor de Oficina' },
+    { id: 'fachada_monumental', label: 'Fachada Monumental' },
+    { id: 'puerta_pivotante', label: 'Puerta Pivotante' },
+  ];
+
+  const filteredLeads = $derived.by(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return localLeads.filter((l) => {
+      if (productFilter !== 'all' && l.product_type !== productFilter) return false;
+      if (!q) return true;
+      const haystack = `${l.customer_name} ${l.customer_phone} ${l.notes ?? ''}`.toLowerCase();
+      return haystack.includes(q);
+    });
+  });
+
+  // Leads (ya filtrados) agrupados por status
   const leadsByStatus = $derived(
     Object.fromEntries(
-      LEAD_STATUSES.map((status) => [status, localLeads.filter((l) => l.status === status)])
+      LEAD_STATUSES.map((status) => [status, filteredLeads.filter((l) => l.status === status)])
     ) as Record<LeadStatus, AdminLead[]>
   );
+
+  // ─── Drawer de detalle ─────────────────────────────────────────────────────
+  let selectedLead: AdminLead | null = $state(null);
+  let drawerSaving: boolean = $state(false);
+
+  function openLead(lead: AdminLead) {
+    selectedLead = lead;
+  }
+  function closeDrawer() {
+    selectedLead = null;
+  }
+
+  async function handleSaveLead(id: string, patch: LeadUpdate) {
+    drawerSaving = true;
+    errorMessage = '';
+    const result = await updateLead(id, patch);
+    drawerSaving = false;
+
+    if (result.error || !result.lead) {
+      errorMessage = `Error al guardar: ${result.error ?? 'respuesta inválida'}`;
+      return;
+    }
+    // Refrescar el lead en el estado local con lo que devolvió el servidor
+    localLeads = localLeads.map((l) => (l.id === id ? result.lead! : l));
+    closeDrawer();
+  }
+
+  async function handleDeleteLead(id: string) {
+    drawerSaving = true;
+    errorMessage = '';
+    const result = await deleteLead(id);
+    drawerSaving = false;
+
+    if (result.error) {
+      errorMessage = `Error al eliminar: ${result.error}`;
+      return;
+    }
+    localLeads = localLeads.filter((l) => l.id !== id);
+    closeDrawer();
+  }
 
   // ─── Labels y colores de columnas ─────────────────────────────────────────
   const columnConfig: Record<LeadStatus, { label: string; color: string; accent: string }> = {
@@ -94,6 +157,44 @@
   </div>
 {/if}
 
+<!-- Toolbar: búsqueda + filtro -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg
+      class="search-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
+    </svg>
+    <input
+      class="search-input"
+      type="search"
+      placeholder="Buscar por nombre, teléfono o nota…"
+      bind:value={searchQuery}
+    />
+  </div>
+  <select class="product-select" bind:value={productFilter} aria-label="Filtrar por producto">
+    {#each PRODUCT_OPTIONS as opt (opt.id)}
+      <option value={opt.id}>{opt.label}</option>
+    {/each}
+  </select>
+  {#if searchQuery || productFilter !== 'all'}
+    <button
+      class="clear-btn"
+      onclick={() => {
+        searchQuery = '';
+        productFilter = 'all';
+      }}>Limpiar</button
+    >
+  {/if}
+</div>
+
 <!-- Kanban Grid -->
 <div class="kanban-board">
   {#each LEAD_STATUSES as status}
@@ -122,7 +223,7 @@
       <!-- Cards -->
       <div class="column-cards">
         {#each columnLeads as lead (lead.id)}
-          <KanbanCard {lead} ondragstart={handleDragStart} />
+          <KanbanCard {lead} ondragstart={handleDragStart} onopen={openLead} />
         {/each}
 
         {#if columnLeads.length === 0 && draggingOverColumn !== status}
@@ -132,6 +233,15 @@
     </div>
   {/each}
 </div>
+
+<!-- Drawer de detalle/edición -->
+<LeadDetailDrawer
+  lead={selectedLead}
+  saving={drawerSaving}
+  onsave={handleSaveLead}
+  ondelete={handleDeleteLead}
+  onclose={closeDrawer}
+/>
 
 <style>
   .error-banner {
@@ -169,6 +279,64 @@
     cursor: pointer;
     padding: 0 0.25rem;
     line-height: 1;
+  }
+
+  /* ─── Toolbar ─── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+  }
+  .search-input,
+  .product-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .search-input {
+    width: 100%;
+    padding-left: 2.1rem;
+  }
+  .search-input:focus,
+  .product-select:focus {
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+  .clear-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover {
+    color: #fff;
+    border-color: rgba(56, 189, 248, 0.4);
   }
 
   /* ─── Board Layout ─── */
