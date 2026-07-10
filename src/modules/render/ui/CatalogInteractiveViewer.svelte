@@ -35,10 +35,11 @@
   />
 
   <!-- Overlay de Controles Glassmorphism -->
-  <div class="absolute top-6 right-6 flex flex-col gap-4 z-40">
+  <!-- top-20 = 80px → clears the fixed navbar (~68px) on desktop; on mobile pt-16 already offsets the layout -->
+  <div class="absolute top-20 right-4 lg:right-6 flex flex-col gap-4 z-40">
     <!-- Config Cristal PBR -->
     <div
-      class="bg-[#0A0A0A]/70 backdrop-blur-md rounded-2xl border border-white/8 p-3 flex flex-col gap-2 pointer-events-auto"
+      class="bg-al13-black/80 backdrop-blur-md rounded-2xl border border-white/10 p-3 flex flex-col gap-2 pointer-events-auto shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
     >
       <span class="text-[10px] text-zinc-400 font-bold tracking-widest uppercase ml-1"
         >Cristal PBR</span
@@ -73,7 +74,7 @@
 
     <!-- Config Perfilería Anodizada -->
     <div
-      class="bg-[#0A0A0A]/70 backdrop-blur-md rounded-2xl border border-white/8 p-3 flex flex-col gap-2 pointer-events-auto"
+      class="bg-al13-black/80 backdrop-blur-md rounded-2xl border border-white/10 p-3 flex flex-col gap-2 pointer-events-auto shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
     >
       <span class="text-[10px] text-zinc-400 font-bold tracking-widest uppercase ml-1"
         >Perfíleria (Anodizados)</span

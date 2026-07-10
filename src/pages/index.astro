@@ -1,7 +1,13 @@
 ---
 import PublicLayout from '@shared/ui/PublicLayout.astro';
-import Navbar from '@shared/ui/Navbar.svelte';
-import { Hero, TrustTicker, ValueProposition, QuantitativeImpact } from '@modules/landing';
+import {
+  Hero,
+  TrustTicker,
+  ValueProposition,
+  QuantitativeImpact,
+  ProjectGallery,
+  SocialProof,
+} from '@modules/landing';
 import { TechnicalValidator } from '@modules/quoter';
 import Footer from '@shared/ui/Footer.astro';
 ---
@@ -10,9 +16,6 @@ import Footer from '@shared/ui/Footer.astro';
   title="Templados AL13 - Boutique Industrial en Vidrio Templado"
   description="Redefiniendo el estándar arquitectónico en cristal templado. Paneles 3D B2B/B2C para la era digital."
 >
-  <!-- Navbar con ScrollSpy reactivo en Cliente -->
-  <Navbar client:load />
-
   <main>
     <!-- Sección 1: El Escaparate (Hero Cine) -->
     <Hero client:idle />
@@ -24,14 +27,20 @@ import Footer from '@shared/ui/Footer.astro';
     <ValueProposition client:visible />
 
     <!-- Sección 2.5: Datos de Impacto Numérico (Autoridad B2B) -->
-    <QuantitativeImpact />
+    <QuantitativeImpact client:visible />
+
+    <!-- Sección 2.6: Galería de Proyectos Reales (Bento Grid) -->
+    <ProjectGallery client:visible />
+
+    <!-- Sección 2.8: Pruebas de Confianza (B2B Testimonials & Partners) -->
+    <SocialProof client:visible />
 
     <!-- Sección 3: Calculadora Técnica (Geometry Feedback Live Engine) -->
     <section
       id="cotizador"
       class="py-24 bg-al13-dark border-t border-white/10 relative overflow-hidden"
     >
-      <TechnicalValidator client:only="svelte" />
+      <TechnicalValidator client:visible />
     </section>
   </main>
 

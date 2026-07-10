@@ -59,14 +59,14 @@ const ctaUrl = `/?product=${data.product_type}#cotizador`;
 
   <!-- Main Container: 100vh split into 60/40 on large screens -->
   <main
-    class="relative h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-[#0A0A0A] pt-16 lg:pt-0"
+    class="relative h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-al13-black pt-16"
   >
     <!-- Left Section: 3D Render Engine (60% Desktop, 50% Mobile) -->
     <section
       class="relative w-full h-[50vh] lg:h-full lg:w-[60%] flex items-center justify-center bg-black/40 z-10"
     >
       <div
-        class="absolute inset-0 z-0 bg-gradient-to-r from-transparent to-[#0A0A0A]/80 pointer-events-none lg:block hidden"
+        class="absolute inset-0 z-0 bg-gradient-to-r from-transparent to-al13-black/80 pointer-events-none lg:block hidden"
       >
       </div>
 
@@ -100,7 +100,7 @@ const ctaUrl = `/?product=${data.product_type}#cotizador`;
 
     <!-- Right Section: Dynamic Product Configurator (40% Desktop, 50% Mobile) -->
     <section
-      class="relative w-full h-[50vh] lg:h-full lg:w-[40%] bg-[#0f0f12] flex flex-col justify-center px-8 lg:px-16 border-t lg:border-t-0 lg:border-l border-white/10 z-20 overflow-y-auto"
+      class="relative w-full h-[50vh] lg:h-full lg:w-[40%] bg-al13-black flex flex-col justify-center px-8 lg:px-16 border-t lg:border-t-0 lg:border-l border-white/10 z-20 overflow-y-auto"
     >
       <!-- Badges & Taxonomy — DINÁMICO -->
       <div class="flex items-center gap-3 mb-6">
@@ -114,7 +114,7 @@ const ctaUrl = `/?product=${data.product_type}#cotizador`;
 
       <!-- Typography — DINÁMICO -->
       <h1
-        class="text-4xl lg:text-5xl font-sans font-bold text-white mb-4 tracking-tight leading-tight"
+        class="text-4xl lg:text-5xl font-heading font-bold text-white mb-4 tracking-tight leading-tight"
       >
         {data.title_start}
         <br />
@@ -150,7 +150,7 @@ const ctaUrl = `/?product=${data.product_type}#cotizador`;
       <!-- Call to Action B2B — DINÁMICO: apunta al producto correcto en el cotizador -->
       <a
         href={ctaUrl}
-        class="w-full relative px-8 py-4 rounded-xl bg-white text-black font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:bg-zinc-200 hover:scale-[1.02] shadow-[0_4px_20px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2 group"
+        class="w-full relative px-8 py-4 rounded-xl bg-gradient-to-r from-al13-cyan to-al13-emerald hover:from-cyan-400 hover:to-emerald-400 text-al13-black font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:scale-[1.02] shadow-[0_0_25px_rgba(56,189,248,0.5)] flex justify-center items-center gap-2 group"
       >
         <span>Cotizar Este Sistema</span>
         <svg

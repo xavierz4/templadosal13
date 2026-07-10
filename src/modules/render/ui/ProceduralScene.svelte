@@ -26,33 +26,38 @@
     frameColor = 'anodizado',
   }: Props = $props();
 
-  // ── Materiales PBR Reactivos ──────────────────────────────────────────────
+  // ── Materiales PBR Estables (Evitan re-compilación de Shaders) ──────────────
+  // En lugar de instanciar un material nuevo en cada render (lo que bloquea el
+  // hilo principal compilando shaders complexos), mutamos la instancia.
 
-  const glassMaterial = $derived(
-    new MeshPhysicalMaterial({
-      transmission: 1.0,
-      ior: glassType === 'clear' ? 1.52 : glassType === 'smoke' ? 1.6 : 1.45,
-      roughness: glassType === 'frosted' ? 0.32 : 0.04,
-      metalness: 0.0,
-      color: glassType === 'clear' ? '#ddeeff' : glassType === 'smoke' ? '#222222' : '#cccccc',
-      transparent: true,
-      opacity: 0.92,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
-      reflectivity: 0.95,
-      thickness: 0.6,
-    })
-  );
+  const glassMaterial = new MeshPhysicalMaterial({
+    transmission: 1.0,
+    transparent: true,
+    opacity: 0.92,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    reflectivity: 0.95,
+    thickness: 0.6,
+  });
 
-  const frameMaterial = $derived(
-    new MeshStandardMaterial({
-      color:
-        frameColor === 'anodizado' ? '#909497' : frameColor === 'black' ? '#0a0a0a' : '#b5860a',
-      metalness: 0.92,
-      roughness: 0.28,
-      envMapIntensity: 1.2,
-    })
-  );
+  const frameMaterial = new MeshStandardMaterial({
+    metalness: 0.92,
+    roughness: 0.28,
+    envMapIntensity: 1.2,
+  });
+
+  // Mutación reactiva ultra-rápida (0 recompilaciones de WebGL)
+  $effect(() => {
+    glassMaterial.ior = glassType === 'clear' ? 1.52 : glassType === 'smoke' ? 1.6 : 1.45;
+    glassMaterial.roughness = glassType === 'frosted' ? 0.32 : 0.04;
+    glassMaterial.color.set(
+      glassType === 'clear' ? '#ddeeff' : glassType === 'smoke' ? '#222222' : '#cccccc'
+    );
+
+    frameMaterial.color.set(
+      frameColor === 'anodizado' ? '#909497' : frameColor === 'black' ? '#0a0a0a' : '#b5860a'
+    );
+  });
 </script>
 
 {#if productType === 'divisor_oficina'}

@@ -4,6 +4,15 @@
   // Reactividad Svelte 5 (Runes) para detectar scroll y aplicar Glassmorphism
   let isScrolled = $state(false);
   let passedHero = $state(false); // Para mostrar dinámicamente el botón CTA
+  let isMobileMenuOpen = $state(false); // Estado del menú móvil alineado con Svelte 5
+
+  function toggleMobileMenu() {
+    isMobileMenuOpen = !isMobileMenuOpen;
+  }
+
+  function closeMenu() {
+    isMobileMenuOpen = false;
+  }
 
   onMount(() => {
     const handleScroll = () => {
@@ -116,16 +125,19 @@
     <nav class="hidden md:flex items-center gap-8">
       <a
         href="/catalogo"
+        data-astro-prefetch="viewport"
         class="text-sm font-medium text-zinc-300 hover:text-white transition-colors duration-200"
         >Catálogo</a
       >
       <a
         href="/nosotros"
+        data-astro-prefetch="viewport"
         class="text-sm font-medium text-zinc-300 hover:text-white transition-colors duration-200"
         >Filosofía</a
       >
       <a
         href="/contacto"
+        data-astro-prefetch="viewport"
         class="text-sm font-medium text-zinc-300 hover:text-white transition-colors duration-200"
         >Contacto B2B</a
       >
@@ -137,27 +149,70 @@
       {#if passedHero}
         <a
           href="#cotizador"
-          class="bg-gradient-to-r from-al13-cyan to-blue-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] active:scale-95 animate-in slide-in-from-bottom-2 fade-in"
+          class="bg-gradient-to-r from-al13-cyan to-al13-emerald hover:from-cyan-400 hover:to-emerald-400 text-al13-black px-6 py-2.5 rounded-lg text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_0_25px_rgba(56,189,248,0.5)] active:scale-95 animate-in slide-in-from-bottom-2 fade-in shadow-lg"
         >
-          Solicitar Cotización
+          Cotizar Proyecto
         </a>
       {/if}
-
-      <a
-        href="/admin/login"
-        class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-sm"
-      >
-        Ingresar Admin
-      </a>
     </div>
 
-    <!-- Mobile Menu Button (Decorativo en esta fase) -->
+    <!-- Mobile Menu Button -->
     <button
       aria-label="Abrir menú móvil"
-      class="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
+      onclick={toggleMobileMenu}
+      class="md:hidden relative z-50 flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
     >
-      <span class="block w-6 h-[2px] bg-white rounded-full transition-transform"></span>
-      <span class="block w-4 h-[2px] bg-white rounded-full transition-transform ml-auto"></span>
+      <span
+        class="block w-6 h-[2px] bg-white rounded-full transition-transform {isMobileMenuOpen
+          ? 'rotate-45 translate-y-[8px]'
+          : ''}"
+      ></span>
+      <span
+        class="block w-4 h-[2px] bg-white rounded-full transition-transform ml-auto {isMobileMenuOpen
+          ? 'opacity-0'
+          : ''}"
+      ></span>
+      <span
+        class="block w-6 h-[2px] bg-white rounded-full transition-transform {isMobileMenuOpen
+          ? '-rotate-45 -translate-y-[8px]'
+          : 'hidden'}"
+      ></span>
     </button>
   </div>
+
+  <!-- Mobile Navigation Overlay -->
+  {#if isMobileMenuOpen}
+    <div
+      class="md:hidden absolute top-0 left-0 w-full h-screen bg-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center space-y-8 px-6 animate-in fade-in zoom-in-95 duration-300"
+    >
+      <a href="/" onclick={closeMenu} class="text-2xl font-bold text-white mb-4">Inicio</a>
+      <a
+        href="/catalogo"
+        data-astro-prefetch="viewport"
+        onclick={closeMenu}
+        class="text-2xl font-bold text-zinc-300 hover:text-al13-cyan transition-colors"
+        >Catálogo 3D</a
+      >
+      <a
+        href="/nosotros"
+        data-astro-prefetch="viewport"
+        onclick={closeMenu}
+        class="text-2xl font-bold text-zinc-300 hover:text-al13-cyan transition-colors"
+        >Nuestra Filosofía</a
+      >
+      <a
+        href="/contacto"
+        data-astro-prefetch="viewport"
+        onclick={closeMenu}
+        class="text-2xl font-bold text-zinc-300 hover:text-al13-cyan transition-colors"
+        >Contacto B2B</a
+      >
+      <a
+        href="/#cotizador"
+        onclick={closeMenu}
+        class="mt-8 bg-al13-cyan text-black px-8 py-4 rounded-xl font-bold text-lg w-full text-center"
+        >Cotizar Proyecto</a
+      >
+    </div>
+  {/if}
 </header>

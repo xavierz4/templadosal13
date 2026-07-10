@@ -47,3 +47,9 @@ tools/did_auditor/__pycache__/
 docs/
 agents/
 tools/
+# Artefactos de herramientas de agente/navegador
+.agent/
+.playwright-cli/
+
+# Wrangler (artefactos temporales de Workers)
+.wrangler/
