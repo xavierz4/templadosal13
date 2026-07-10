@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from '../supabaseServer';
  */
 export class SupabaseClientLogRepository implements IClientLogRepository {
   private request: Request;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cookies: any; // Type 'AstroCookies' would require importing from Astro but any is safest here if we don't have it
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,22 +24,23 @@ export class SupabaseClientLogRepository implements IClientLogRepository {
     // Causa: La tabla "client_logs" es nueva; los tipos en database.types.ts (generados desde la nube)
     // aún no la contienen. Resolver: Al ejecutar `supabase gen types typescript`.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
-      .from('client_logs')
-      .insert({
-        level: data.level,
-        message: data.message,
-        source: data.source,
-        lineno: data.lineno,
-        colno: data.colno,
-        error_stack: data.error_stack,
-        url: data.url,
-        user_agent: userAgent,
-      });
+    const { error } = await (supabase as any).from('client_logs').insert({
+      level: data.level,
+      message: data.message,
+      source: data.source,
+      lineno: data.lineno,
+      colno: data.colno,
+      error_stack: data.error_stack,
+      url: data.url,
+      user_agent: userAgent,
+    });
 
     if (error) {
       // Fail Loudly en los logs del servidor (Edge/Node), pero la app sobrevive.
-      console.error("[ClientLogRepository] Fallo silencioso insertando cliente log:", error.message);
+      console.error(
+        '[ClientLogRepository] Fallo silencioso insertando cliente log:',
+        error.message
+      );
       throw new Error(`DB Insert Error: ${error.message}`);
     }
   }

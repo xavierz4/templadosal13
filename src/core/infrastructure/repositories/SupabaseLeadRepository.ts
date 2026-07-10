@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ILeadRepository } from '@core/domain/repositories/ILeadRepository';
 import type { LeadPayload } from '@core/domain/leadSchema';
 import type { PhysicsResult } from '@core/domain/physicsEngine';
-import type { AdminLead, LeadStatus } from '@core/domain/leadAdminSchema';
+import type { AdminLead, LeadStatus, LeadUpdate } from '@core/domain/leadAdminSchema';
 
 /**
  * Adaptador de Infraestructura para Supabase (Database Repository)
@@ -27,27 +27,25 @@ export class SupabaseLeadRepository implements ILeadRepository {
   // ─── Método existente (Task 3.x) ─────────────────────────────────────────
   async saveLead(payload: LeadPayload, physics: PhysicsResult): Promise<{ id: string }> {
     const generatedId = crypto.randomUUID();
-    const { error: dbError } = await this.client
-      .from('leads')
-      .insert([
-        {
-          id: generatedId,
-          product_type: payload.productType,
-          customer_name: payload.contactName,
-          customer_phone: payload.phone,
-          measurements: {
-            width_mm: payload.width,
-            height_mm: payload.height,
-            glass_color: payload.glassColor,
-            aluminum_color: payload.aluminumColor,
-            thickness_recommended: physics.recommendedThickness,
-          },
-          notes: payload.companyName ? `Empresa: ${payload.companyName}` : null,
-          status: 'NUEVO',
-          utm_source: payload.utmSource,
-          utm_campaign: payload.utmCampaign,
+    const { error: dbError } = await this.client.from('leads').insert([
+      {
+        id: generatedId,
+        product_type: payload.productType,
+        customer_name: payload.contactName,
+        customer_phone: payload.phone,
+        measurements: {
+          width_mm: payload.width,
+          height_mm: payload.height,
+          glass_color: payload.glassColor,
+          aluminum_color: payload.aluminumColor,
+          thickness_recommended: physics.recommendedThickness,
         },
-      ]);
+        notes: payload.companyName ? `Empresa: ${payload.companyName}` : null,
+        status: 'NUEVO',
+        utm_source: payload.utmSource,
+        utm_campaign: payload.utmCampaign,
+      },
+    ]);
 
     if (dbError) {
       console.error('[LeadRepository] saveLead error:', { message: dbError.message });
@@ -67,7 +65,7 @@ export class SupabaseLeadRepository implements ILeadRepository {
     const { data, error } = await this.client
       .from('leads')
       .select(
-        'id, customer_name, customer_phone, product_type, notes, status, created_at, measurements'
+        'id, customer_name, customer_phone, product_type, notes, status, total_value, utm_source, utm_campaign, created_at, measurements'
       )
       .order('created_at', { ascending: false });
 
@@ -89,6 +87,40 @@ export class SupabaseLeadRepository implements ILeadRepository {
     if (error) {
       console.error('[LeadRepository] updateStatus error:', { id, status, message: error.message });
       throw new Error(`Error al actualizar el status del lead ${id}.`);
+    }
+  }
+
+  /**
+   * Actualiza campos editables de un lead desde el drawer de detalle.
+   * Devuelve el lead actualizado para refrescar la UI.
+   */
+  async update(id: string, patch: LeadUpdate): Promise<AdminLead> {
+    const { data, error } = await this.client
+      .from('leads')
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select(
+        'id, customer_name, customer_phone, product_type, notes, status, total_value, utm_source, utm_campaign, created_at, measurements'
+      )
+      .single();
+
+    if (error) {
+      console.error('[LeadRepository] update error:', { id, message: error.message });
+      throw new Error(`Error al actualizar el lead ${id}.`);
+    }
+
+    return data as AdminLead;
+  }
+
+  /**
+   * Elimina un lead del CRM. Usado por DELETE /api/admin/leads/[id].
+   */
+  async delete(id: string): Promise<void> {
+    const { error } = await this.client.from('leads').delete().eq('id', id);
+
+    if (error) {
+      console.error('[LeadRepository] delete error:', { id, message: error.message });
+      throw new Error(`Error al eliminar el lead ${id}.`);
     }
   }
 }

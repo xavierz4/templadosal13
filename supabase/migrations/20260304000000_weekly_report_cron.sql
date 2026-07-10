@@ -32,10 +32,10 @@ SELECT cron.schedule(
   '0 8 * * 1',                               -- Cron expression: Lunes 08:00 UTC
   $$
     SELECT net.http_post(
-      url     := 'https://<YOUR_SUPABASE_PROJECT_REF>.supabase.co/functions/v1/weekly-report',
+      url     := 'https://cfxmfiiidljtaxjahwsa.supabase.co/functions/v1/weekly-report',
       headers := jsonb_build_object(
         'Content-Type',  'application/json',
-        'Authorization', 'Bearer <YOUR_SUPABASE_ANON_KEY>'
+        'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeG1maWlpZGxqdGF4amFod3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NjQ5MDMsImV4cCI6MjA5OTI0MDkwM30.AOceQWhnw-E4HklqezgFlI9AOjC6cpj2n55hfPONofI'
       ),
       body    := '{}'::jsonb
     );

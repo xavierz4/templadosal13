@@ -12,9 +12,14 @@
   interface Props {
     lead: AdminLead;
     ondragstart: (leadId: string) => void;
+    onopen: (lead: AdminLead) => void;
   }
 
   const props: Props = $props();
+
+  // Distinguir click (abrir detalle) de drag (mover). Si hubo arrastre entre
+  // mousedown y click, se ignora el click para no abrir el drawer al soltar.
+  let didDrag = $state(false);
 
   // Format date nicely — $derived to stay reactive to props changes
   const formattedDate = $derived(
@@ -39,11 +44,26 @@
 <div
   class="kanban-card"
   draggable="true"
-  role="listitem"
-  aria-label={`Lead de ${props.lead.customer_name}`}
+  role="button"
+  tabindex="0"
+  aria-label={`Ver detalle del lead de ${props.lead.customer_name}`}
   ondragstart={(e) => {
+    didDrag = true;
     e.dataTransfer?.setData('text/plain', props.lead.id);
     props.ondragstart(props.lead.id);
+  }}
+  ondragend={() => {
+    // Reset tras el ciclo de drag para permitir clicks posteriores
+    setTimeout(() => (didDrag = false), 0);
+  }}
+  onclick={() => {
+    if (!didDrag) props.onopen(props.lead);
+  }}
+  onkeydown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      props.onopen(props.lead);
+    }
   }}
 >
   <!-- Header -->
@@ -89,7 +109,7 @@
 
   .kanban-card:hover {
     background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(212, 175, 55, 0.25);
+    border-color: rgba(56, 189, 248, 0.25);
     transform: translateY(-1px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
@@ -109,9 +129,9 @@
   .product-badge {
     font-size: 0.65rem;
     font-weight: 600;
-    color: #d4af37;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--color-al13-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 999px;
     padding: 0.2rem 0.5rem;
     letter-spacing: 0.02em;
@@ -146,7 +166,7 @@
   }
 
   .customer-phone:hover {
-    color: #d4af37;
+    color: var(--color-al13-cyan);
   }
 
   .card-notes {

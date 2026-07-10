@@ -4,7 +4,7 @@
  * Los componentes Svelte en ui/ NO hacen fetch() directamente.
  * Delegan a este módulo para todas las operaciones HTTP del CMS.
  */
-import type { CatalogCategory } from '@core/domain/catalogSchema';
+import type { CatalogCategory, CatalogProject } from '@core/domain/catalogSchema';
 
 export interface PresignResponse {
   signedUrl?: string;
@@ -16,7 +16,7 @@ export interface PresignResponse {
 
 export interface CreateProjectResponse {
   success?: boolean;
-  project?: { id: string; title: string };
+  project?: CatalogProject;
   error?: string;
 }
 
@@ -106,6 +106,38 @@ export async function createProject(payload: {
       console.error('[CatalogAdminClient] createProject error:', { message: error.message });
     }
     return { error: 'Error de conexión al guardar el proyecto.' };
+  }
+}
+
+export interface UpdateProjectResponse {
+  success?: boolean;
+  project?: CatalogProject;
+  error?: string;
+}
+
+/** Edita metadata de un proyecto existente (PUT /api/admin/catalog/:id) */
+export async function updateProject(
+  id: string,
+  patch: {
+    title?: string;
+    category?: CatalogCategory;
+    description?: string | null;
+    image_url?: string;
+    image_path?: string;
+  }
+): Promise<UpdateProjectResponse> {
+  try {
+    const res = await fetch(`/api/admin/catalog/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    });
+    return await res.json();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('[CatalogAdminClient] updateProject error:', { message: error.message });
+    }
+    return { error: 'Error de conexión al actualizar el proyecto.' };
   }
 }
 

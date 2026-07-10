@@ -3,34 +3,50 @@ import { z } from 'zod';
 // Define the expected strict typing for our environment variables
 const envSchema = z.object({
   // Supabase (Obligatory)
-  PUBLIC_SUPABASE_URL: z.string().url("Debe ser una URL válida de Supabase"),
-  PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "Anon Key requerida"),
+  PUBLIC_SUPABASE_URL: z.string().url('Debe ser una URL válida de Supabase'),
+  PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'Anon Key requerida'),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(), // Opcional, solo en scripts admin puros
 
   // Resend (Obligatory for transactional emails)
-  RESEND_API_KEY: z.string().startsWith("re_", "Resend Key debe empezar con re_")
+  RESEND_API_KEY: z.string().startsWith('re_', 'Resend Key debe empezar con re_'),
+
+  // DeepSeek (Opcional — solo el módulo de marketing con IA lo necesita).
+  // API compatible con OpenAI. Base y modelo configurables por si se usa un
+  // proveedor/revendedor con otra URL. Si falta la key, el generador responde
+  // con un error claro y no rompe la app.
+  DEEPSEEK_API_KEY: z.string().min(1).optional(),
+  DEEPSEEK_BASE_URL: z.string().url().default('https://api.deepseek.com'),
+  // flash por defecto: ~3x más rápido y barato que pro, y con el brand kit
+  // genera contenido igual de on-brand. Se puede subir a deepseek-v4-pro en .env.
+  DEEPSEEK_MODEL: z.string().default('deepseek-v4-flash'),
 });
 
 // Extraemos las variables del entorno (Astro y Node proveen diferentes vías)
 // Nota: en Vite/Astro, import.meta.env tiene precedencia, pero process.env se usa en testing/scripts
 const processEnv = {
-    PUBLIC_SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL,
-    PUBLIC_SUPABASE_ANON_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY,
-    SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
-    RESEND_API_KEY: import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY
+  PUBLIC_SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL,
+  PUBLIC_SUPABASE_ANON_KEY:
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY,
+  SUPABASE_SERVICE_ROLE_KEY:
+    import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
+  RESEND_API_KEY: import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY,
+  DEEPSEEK_API_KEY: import.meta.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY,
+  DEEPSEEK_BASE_URL:
+    import.meta.env.DEEPSEEK_BASE_URL || process.env.DEEPSEEK_BASE_URL || undefined,
+  DEEPSEEK_MODEL: import.meta.env.DEEPSEEK_MODEL || process.env.DEEPSEEK_MODEL || undefined,
 };
 
 // Fail Fast: Si el schema no pasa, el servidor explota antes de intentar enviar un email o leer DB
 const envParseResult = envSchema.safeParse(processEnv);
 
 if (!envParseResult.success) {
-    console.error("❌ GRAVE ERROR DE CONFIGURACIÓN ENTORNO ❌");
-    console.error("Faltan variables de entorno esenciales o están mal formadas:");
-    envParseResult.error.issues.forEach(issue => {
-        console.error(`- ${issue.path[0]}: ${issue.message}`);
-    });
-    // Crash the process intentionally so it does not boot broken
-    process.exit(1); 
+  console.error('❌ GRAVE ERROR DE CONFIGURACIÓN ENTORNO ❌');
+  console.error('Faltan variables de entorno esenciales o están mal formadas:');
+  envParseResult.error.issues.forEach((issue) => {
+    console.error(`- ${issue.path[0]}: ${issue.message}`);
+  });
+  // Crash the process intentionally so it does not boot broken
+  process.exit(1);
 }
 
 // Export a strictly typed, fully validated configuration constant

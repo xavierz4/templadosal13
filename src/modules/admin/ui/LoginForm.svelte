@@ -168,14 +168,14 @@
     margin: 0 auto 1rem;
     padding: 0.75rem;
     border-radius: 1rem;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.05));
+    border: 1px solid rgba(56, 189, 248, 0.2);
   }
 
   .icon-shield {
     width: 100%;
     height: 100%;
-    color: #d4af37;
+    color: var(--color-al13-cyan);
   }
 
   .brand-title {
@@ -235,8 +235,8 @@
   }
 
   .input-field:focus {
-    border-color: rgba(212, 175, 55, 0.5);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
     background: rgba(255, 255, 255, 0.08);
   }
 
@@ -298,8 +298,8 @@
     font-family: 'Outfit', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #0f1115;
-    background: linear-gradient(135deg, #d4af37, #f0d060);
+    color: var(--color-al13-black);
+    background: linear-gradient(135deg, var(--color-al13-cyan), var(--color-al13-emerald));
     border: none;
     border-radius: 0.75rem;
     cursor: pointer;
@@ -309,7 +309,7 @@
 
   .submit-btn:hover:not(:disabled) {
     transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3);
   }
 
   .submit-btn:active:not(:disabled) {

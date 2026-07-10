@@ -1,0 +1,68 @@
+---
+/**
+ * /admin/logs.astro — Dashboard de errores de cliente (Fase 7)
+ *
+ * Lee los últimos client_logs (RLS admin) y los pasa al visor. Observabilidad:
+ * los errores JS del sitio público llegan aquí vía el tracker de ClientObserver.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { ErrorLogViewer } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseAdminLogRepository } from '@core/infrastructure/repositories/SupabaseAdminLogRepository';
+import type { ClientLog } from '@core/domain/clientLogSchema';
+
+export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+if (!session) {
+  return Astro.redirect('/admin/login', 302);
+}
+
+let logs: ClientLog[] = [];
+let loadError = '';
+try {
+  const repo = new SupabaseAdminLogRepository(supabase);
+  logs = await repo.getRecent(200);
+} catch (error: unknown) {
+  loadError = error instanceof Error ? error.message : 'Error al cargar los logs.';
+  console.error('[Admin Logs] Load error:', error);
+}
+---
+
+<AdminLayout title="Errores de Cliente" section="Logs">
+  <div class="intro">
+    <p>
+      Errores de JavaScript capturados en el sitio público (últimos 200). Se registran
+      automáticamente vía el observador del front. Úsalo para cazar problemas antes de que un
+      cliente los reporte.
+    </p>
+  </div>
+
+  {loadError && <div class="fetch-error">⚠️ {loadError}</div>}
+
+  <ErrorLogViewer logs={logs} client:load />
+</AdminLayout>
+
+<style>
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+    max-width: 65ch;
+  }
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+</style>

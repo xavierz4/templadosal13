@@ -1,77 +1,95 @@
 ---
-export const prerender = false;
-
+/**
+ * Public Catalog Page — Refactored for instant TTFB (2026-03-12)
+ *
+ * BEFORE: prerender=false → SSR blocking → Supabase call (~5-10s) → HTML sent
+ * AFTER: prerender=true → HTML sent instantly → client fetches /api/catalog → cards appear
+ *
+ * REGLA 14 (Resiliencia): API endpoint handles errors gracefully (returns []).
+ * REGLA 4 (UI Dumb): This page only renders the shell. JS handles data fetching.
+ */
 import PublicLayout from '@shared/ui/PublicLayout.astro';
-import Navbar from '@shared/ui/Navbar.svelte';
 import Footer from '@shared/ui/Footer.astro';
-import PublicCatalogCard from '@modules/catalog/ui/PublicCatalogCard.astro';
-import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
-import { SupabaseCatalogRepository } from '@core/infrastructure/repositories/SupabaseCatalogRepository';
-import type { CatalogProject } from '@core/domain/catalogSchema';
-
-const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
-const catalogRepository = new SupabaseCatalogRepository(supabase);
-
-let projects: CatalogProject[] = [];
-let fetchError = '';
-
-try {
-  const allProjects = await catalogRepository.getAll();
-  projects = allProjects.filter(p => p.is_published);
-} catch (error: unknown) {
-  fetchError = error instanceof Error ? error.message : String(error);
-  console.error('[Public Catalog] Fetch Error:', error);
-}
-
-Astro.response.headers.set(
-  'Cache-Control',
-  'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
-);
 ---
 
-<PublicLayout title="Catálogo B2B | Templados AL13" description="Explora nuestros sistemas de cristal templado y aluminio estructural.">
-  <Navbar client:load />
-  
-  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 bg-[#0A0A0A] relative overflow-hidden">
+<PublicLayout
+  title="Catálogo B2B | Templados AL13"
+  description="Explora nuestros sistemas de cristal templado y aluminio estructural."
+>
+  <main class="min-h-screen pt-32 pb-24 px-6 md:px-12 bg-al13-black relative overflow-hidden">
     <!-- Texture overlay ultra-light (CSS Base64) to prevent CPU/GPU drops on feTurbulence -->
-    <div class="absolute inset-0 pointer-events-none opacity-[0.03] z-0" style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"></div>
+    <div
+      class="absolute inset-0 pointer-events-none opacity-[0.03] z-0"
+      style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"
+    >
+    </div>
 
     <div class="max-w-7xl mx-auto relative z-10">
-      
       <!-- Headers -->
       <div class="mb-16">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-sans font-bold text-white tracking-tight mb-4">Catálogo <span class="text-zinc-500">B2B</span></h1>
-        <p class="text-zinc-400 text-lg max-w-2xl">Explora nuestros sistemas arquitectónicos en detalle. Selecciona un producto para iniciar la experiencia inmersiva.</p>
-        
-        {fetchError && (
-          <p class="text-red-400 mt-4 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20 inline-block">{fetchError}</p>
-        )}
+        <h1
+          class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white tracking-tight mb-4"
+        >
+          Catálogo <span class="text-zinc-500">B2B</span>
+        </h1>
+        <p class="text-zinc-400 text-lg max-w-2xl font-sans font-light">
+          Explora nuestros sistemas arquitectónicos en detalle. Selecciona un producto para iniciar
+          la experiencia inmersiva.
+        </p>
 
-        <!-- Category Filters (US-304) -->
-        {!fetchError && projects.length > 0 && (
-          <div class="mt-8 flex flex-wrap gap-3" id="catalog-filters">
-            <button class="filter-btn active px-5 py-2 rounded-full border border-white/20 bg-white/10 text-white text-sm font-medium transition-colors hover:bg-white/20" data-filter="all">Todos</button>
-            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="cabina_ducha">Sistemas de Ducha</button>
-            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="puerta_pivotante">Puertas Batientes</button>
-            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="divisor_oficina">Divisiones de Oficina</button>
-            <button class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white" data-filter="fachada_monumental">Fachadas Monumentales</button>
-          </div>
-        )}
+        <!-- Category Filters -->
+        <div class="mt-8 flex flex-wrap gap-3" id="catalog-filters">
+          <button
+            class="filter-btn active px-5 py-2 rounded-full border border-white/20 bg-white/10 text-white text-sm font-medium transition-colors hover:bg-white/20"
+            data-filter="all">Todos</button
+          >
+          <button
+            class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white"
+            data-filter="cabina_ducha">Sistemas de Ducha</button
+          >
+          <button
+            class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white"
+            data-filter="puerta_pivotante">Puertas Batientes</button
+          >
+          <button
+            class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white"
+            data-filter="divisor_oficina">Divisiones de Oficina</button
+          >
+          <button
+            class="filter-btn px-5 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-white"
+            data-filter="fachada_monumental">Fachadas Monumentales</button
+          >
+        </div>
       </div>
-      
-      <!-- CSS Grid para las tarjetas -->
-      {projects.length === 0 && !fetchError ? (
-        <div class="py-20 text-center border border-white/5 rounded-2xl bg-white/5 backdrop-blur-sm">
-          <p class="text-zinc-500">No hay proyectos publicados en este momento.</p>
-        </div>
-      ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {projects.map(project => (
-            <PublicCatalogCard project={project} />
-          ))}
-        </div>
-      )}
 
+      <!-- Skeleton loading placeholders shown while data is fetched client-side -->
+      <div
+        id="catalog-skeleton"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+      >
+        {
+          Array.from({ length: 4 }).map(() => (
+            <div class="aspect-square rounded-[1.5rem] bg-white/5 animate-pulse border border-white/5" />
+          ))
+        }
+      </div>
+
+      <!-- Real cards injected here by JS -->
+      <!-- NOTE: style not class for display:grid — avoids Tailwind 'hidden vs grid' CSS specificity conflict -->
+      <div
+        id="catalog-grid"
+        style="display:none"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+      >
+      </div>
+
+      <!-- Error state -->
+      <div
+        id="catalog-error"
+        class="hidden py-20 text-center border border-white/5 rounded-2xl bg-white/5 backdrop-blur-sm"
+      >
+        <p class="text-zinc-500">No hay proyectos publicados en este momento.</p>
+      </div>
     </div>
   </main>
 
@@ -79,55 +97,132 @@ Astro.response.headers.set(
 </PublicLayout>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
-    const filters = document.querySelectorAll('.filter-btn') as NodeListOf<HTMLButtonElement>;
-    const cards = document.querySelectorAll('.catalog-card') as NodeListOf<HTMLElement>;
+  // ── Client-side data fetching (replaces blocking SSR Supabase call) ─────────
+  // This script runs AFTER the page HTML is delivered — user sees the page instantly.
+  // TTFB: ~100ms (static HTML) vs ~10000ms (SSR with Supabase round-trip).
 
-    // Sync UI with URL parameters on mount
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialCat = urlParams.get('categoria') || 'all';
+  type CatalogProject = {
+    id: string;
+    title: string;
+    category: string;
+    description?: string;
+    image_url: string;
+    is_published: boolean;
+  };
 
-    function applyFilter(category: string) {
-      // Toggle Active Classes
-      filters.forEach(btn => {
-        if (btn.dataset.filter === category) {
-          btn.classList.add('bg-white/10', 'border-white/20', 'text-white', 'active');
-          btn.classList.remove('bg-zinc-900/50', 'border-zinc-800', 'text-zinc-400');
-        } else {
-          btn.classList.remove('bg-white/10', 'border-white/20', 'text-white', 'active');
-          btn.classList.add('bg-zinc-900/50', 'border-zinc-800', 'text-zinc-400');
-        }
-      });
+  const CATEGORY_LABELS: Record<string, string> = {
+    cabina_ducha: 'Cabina de Ducha',
+    divisor_oficina: 'División de Oficina',
+    fachada_monumental: 'Fachada',
+    puerta_pivotante: 'Puerta Pivotante',
+  };
 
-      // Show/Hide Elements
-      cards.forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = 'block';
-          // Force reflow for opacity transition if needed
-          setTimeout(() => card.style.opacity = '1', 50);
-        } else {
-          card.style.opacity = '0';
-          setTimeout(() => card.style.display = 'none', 300); // Wait for fade-out
-        }
-      });
+  function renderCard(project: CatalogProject): string {
+    const label = CATEGORY_LABELS[project.category] ?? project.category;
+    return `
+      <a
+        href="/sistemas/3d/${project.category}"
+        data-category="${project.category}"
+        data-astro-reload
+        class="catalog-card group relative block w-full aspect-square rounded-[1.5rem] bg-al13-black overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-300 shadow-[2px_4px_16px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(255,255,255,0.05)] cursor-pointer"
+      >
+        <div class="absolute inset-0">
+          <img
+            src="${project.image_url}"
+            alt="${project.title}"
+            loading="lazy"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            onerror="this.style.display='none'"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+        </div>
 
-      // Update Native History API to avoid a hard page reload
-      const newUrl = new URL(window.location.href);
-      if (category === 'all') {
-        newUrl.searchParams.delete('categoria');
-      } else {
-        newUrl.searchParams.set('categoria', category);
-      }
-      window.history.pushState({}, '', newUrl);
-    }
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+          <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase border border-white/20 bg-white/5 text-zinc-400 mb-2">${label}</span>
+          <h2 class="text-xl font-heading font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] leading-tight">${project.title}</h2>
+        </div>
 
-    applyFilter(initialCat);
+        <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-al13-cyan/20 border border-al13-cyan/30 text-al13-cyan text-xs font-bold">
+            Ver 3D →
+          </span>
+        </div>
+      </a>
+    `;
+  }
 
-    filters.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLButtonElement;
-        applyFilter(target.dataset.filter || 'all');
-      });
+  function applyFilter(category: string) {
+    const grid = document.getElementById('catalog-grid');
+    if (!grid) return;
+    const cards = grid.querySelectorAll<HTMLElement>('.catalog-card');
+    cards.forEach((card) => {
+      const show = category === 'all' || card.dataset.category === category;
+      card.style.display = show ? 'block' : 'none';
     });
-  });
+
+    // Update filter button states
+    document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach((btn) => {
+      const isActive = btn.dataset.filter === category;
+      btn.classList.toggle('active', isActive);
+      btn.classList.toggle('bg-white/10', isActive);
+      btn.classList.toggle('border-white/20', isActive);
+      btn.classList.toggle('text-white', isActive);
+      btn.classList.toggle('bg-zinc-900/50', !isActive);
+      btn.classList.toggle('border-zinc-800', !isActive);
+      btn.classList.toggle('text-zinc-400', !isActive);
+    });
+  }
+
+  async function initCatalog() {
+    const skeleton = document.getElementById('catalog-skeleton');
+    const grid = document.getElementById('catalog-grid');
+    const errorEl = document.getElementById('catalog-error');
+    if (!grid || !skeleton || !errorEl) return;
+
+    try {
+      const response = await fetch('/api/catalog');
+      const projects: CatalogProject[] = await response.json();
+
+      skeleton.classList.add('hidden');
+
+      if (projects.length === 0) {
+        console.warn(
+          '[Catalog] API returned 0 projects. Check Supabase connection and is_published flags.'
+        );
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      grid.innerHTML = projects.map(renderCard).join('');
+      // Use inline style instead of classList to avoid Tailwind CSS specificity issues
+      grid.style.display = 'grid';
+
+      // Sync URL filter on init
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialCat = urlParams.get('categoria') || 'all';
+      applyFilter(initialCat);
+
+      // Wire filter buttons
+      document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cat = btn.dataset.filter || 'all';
+          applyFilter(cat);
+          const newUrl = new URL(window.location.href);
+          if (cat === 'all') {
+            newUrl.searchParams.delete('categoria');
+          } else {
+            newUrl.searchParams.set('categoria', cat);
+          }
+          window.history.pushState({}, '', newUrl);
+        });
+      });
+    } catch (error) {
+      console.error('[Catalog] Failed to load projects:', error);
+      skeleton.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  // Run on initial load and on Astro page transitions
+  document.addEventListener('astro:page-load', initCatalog);
 </script>

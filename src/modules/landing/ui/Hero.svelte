@@ -1,116 +1,147 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { spring } from 'svelte/motion';
 
-  // Bank of generated ultra-wide horizontal cinematic B2B images passed from Astro
-  let { backgroundImages = [] } = $props<{ backgroundImages: { src: string; srcset: string }[] }>();
+  // Magnetic effect on CTA button
+  let ctaBtn: HTMLAnchorElement;
+  const btnSpring = spring({ x: 0, y: 0, scale: 1 }, { stiffness: 0.08, damping: 0.3 });
 
-  let currentImageIndex = $state(0);
+  function handleBtnMove(e: MouseEvent) {
+    if (!ctaBtn) return;
+    const rect = ctaBtn.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+    const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+    btnSpring.set({ x: y * -8, y: x * 8, scale: 1.05 });
+  }
 
-  onMount(() => {
-    // Rotar imágenes cada 5 segundos (Motion Fading)
-    const interval = setInterval(() => {
-      currentImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-    }, 5000);
-
-    return () => clearInterval(interval);
-  });
+  function handleBtnLeave() {
+    btnSpring.set({ x: 0, y: 0, scale: 1 });
+  }
 </script>
 
-<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-  <!-- Fondo Oscuro de Estudio Principal -->
-  <div class="absolute inset-0 bg-[#0A0A0A] z-0"></div>
+<section class="relative min-h-[90vh] flex items-center overflow-hidden">
+  <!-- Fondo Oscuro Base (visible antes de que cargue video) -->
+  <div class="absolute inset-0 bg-al13-black z-0"></div>
 
-  <!-- Sistema de Contención 16:9 con IMG Nativo (Anti-Pixelación 4K) -->
-  {#each backgroundImages as image, i}
-    <img
-      src={image.src}
-      srcset={image.srcset}
-      sizes="100vw"
-      decoding="async"
-      loading={i === 0 ? 'eager' : 'lazy'}
-      alt="Fondo Arquitectónico AL13"
-      class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-2000 ease-in-out pointer-events-none filter contrast-105 brightness-[0.85]"
-      style="opacity: {i === currentImageIndex ? 1 : 0};"
-    />
-  {/each}
-
-  <!-- Overlay de oscuridad profunda detrás de los textos (Solapamiento lateral) -->
-  <div
-    class="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/90 via-[#0A0A0A]/50 to-transparent z-10 pointer-events-none w-full lg:w-[75%]"
-  ></div>
-
-  <!-- Fundido Suave en el borde inferior (Soft Cut/Fade a la siguiente sección) -->
-  <div
-    class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10 pointer-events-none"
-  ></div>
-
-  <!-- Contenedor Principal Limitado -->
-  <div
-    class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24"
+  <!-- Cinematic Background Video -->
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    poster="/hero_placeholder.jpg"
+    class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none filter contrast-[1.05] brightness-[0.75] animate-hero-video"
   >
-    <!-- Texto (Mitad Izquierda) -->
-    <div class="flex-1 flex flex-col items-start text-left space-y-6 max-w-2xl pl-0 lg:pl-10">
-      <!-- Titular SEO Impactante (Tipografía gruesa blanca) -->
+    <source src="/videos/hero-bg-opt.mp4" type="video/mp4" />
+    <source
+      src="https://cdn.pixabay.com/video/2021/08/21/85806-591741703_large.mp4"
+      type="video/mp4"
+    />
+  </video>
+
+  <!-- Overlay lateral: gradiente oscuro izquierda para legibilidad del texto (Aclarado para mayor luminosidad) -->
+  <div
+    class="absolute inset-0 z-[2] pointer-events-none bg-gradient-to-r from-al13-black/80 via-al13-black/30 to-transparent"
+  ></div>
+
+  <!-- Overlay superior sutil (oscurece zona del navbar) -->
+  <div
+    class="absolute inset-x-0 top-0 h-32 z-[2] pointer-events-none bg-gradient-to-b from-al13-black/60 to-transparent"
+  ></div>
+
+  <!-- Fundido inferior (transición suave a la siguiente sección) -->
+  <div
+    class="absolute inset-x-0 bottom-0 h-44 z-[2] pointer-events-none bg-gradient-to-t from-al13-black to-transparent"
+  ></div>
+
+  <!-- Contenido Principal -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-16 w-full pt-24 pb-20">
+    <div class="max-w-3xl flex flex-col items-start text-left space-y-8">
+      <!-- Titular SEO — Efecto cinemático de "apertura" scale(0.95→1) -->
       <h1
-        class="text-5xl md:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-white leading-[1.1] animate-fade-in-up"
+        class="text-5xl md:text-6xl lg:text-[4.5rem] font-heading font-bold tracking-tight text-white leading-[1.1] animate-cinematic-open"
+        style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.6);"
       >
         CRISTAL Y<br />
         ALUMINIO<br />
         ARQUITECTÓNICO
       </h1>
 
-      <!-- Párrafo Subtitular (Minimalista) -->
+      <!-- Subtítulo — fade-in suave retardado -->
       <p
-        class="text-xl md:text-2xl text-zinc-300 font-sans font-light tracking-wide animate-fade-in-up"
-        style="animation-delay: 200ms;"
+        class="text-xl md:text-2xl text-zinc-200 font-sans font-light tracking-widest uppercase animate-hero-fade"
+        style="animation-delay: 200ms; text-shadow: 0 2px 16px rgba(0,0,0,0.9);"
       >
-        Diseño. Precisión. Lujo.
+        Diseño · Precisión · Lujo
       </p>
-    </div>
 
-    <!-- Panel de Cristal Interactivo (Mitad Derecha) -->
-    <div
-      class="flex-1 w-full relative flex items-center justify-center animate-fade-in-up"
-      style="animation-delay: 400ms;"
-    >
-      <!-- Cubo/Panel Glassmorphism Translúcido Puro (Escarcha Blanca a lo UI Concept) -->
+      <!-- Línea decorativa (simula perfil de aluminio) -->
       <div
-        class="relative w-full max-w-sm lg:max-w-md aspect-[3/4.5] rounded-2xl flex items-center justify-center overflow-hidden transition-transform duration-700 hover:scale-[1.02] bg-white/5 backdrop-blur-[12px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
-      >
-        <!-- Contenedor vacío para mantener la estética Glassmorphism sin malla 3D -->
-        <div class="absolute inset-0 z-0 bg-black/10 rounded-2xl"></div>
+        class="h-[2px] w-24 bg-gradient-to-r from-amber-400/80 via-white/40 to-transparent animate-hero-fade"
+        style="animation-delay: 350ms;"
+      ></div>
 
-        <!-- Borde Iluminado Superior sutil -->
-        <div
-          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-10"
-        ></div>
-
-        <!-- Botón B2B: Cotizar Proyecto con borde glowing naranja/azul -->
-        <button
-          class="group relative px-8 py-3.5 rounded-lg bg-white/5 text-white font-bold text-sm tracking-widest uppercase backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:scale-105 shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-20"
+      <!-- CTA Principal con efecto magnético -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="animate-hero-fade" style="animation-delay: 500ms;">
+        <a
+          href="#cotizador"
+          bind:this={ctaBtn}
+          onmousemove={handleBtnMove}
+          onmouseleave={handleBtnLeave}
+          class="group relative inline-flex items-center px-10 py-4 rounded-lg text-white font-bold text-sm tracking-[0.2em] uppercase transition-all duration-300 hover:scale-[1.02] will-change-transform"
+          style="transform: rotateX({$btnSpring.x}deg) rotateY({$btnSpring.y}deg) scale({$btnSpring.scale}); transform-style: preserve-3d;"
         >
-          <!-- Borde simulado (Glow naranja-azul claro estilo UI Concept) -->
+          <!-- Fondo sutil glass -->
           <div
-            class="absolute inset-0 rounded-lg border-[1.5px] border-transparent bg-gradient-to-r from-blue-400 via-white/60 to-orange-400 opacity-90 group-hover:opacity-100"
+            class="absolute inset-0 rounded-lg bg-white/[0.06] backdrop-blur-sm border border-white/15"
+          ></div>
+
+          <!-- Borde glow (azul → ámbar) -->
+          <div
+            class="absolute inset-0 rounded-lg border-[1.5px] border-transparent bg-gradient-to-r from-sky-400 via-white/50 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
             style="-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 1.5px;"
           ></div>
-          <!-- Glow exterior sutil naranja/azul -->
+
+          <!-- Glow exterior -->
           <div
-            class="absolute inset-0 rounded-lg opacity-40 bg-gradient-to-r from-blue-400/30 via-transparent to-orange-400/30 blur-md -z-10 group-hover:opacity-70 transition-opacity duration-300"
+            class="absolute inset-0 rounded-lg opacity-30 bg-gradient-to-r from-sky-400/20 via-transparent to-amber-500/20 blur-lg -z-10 group-hover:opacity-60 transition-opacity duration-300"
           ></div>
 
-          <span class="relative z-10 drop-shadow-md">Cotizar Proyecto</span>
-        </button>
+          <span class="relative z-10 drop-shadow-lg">Cotizar Proyecto</span>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  @keyframes fadeInUp {
+  /* ── Hero Cinematic Opening: scale(0.95→1) + opacity ── */
+  @keyframes cinematicOpen {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: scale(0.95);
+      filter: blur(2px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+  }
+
+  .animate-cinematic-open {
+    animation: cinematicOpen 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    will-change: transform, opacity, filter;
+  }
+
+  /* ── Hero elements fade-in (subtitle, line, CTA) ── */
+  @keyframes heroFade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -118,9 +149,36 @@
     }
   }
 
-  .animate-fade-in-up {
-    /* Initially hidden via forwards rule applying the first frame implicitly if needed, but we ensure it plays. */
-    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    opacity: 0; /* Fallback that gets overridden by forwards */
+  .animate-hero-fade {
+    animation: heroFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /* ── Video fade-in retardado (200ms después del título) ── */
+  @keyframes videoReveal {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-hero-video {
+    animation: videoReveal 1.5s ease-out 200ms forwards;
+    opacity: 0;
+  }
+
+  /* ── Accesibilidad: sin animaciones ── */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-cinematic-open,
+    .animate-hero-fade,
+    .animate-hero-video {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
   }
 </style>

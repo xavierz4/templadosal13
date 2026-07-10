@@ -1,4 +1,4 @@
-import type { CatalogProject, CatalogProjectInput } from '../catalogSchema';
+import type { CatalogProject, CatalogProjectInput, CatalogUpdate } from '../catalogSchema';
 
 /**
  * Puerto Secundario — Catálogo CMS (Task 4.3)
@@ -19,6 +19,9 @@ export interface ICatalogRepository {
 
   /** Publica o despublica un proyecto del catálogo */
   togglePublish(id: string, isPublished: boolean): Promise<void>;
+
+  /** Actualiza metadata (título, categoría, descripción, imagen) de un proyecto */
+  update(id: string, patch: CatalogUpdate): Promise<CatalogProject>;
 
   /** Elimina un proyecto de la BD (la imagen del bucket se borra por separado) */
   delete(id: string): Promise<void>;

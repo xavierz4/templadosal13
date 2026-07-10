@@ -1,0 +1,50 @@
+---
+/**
+ * /admin/users.astro — Gestión de usuarios y roles (Fase 5)
+ *
+ * SSR con AdminLayout (auth guard heredado). Lee la lista de usuarios vía RPC
+ * (une el email de auth.users) y la pasa al island UsersManager.
+ */
+import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { UsersManager } from '@modules/admin';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseProfileRepository } from '@core/infrastructure/repositories/SupabaseProfileRepository';
+import type { AdminUser } from '@core/domain/userAdminSchema';
+
+export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+if (!session) {
+  return Astro.redirect('/admin/login', 302);
+}
+
+let users: AdminUser[] = [];
+let fetchError = '';
+try {
+  const repo = new SupabaseProfileRepository(supabase);
+  users = await repo.getAll();
+} catch (error: unknown) {
+  fetchError = error instanceof Error ? error.message : 'Error al cargar los usuarios.';
+  console.error('[Admin Users] Fetch error:', error);
+}
+---
+
+<AdminLayout title="Usuarios y Roles" section="Users">
+  {fetchError && <div class="fetch-error">⚠️ {fetchError}</div>}
+  <UsersManager users={users} currentUserId={session.user.id} client:load />
+</AdminLayout>
+
+<style>
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+</style>

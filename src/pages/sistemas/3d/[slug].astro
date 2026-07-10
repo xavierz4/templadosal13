@@ -1,0 +1,192 @@
+---
+/**
+ * Epic 5.x: Dynamic 3D Systems Catalog
+ * Ruta dinámica generada por Astro Content Collections.
+ * Cada sistema arquitectónico tiene su propia URL basada en su slug.
+ *
+ * REGLA 2 (Hexagonal): Solo datos y props en el frontmatter. Sin lógica de negocio.
+ * REGLA 4 (UI Dumb): Esta ruta solo transmite props, no procesa business logic.
+ */
+import { getCollection } from 'astro:content';
+import PublicLayout from '@shared/ui/PublicLayout.astro';
+import CatalogInteractiveViewer from '@modules/render/ui/CatalogInteractiveViewer.svelte';
+
+export async function getStaticPaths() {
+  const sistemasCollection = await getCollection('sistemas');
+  return sistemasCollection.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { sistema: entry },
+  }));
+}
+
+const { sistema } = Astro.props;
+const { data } = sistema;
+
+// Badge color por tipo de sistema
+const badgeColors: Record<string, string> = {
+  cabina_ducha: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  divisor_oficina: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  fachada_monumental: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  puerta_pivotante: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+};
+
+const badgeColor =
+  badgeColors[data.product_type] ?? 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+
+// Gradient accent por tipo de sistema
+const gradients: Record<string, string> = {
+  cabina_ducha: 'from-emerald-400 to-cyan-400',
+  divisor_oficina: 'from-blue-400 to-emerald-400',
+  fachada_monumental: 'from-amber-400 to-orange-400',
+  puerta_pivotante: 'from-violet-400 to-fuchsia-400',
+};
+const gradient = gradients[data.product_type] ?? 'from-blue-400 to-emerald-400';
+
+// CTA URL dinámica hacia el cotizador
+const ctaUrl = `/?product=${data.product_type}#cotizador`;
+---
+
+<PublicLayout
+  title={`${data.title_start} ${data.title_highlight} | Templados AL13`}
+  description={data.description}
+>
+  <!-- Texture overlay ultra-light -->
+  <div
+    class="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
+    style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"
+  >
+  </div>
+
+  <!-- Main Container: 100vh split into 60/40 on large screens -->
+  <main
+    class="relative h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-al13-black pt-16"
+  >
+    <!-- Left Section: 3D Render Engine (60% Desktop, 50% Mobile) -->
+    <section
+      class="relative w-full h-[50vh] lg:h-full lg:w-[60%] flex items-center justify-center bg-black/40 z-10"
+    >
+      <div
+        class="absolute inset-0 z-0 bg-gradient-to-r from-transparent to-al13-black/80 pointer-events-none lg:block hidden"
+      >
+      </div>
+
+      <!-- Interactive Svelte Island Engine — ProceduralScene por productType del CMS -->
+      <div class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
+        <CatalogInteractiveViewer client:only="svelte" productType={data.product_type} />
+      </div>
+
+      <!-- UX Hint for dragging -->
+      <div
+        class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white/60 pointer-events-none z-20 animate-pulse"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8"></path>
+          <path d="m8 12 4-4 4 4"></path>
+        </svg>
+        <span class="text-xs tracking-wider uppercase">Arrastra para girar</span>
+      </div>
+    </section>
+
+    <!-- Right Section: Dynamic Product Configurator (40% Desktop, 50% Mobile) -->
+    <section
+      class="relative w-full h-[50vh] lg:h-full lg:w-[40%] bg-al13-black flex flex-col justify-center px-8 lg:px-16 border-t lg:border-t-0 lg:border-l border-white/10 z-20 overflow-y-auto"
+    >
+      <!-- Badges & Taxonomy — DINÁMICO -->
+      <div class="flex items-center gap-3 mb-6">
+        <span
+          class={`px-3 py-1 rounded-full text-xs font-medium border uppercase tracking-widest ${badgeColor}`}
+        >
+          {data.badge_label}
+        </span>
+        <span class="text-xs text-zinc-500 font-mono">{data.id_badge}</span>
+      </div>
+
+      <!-- Typography — DINÁMICO -->
+      <h1
+        class="text-4xl lg:text-5xl font-heading font-bold text-white mb-4 tracking-tight leading-tight"
+      >
+        {data.title_start}
+        <br />
+        <span class={`text-transparent bg-clip-text bg-gradient-to-r ${gradient}`}>
+          {data.title_highlight}
+        </span>
+      </h1>
+
+      <p class="text-zinc-400 text-sm lg:text-base leading-relaxed mb-10 max-w-sm">
+        {data.description}
+      </p>
+
+      <!-- Specifications Grid — DINÁMICO -->
+      <div class="grid grid-cols-2 gap-6 mb-12">
+        <div class="flex flex-col gap-1 pb-4 border-b border-white/10">
+          <span class="text-xs text-zinc-500 uppercase tracking-wider">Cristal</span>
+          <span class="text-white font-medium">{data.spec_cristal}</span>
+        </div>
+        <div class="flex flex-col gap-1 pb-4 border-b border-white/10">
+          <span class="text-xs text-zinc-500 uppercase tracking-wider">Perfilería</span>
+          <span class="text-white font-medium">{data.spec_perfileria}</span>
+        </div>
+        <div class="flex flex-col gap-1 pb-4 border-b border-white/10">
+          <span class="text-xs text-zinc-500 uppercase tracking-wider">Herrajes</span>
+          <span class="text-white font-medium">{data.spec_herrajes}</span>
+        </div>
+        <div class="flex flex-col gap-1 pb-4 border-b border-white/10">
+          <span class="text-xs text-zinc-500 uppercase tracking-wider">Acústica</span>
+          <span class="text-white font-medium">{data.spec_acustica}</span>
+        </div>
+      </div>
+
+      <!-- Call to Action B2B — DINÁMICO: apunta al producto correcto en el cotizador -->
+      <a
+        href={ctaUrl}
+        class="w-full relative px-8 py-4 rounded-xl bg-gradient-to-r from-al13-cyan to-al13-emerald hover:from-cyan-400 hover:to-emerald-400 text-al13-black font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:scale-[1.02] shadow-[0_0_25px_rgba(56,189,248,0.5)] flex justify-center items-center gap-2 group"
+      >
+        <span>Cotizar Este Sistema</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="transition-transform group-hover:translate-x-1"
+        >
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+      </a>
+
+      <!-- Security / Guarantee seal -->
+      <div class="mt-8 flex items-center justify-center gap-2 text-zinc-600">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+        </svg>
+        <span class="text-xs font-medium">Garantía Estructural AL13 de 5 años</span>
+      </div>
+    </section>
+  </main>
+</PublicLayout>

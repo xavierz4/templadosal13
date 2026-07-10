@@ -95,6 +95,13 @@
       }
 
       step = 3;
+      // Los dos islands (form y grid) se montan por separado; un CustomEvent en
+      // window los conecta para insertar la tarjeta sin recargar la página.
+      if (createResult.project) {
+        window.dispatchEvent(
+          new CustomEvent('al13:project-created', { detail: createResult.project })
+        );
+      }
       if (props.onSuccess) {
         props.onSuccess(createResult.project);
       }
@@ -213,7 +220,7 @@
     font-family: 'Outfit', sans-serif;
     font-size: 1rem;
     font-weight: 600;
-    color: #d4af37;
+    color: var(--color-al13-cyan);
     margin-bottom: 1.25rem;
   }
 
@@ -271,7 +278,7 @@
   }
 
   .input:focus {
-    border-color: rgba(212, 175, 55, 0.4);
+    border-color: rgba(56, 189, 248, 0.4);
   }
 
   .textarea {
@@ -293,7 +300,7 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #d4af37, #b8962e);
+    background: linear-gradient(135deg, var(--color-al13-cyan), var(--color-al13-emerald));
     color: #0a0a0a;
     font-weight: 700;
     font-size: 0.85rem;
@@ -321,7 +328,7 @@
     padding: 2rem 0;
   }
   .progress-label {
-    color: #d4af37;
+    color: var(--color-al13-cyan);
     font-size: 0.9rem;
     margin-bottom: 1rem;
   }
@@ -334,7 +341,7 @@
   }
   .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, #d4af37, #22c55e);
+    background: linear-gradient(90deg, var(--color-al13-cyan), var(--color-al13-emerald));
     border-radius: 999px;
     transition: width 0.1s linear;
   }

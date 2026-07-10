@@ -21,6 +21,9 @@ export interface AdminLead {
   product_type: string;
   notes: string | null;
   status: LeadStatus;
+  total_value: number | null;
+  utm_source: string | null;
+  utm_campaign: string | null;
   created_at: string;
   measurements: {
     width_mm: number;
@@ -41,3 +44,30 @@ export const LeadStatusUpdateSchema = z.object({
 });
 
 export type LeadStatusUpdate = z.infer<typeof LeadStatusUpdateSchema>;
+
+// Sanitización anti-XSS para campos de texto libre editados en el drawer
+const stripHtml = (str: string) => str.replace(/<\/?[^>]+(>|$)/g, '').trim();
+
+/**
+ * Schema Zod para editar un lead desde el drawer de detalle.
+ * Todos los campos son opcionales (patch parcial); se validan los presentes.
+ */
+export const LeadUpdateSchema = z
+  .object({
+    customer_name: z.string().min(1).max(255).transform(stripHtml).optional(),
+    customer_phone: z.string().min(1).max(50).transform(stripHtml).optional(),
+    product_type: z.string().min(1).max(100).optional(),
+    notes: z
+      .string()
+      .max(2000)
+      .transform((v) => (v ? stripHtml(v) : v))
+      .nullable()
+      .optional(),
+    total_value: z.number().nonnegative().nullable().optional(),
+    status: z.enum(LEAD_STATUSES).optional(),
+  })
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: 'Debe incluir al menos un campo para actualizar.',
+  });
+
+export type LeadUpdate = z.infer<typeof LeadUpdateSchema>;

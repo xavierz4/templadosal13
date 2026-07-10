@@ -7,12 +7,24 @@ export default [
   ...eslintPluginAstro.configs.recommended,
   ...eslintPluginSvelte.configs['flat/recommended'],
   {
+    // <script lang="ts"> en .svelte necesita el parser de TypeScript encadenado;
+    // sin esto, cualquier sintaxis TS (type, interface, anotaciones) es parse error.
+    files: ['**/*.svelte'],
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+    },
+  },
+  {
     ignores: [
       'dist/**/*',
       '.astro/**/*',
       'node_modules/**/*',
       'supabase/**/*',
       'tools/**/*',
+      // Artefactos temporales de wrangler dev/deploy
+      '**/.wrangler/**',
       // Archivo de tipos generado por Supabase CLI (binario/auto-generado)
       'src/core/types/database.types.ts',
       // Svelte 5 rune syntax no soportado aún por el parser ESLint en estos archivos
@@ -23,6 +35,11 @@ export default [
       'src/modules/admin/ui/KanbanCard.svelte',
       'src/modules/admin/ui/ProjectUploadForm.svelte',
       'src/modules/admin/ui/CatalogGrid.svelte',
+      // Svelte 5 rune syntax + TypeScript type declarations in render module (Threlte components)
+      'src/modules/render/ui/Scene3DCanvas.svelte',
+      'src/modules/render/ui/CatalogInteractiveViewer.svelte',
+      'src/modules/render/ui/AL13Model.svelte',
+      'src/modules/render/ui/ProceduralScene.svelte',
     ],
   },
   {

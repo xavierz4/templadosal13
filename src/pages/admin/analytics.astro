@@ -16,8 +16,12 @@ const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
 const analyticsRepo = new SupabaseAnalyticsRepository(supabase);
 
 let data = [];
+let sources = [];
 try {
-  data = await analyticsRepo.getDashboardAnalytics();
+  [data, sources] = await Promise.all([
+    analyticsRepo.getDashboardAnalytics(),
+    analyticsRepo.getSourceAnalytics(),
+  ]);
 } catch (error) {
   console.error('[Admin Analytics] Fallo al inyectar BI Data', error);
 }
@@ -29,7 +33,7 @@ try {
       Soberanía Analítica: Cálculo L3 delegado a motor PostgreSQL (Supabase). Cero overhead web.
     </p>
   </div>
-  
+
   <!-- Isla Svelte 5 asimétrica: Despacha gráficas ChartJS pesadas solo al cliente visual -->
-  <AnalyticsDashboard data={data} client:load />
+  <AnalyticsDashboard data={data} sources={sources} client:load />
 </AdminLayout>

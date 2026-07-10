@@ -4,13 +4,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 describe('SupabaseSeoRepository', () => {
   it('should return systems when query is successful', async () => {
-    const mockSystems = [
-      { id: '1', slug: 'sys-1', name: 'System 1' }
-    ];
+    const mockSystems = [{ id: '1', slug: 'sys-1', name: 'System 1' }];
 
     const mockSelect = vi.fn().mockResolvedValue({ data: mockSystems, error: null });
     const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
-    const mockClient = { from: mockFrom } as unknown as SupabaseClient<any>;
+    const mockClient = { from: mockFrom } as unknown as SupabaseClient;
 
     const repo = new SupabaseSeoRepository(mockClient);
     const result = await repo.getAllSystems();
@@ -24,7 +22,7 @@ describe('SupabaseSeoRepository', () => {
     const mockError = new Error('DB Error');
     const mockSelect = vi.fn().mockResolvedValue({ data: null, error: mockError });
     const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
-    const mockClient = { from: mockFrom } as unknown as SupabaseClient<any>;
+    const mockClient = { from: mockFrom } as unknown as SupabaseClient;
 
     const repo = new SupabaseSeoRepository(mockClient);
 
@@ -32,13 +30,11 @@ describe('SupabaseSeoRepository', () => {
   });
 
   it('should return locations when query is successful', async () => {
-    const mockLocations = [
-      { id: '1', slug: 'loc-1', name: 'Loc 1', department: 'Dep 1' }
-    ];
+    const mockLocations = [{ id: '1', slug: 'loc-1', name: 'Loc 1', department: 'Dep 1' }];
 
     const mockSelect = vi.fn().mockResolvedValue({ data: mockLocations, error: null });
     const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
-    const mockClient = { from: mockFrom } as unknown as SupabaseClient<any>;
+    const mockClient = { from: mockFrom } as unknown as SupabaseClient;
 
     const repo = new SupabaseSeoRepository(mockClient);
     const result = await repo.getAllLocations();
@@ -52,10 +48,12 @@ describe('SupabaseSeoRepository', () => {
     const mockError = new Error('DB Error');
     const mockSelect = vi.fn().mockResolvedValue({ data: null, error: mockError });
     const mockFrom = vi.fn().mockReturnValue({ select: mockSelect });
-    const mockClient = { from: mockFrom } as unknown as SupabaseClient<any>;
+    const mockClient = { from: mockFrom } as unknown as SupabaseClient;
 
     const repo = new SupabaseSeoRepository(mockClient);
 
-    await expect(repo.getAllLocations()).rejects.toThrow('No se pudieron obtener las ubicaciones SEO.');
+    await expect(repo.getAllLocations()).rejects.toThrow(
+      'No se pudieron obtener las ubicaciones SEO.'
+    );
   });
 });

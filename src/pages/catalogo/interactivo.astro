@@ -8,7 +8,11 @@ import CatalogInteractiveViewer from '@modules/render/ui/CatalogInteractiveViewe
   description="Explora nuestros productos arquitectónicos en 3D. Rota, acerca y visualiza los detalles de nuestro vidrio templado y aluminio anonizado AL13."
 >
   <!-- Texture overlay ultra-light (CSS Base64) to prevent CPU/GPU drops on feTurbulence -->
-  <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"></div>
+  <div
+    class="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
+    style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAASUExURefn59/f3+Tk5O7u7vf39/n5+R9Z2oIAAAACdRJREFUOMtjYMAO/hMQsEAAmwEFAYIIYqC8P5x0YI8h0X8GEP8/AAQAAP//6Z7EywAAAIhJREFUOE/llkEOAzEIgxm2HqD0VvT+x0qg2qTtvFvjJg+HIfv/2Hw+N1L+Cj8kH4Wp9kG2v0C3f0D0/4B2v0Bzf0B7vwC3v0C/v0AAAEf//x8AgICAAEB/4B8AgABAfxAAwB8AQP8HAfAHAfAHAgL8BwAgIPAPAAH8BwAC/B8gAPAPQIA/AAI2rZ2VAAAAAElFTkSuQmCC'); background-repeat: repeat;"
+  >
+  </div>
 
   <!-- Main Container: 100vh split into 60/40 on large screens -->
   <main
@@ -25,7 +29,7 @@ import CatalogInteractiveViewer from '@modules/render/ui/CatalogInteractiveViewe
 
       <!-- Interactive Svelte Island Engine -->
       <div class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
-        <CatalogInteractiveViewer client:load />
+        <CatalogInteractiveViewer client:only="svelte" productType="divisor_oficina" />
       </div>
 
       <!-- UX Hint for dragging -->

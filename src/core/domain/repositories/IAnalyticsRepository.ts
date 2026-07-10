@@ -1,4 +1,4 @@
-import type { AnalyticsRPCResponse } from '../analyticsSchema';
+import type { AnalyticsRPCResponse, SourceAnalyticsResponse } from '../analyticsSchema';
 
 /**
  * Interface Repository para abstraer las consultas de BI Analytics.
@@ -10,4 +10,7 @@ export interface IAnalyticsRepository {
    * Cero matemática local, el backend ya filtró la suma y el conteo.
    */
   getDashboardAnalytics(): Promise<AnalyticsRPCResponse>;
+
+  /** Atribución de leads por utm_source/utm_campaign. */
+  getSourceAnalytics(): Promise<SourceAnalyticsResponse>;
 }
