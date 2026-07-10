@@ -1,8 +1,10 @@
 ---
 import '@core/theme/global.css';
 import { ClientRouter } from 'astro:transitions';
+
 import ClientObserver from './ClientObserver.astro';
-import FloatingCTA from './FloatingCTA.svelte';
+import WhatsAppButton from './WhatsAppButton.svelte';
+import Navbar from './Navbar.svelte';
 
 interface Props {
   title?: string;
@@ -25,6 +27,11 @@ const {
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Navegación SPA: intercepta los clics, hace swap del DOM sin recarga completa
+         y habilita el evento astro:page-load del que dependen los scripts de página
+         (p. ej. la carga de tarjetas en /catalogo). -->
+    <ClientRouter />
     <ClientObserver />
 
     <!-- UTM Attribution Tracker (Task 6.2.5) -->
@@ -46,13 +53,13 @@ const {
 
     <!-- Structured Data / JSON-LD -->
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
-
-    <ClientRouter />
   </head>
   <body
     class="antialiased min-h-screen flex flex-col selection:bg-al13-cyan/30 selection:text-al13-cyan"
   >
+    <!-- transition:persist evita destruir y re-hidratar estas islas en cada navegación -->
+    <Navbar client:idle transition:persist="navbar" />
     <slot />
-    <FloatingCTA client:load />
+    <WhatsAppButton client:idle transition:persist="whatsapp-cta" />
   </body>
 </html>

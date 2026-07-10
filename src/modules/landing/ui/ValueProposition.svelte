@@ -1,6 +1,11 @@
 <script lang="ts">
-  import { CheckCircle2, ShieldCheck, Ruler, Sparkles, Gem, ArrowRight } from 'lucide-svelte';
-  import { fade, fly } from 'svelte/transition';
+  import CheckCircle2 from 'lucide-svelte/icons/circle-check-big';
+  import ShieldCheck from 'lucide-svelte/icons/shield-check';
+  import Ruler from 'lucide-svelte/icons/ruler';
+  import Sparkles from 'lucide-svelte/icons/sparkles';
+  import Gem from 'lucide-svelte/icons/gem';
+  import ArrowRight from 'lucide-svelte/icons/arrow-right';
+  import ScrollReveal from '@shared/ui/ScrollReveal.svelte';
   import { onMount } from 'svelte';
 
   // Pilares de Valor B2B
@@ -46,32 +51,37 @@
     },
   ];
 
-  let sectionRef: HTMLElement;
-  let isVisible = $state(false);
   let scrollY = $state(0);
+  let prefersReducedMotion = $state(false);
 
   onMount(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          isVisible = true;
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    if (sectionRef) observer.observe(sectionRef);
-    return () => observer.disconnect();
+    prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent) => {
+      prefersReducedMotion = e.matches;
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   });
+
+  /**
+   * Task 9.3.7: Parallax velocity differential
+   * Images: ~0.8x scroll speed (translateY positive = moves slower)
+   * Text: 1x (no transform = natural speed)
+   * Delta creates depth illusion.
+   * Task 9.3.9: Only uses `transform: translateY()` — composite-only, 60fps.
+   */
+  function parallaxOffset(baseOffset: number): number {
+    if (prefersReducedMotion) return 0; // Task 9.3.8
+    return scrollY * baseOffset;
+  }
 </script>
 
 <svelte:window bind:scrollY />
 
 <section
-  bind:this={sectionRef}
   id="propuesta-valor"
-  class="relative py-24 md:py-32 px-6 md:px-12 bg-[#0A0A0A] overflow-hidden"
+  class="relative pt-24 pb-12 md:pt-32 md:pb-16 px-6 md:px-12 bg-al13-black overflow-hidden"
 >
   <!-- Efectos de Luz Background -->
   <div
@@ -86,42 +96,49 @@
 
   <div class="max-w-7xl mx-auto relative z-10">
     <!-- Encabezado de Sección -->
-    <div class="text-center mb-20 max-w-3xl mx-auto">
-      <div
-        class="inline-flex items-center space-x-2 border border-white/10 bg-white/5 rounded-full px-4 py-1.5 mb-6 backdrop-blur-sm"
-      >
-        <Sparkles class="w-4 h-4 text-orange-400" strokeWidth={2} />
-        <span class="text-xs font-bold tracking-widest text-zinc-300 uppercase"
-          >El Estándar AL13</span
-        >
+    <ScrollReveal animation="fade-up">
+      <div class="text-center mb-20 max-w-3xl mx-auto">
+        <ScrollReveal animation="scale" delay={100}>
+          <div
+            class="inline-flex items-center space-x-2 border border-white/10 bg-white/5 rounded-full px-4 py-1.5 mb-6 backdrop-blur-sm"
+          >
+            <Sparkles class="w-4 h-4 text-orange-400" strokeWidth={2} />
+            <span class="text-xs font-bold tracking-widest text-zinc-300 uppercase"
+              >El Estándar AL13</span
+            >
+          </div>
+        </ScrollReveal>
+        <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6 tracking-tight">
+          No fabricamos ventanas.<br /> Forjamos arquitectura.
+        </h2>
+        <p class="text-lg text-zinc-400 font-light">
+          La industria se conforma con lo funcional. Nosotros redefinimos la estética industrial a
+          través de sistemas de vidrio y aluminio diseñados para espacios que exigen la máxima
+          sofisticación y durabilidad.
+        </p>
       </div>
-      <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6 tracking-tight">
-        No fabricamos ventanas.<br /> Forjamos arquitectura.
-      </h2>
-      <p class="text-lg text-zinc-400 font-light">
-        La industria se conforma con lo funcional. Nosotros redefinimos la estética industrial a
-        través de sistemas de vidrio y aluminio diseñados para espacios que exigen la máxima
-        sofisticación y durabilidad.
-      </p>
-    </div>
+    </ScrollReveal>
 
     <!-- Flujo Editorial Z-Pattern -->
     <div class="flex flex-col space-y-32 md:space-y-48 mt-16 md:mt-32">
-      {#if isVisible}
-        {#each values as value, index}
-          {@const isReversed = index % 2 !== 0}
-          {@const BadgeIcon = value.badge.icon}
+      {#each values as value, index}
+        {@const isReversed = index % 2 !== 0}
+        {@const BadgeIcon = value.badge.icon}
 
-          <div
-            in:fly={{ y: 80, duration: 1000, delay: index * 150 }}
-            class="flex flex-col md:flex-row {isReversed
-              ? 'md:flex-row-reverse'
-              : ''} items-center gap-12 lg:gap-24 group"
+        <div
+          class="flex flex-col md:flex-row {isReversed
+            ? 'md:flex-row-reverse'
+            : ''} items-center gap-12 lg:gap-24 group"
+        >
+          <!-- 50% Visual (Imagen Editorial con Parallax y Trust Badge) -->
+          <ScrollReveal
+            animation={isReversed ? 'slide-right' : 'slide-left'}
+            class="w-full md:w-1/2"
+            staggerIndex={index}
           >
-            <!-- 50% Visual (Imagen Editorial con Parallax y Trust Badge) -->
             <div
-              class="w-full md:w-1/2 relative"
-              style="transform: translateY({scrollY * 0.05}px); will-change: transform;"
+              class="relative"
+              style="transform: translateY({parallaxOffset(0.03)}px); will-change: transform;"
             >
               <div
                 class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-[1.02] border border-white/10"
@@ -144,7 +161,7 @@
                     : 'right-6'} z-20 transition-transform duration-500 group-hover:-translate-y-2"
                 >
                   <div
-                    class="backdrop-blur-md bg-white/5 border border-white/20 shadow-2xl rounded-2xl p-4 flex flex-col items-start min-w-[160px] overflow-hidden group/badge"
+                    class="backdrop-blur-md bg-white/5 border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.6)] rounded-2xl p-4 flex flex-col items-start min-w-[160px] overflow-hidden group/badge"
                   >
                     <!-- Glow effect tras el icono -->
                     <div
@@ -171,15 +188,22 @@
                 </div>
               </div>
             </div>
+          </ScrollReveal>
 
-            <!-- 50% Copy (Texto B2B Puro) -->
+          <!-- 50% Copy (Texto B2B Puro) -->
+          <ScrollReveal
+            animation={isReversed ? 'slide-left' : 'slide-right'}
+            class="w-full md:w-1/2"
+            delay={150}
+            staggerIndex={index}
+          >
             <div
-              class="w-full md:w-1/2 flex flex-col items-start {isReversed
+              class="flex flex-col items-start {isReversed
                 ? 'md:items-start lg:pl-12'
                 : 'md:items-start lg:pr-12'}"
             >
               <h3
-                class="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-white mb-6 tracking-tight leading-tight"
+                class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white mb-6 tracking-tight leading-tight"
               >
                 {value.title}
               </h3>
@@ -198,9 +222,9 @@
                 />
               </button>
             </div>
-          </div>
-        {/each}
-      {/if}
+          </ScrollReveal>
+        </div>
+      {/each}
     </div>
   </div>
 </section>
