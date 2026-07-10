@@ -7,7 +7,8 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('@core/infrastructure/repositories/SupabaseContactRepository', () => {
   return {
-    SupabaseContactRepository: vi.fn().mockImplementation(() => {
+    // vitest v4: la impl debe ser `function`/`class` para ser instanciable con `new`.
+    SupabaseContactRepository: vi.fn().mockImplementation(function () {
       return {
         saveContact: vi.fn().mockResolvedValue({ id: 'mocked-contact-123' }),
       };
@@ -17,7 +18,7 @@ vi.mock('@core/infrastructure/repositories/SupabaseContactRepository', () => {
 
 vi.mock('@core/infrastructure/services/ResendEmailService', () => {
   return {
-    ResendEmailService: vi.fn().mockImplementation(() => {
+    ResendEmailService: vi.fn().mockImplementation(function () {
       return {
         sendContactNotification: vi.fn().mockReturnValue(undefined), // Fire and forget
       };

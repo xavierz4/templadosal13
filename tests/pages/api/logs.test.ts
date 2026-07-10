@@ -8,7 +8,8 @@ const mockSaveLog = vi.fn().mockResolvedValue(true);
 
 vi.mock('@core/infrastructure/repositories/SupabaseClientLogRepository', () => {
   return {
-    SupabaseClientLogRepository: vi.fn().mockImplementation(() => {
+    // vitest v4: la impl debe ser `function`/`class` para ser instanciable con `new`.
+    SupabaseClientLogRepository: vi.fn().mockImplementation(function () {
       return {
         saveLog: mockSaveLog,
       };
