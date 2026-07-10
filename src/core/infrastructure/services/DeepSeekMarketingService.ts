@@ -91,10 +91,9 @@ export class DeepSeekMarketingService implements IMarketingAgentService {
       throw new Error('La IA no devolvió contenido.');
     }
 
-    let parsed: { pieces?: unknown };
-    try {
-      parsed = JSON.parse(content);
-    } catch {
+    const parsed = this.parseJsonLoose(content);
+    if (!parsed) {
+      console.error('[DeepSeekMarketing] JSON inválido, contenido:', content.slice(0, 400));
       throw new Error('La IA devolvió un JSON inválido.');
     }
 
@@ -112,6 +111,68 @@ export class DeepSeekMarketingService implements IMarketingAgentService {
         cta: String(p.cta ?? '').trim(),
       };
     });
+  }
+
+  /**
+   * Parseo tolerante: algunos modelos (p. ej. flash) envuelven el JSON en fences
+   * de markdown o le anteponen texto. Se limpian los fences y, si falla, se
+   * extrae el primer objeto {...} del contenido.
+   */
+  private parseJsonLoose(raw: string): { pieces?: unknown } | null {
+    let cleaned = raw
+      .replace(/```json\s*/gi, '')
+      .replace(/```/g, '')
+      .trim();
+
+    // Recorta al primer objeto {...} por si hay texto antes/después.
+    const start = cleaned.indexOf('{');
+    const end = cleaned.lastIndexOf('}');
+    if (start !== -1 && end > start) cleaned = cleaned.slice(start, end + 1);
+
+    // Intento directo.
+    try {
+      return JSON.parse(cleaned);
+    } catch {
+      /* sigue a la reparación */
+    }
+
+    // Reparación: escapa saltos de línea / tabs CRUDOS dentro de los strings
+    // (común en copy de redes) que invalidan el JSON. Recorre el texto
+    // rastreando si estamos dentro de un string.
+    try {
+      return JSON.parse(this.escapeRawControlChars(cleaned));
+    } catch {
+      return null;
+    }
+  }
+
+  private escapeRawControlChars(s: string): string {
+    let out = '';
+    let inString = false;
+    let escaped = false;
+    for (const ch of s) {
+      if (escaped) {
+        out += ch;
+        escaped = false;
+        continue;
+      }
+      if (ch === '\\') {
+        out += ch;
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        out += ch;
+        continue;
+      }
+      if (inString && (ch === '\n' || ch === '\r' || ch === '\t')) {
+        out += ch === '\n' ? '\\n' : ch === '\r' ? '\\r' : '\\t';
+        continue;
+      }
+      out += ch;
+    }
+    return out;
   }
 
   private channelBrief(channel: MarketingChannel): string {

@@ -16,7 +16,9 @@ const envSchema = z.object({
   // con un error claro y no rompe la app.
   DEEPSEEK_API_KEY: z.string().min(1).optional(),
   DEEPSEEK_BASE_URL: z.string().url().default('https://api.deepseek.com'),
-  DEEPSEEK_MODEL: z.string().default('deepseek-v4-pro'),
+  // flash por defecto: ~3x más rápido y barato que pro, y con el brand kit
+  // genera contenido igual de on-brand. Se puede subir a deepseek-v4-pro en .env.
+  DEEPSEEK_MODEL: z.string().default('deepseek-v4-flash'),
 });
 
 // Extraemos las variables del entorno (Astro y Node proveen diferentes vías)
