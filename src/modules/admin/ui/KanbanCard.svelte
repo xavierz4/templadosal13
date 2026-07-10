@@ -89,7 +89,7 @@
 
   .kanban-card:hover {
     background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(212, 175, 55, 0.25);
+    border-color: rgba(56, 189, 248, 0.25);
     transform: translateY(-1px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
@@ -109,9 +109,9 @@
   .product-badge {
     font-size: 0.65rem;
     font-weight: 600;
-    color: #d4af37;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--color-al13-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 999px;
     padding: 0.2rem 0.5rem;
     letter-spacing: 0.02em;
@@ -146,7 +146,7 @@
   }
 
   .customer-phone:hover {
-    color: #d4af37;
+    color: var(--color-al13-cyan);
   }
 
   .card-notes {

@@ -28,11 +28,12 @@
 
   let { data }: { data: AnalyticsRPCResponse } = $props();
 
-  // Color palette AL13 B2B
+  // Color palette AL13 B2B — alineada al acento cyan/emerald de la marca.
+  // Los cortes del donut usan la paleta semántica de estados del Kanban.
   const BRAND_CYAN = '#38bdf8';
-  const BRAND_GOLD = '#d4af37';
   const BRAND_RED = '#ef4444';
   const BRAND_GREEN = '#22c55e';
+  const BRAND_AMBER = '#fbbf24';
 
   // 1. Process data for Pipeline Donut (By Status)
   let statusTotals = $derived.by(() => {
@@ -48,7 +49,7 @@
     datasets: [
       {
         data: Object.values(statusTotals),
-        backgroundColor: [BRAND_CYAN, BRAND_GOLD, BRAND_GREEN, BRAND_RED, '#a855f7'],
+        backgroundColor: [BRAND_CYAN, BRAND_AMBER, BRAND_GREEN, BRAND_RED, '#a855f7'],
         borderWidth: 1,
         borderColor: '#090a0c',
       },

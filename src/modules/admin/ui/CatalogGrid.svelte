@@ -178,7 +178,7 @@
   }
 
   .project-card:hover {
-    border-color: rgba(212, 175, 55, 0.2);
+    border-color: rgba(56, 189, 248, 0.2);
     transform: translateY(-2px);
   }
   .project-card.unpublished {
@@ -220,9 +220,9 @@
   .category-tag {
     font-size: 0.62rem;
     font-weight: 600;
-    color: #d4af37;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--color-al13-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 999px;
     padding: 0.15rem 0.5rem;
     display: inline-block;
