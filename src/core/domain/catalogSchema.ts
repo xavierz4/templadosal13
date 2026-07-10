@@ -60,3 +60,26 @@ export type PresignRequest = z.infer<typeof PresignRequestSchema>;
 export const TogglePublishSchema = z.object({
   is_published: z.boolean(),
 });
+
+/**
+ * Zod schema para editar metadata de un proyecto existente (PUT).
+ * Los campos de imagen son opcionales (solo si se reemplaza la imagen).
+ */
+export const CatalogUpdateSchema = z
+  .object({
+    title: z.string().min(3).max(255).transform(sanitizeHtml).optional(),
+    category: z.enum(CATALOG_CATEGORIES).optional(),
+    description: z
+      .string()
+      .max(2000)
+      .transform((val) => (val ? sanitizeHtml(val) : val))
+      .nullable()
+      .optional(),
+    image_url: z.string().url('URL de imagen inválida').optional(),
+    image_path: z.string().min(1).optional(),
+  })
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: 'Debe incluir al menos un campo para actualizar.',
+  });
+
+export type CatalogUpdate = z.infer<typeof CatalogUpdateSchema>;

@@ -1,6 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ICatalogRepository } from '@core/domain/repositories/ICatalogRepository';
-import type { CatalogProject, CatalogProjectInput } from '@core/domain/catalogSchema';
+import type {
+  CatalogProject,
+  CatalogProjectInput,
+  CatalogUpdate,
+} from '@core/domain/catalogSchema';
 
 /**
  * Adaptador de Infraestructura — Catálogo CMS (Task 4.3)
@@ -78,6 +82,22 @@ export class SupabaseCatalogRepository implements ICatalogRepository {
       console.error('[CatalogRepository] togglePublish error:', { id, message: error.message });
       throw new Error(`Error al actualizar publicación del proyecto ${id}.`);
     }
+  }
+
+  async update(id: string, patch: CatalogUpdate): Promise<CatalogProject> {
+    const { data, error } = await this.client
+      .from('catalog_projects')
+      .update(patch)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[CatalogRepository] update error:', { id, message: error.message });
+      throw new Error(`Error al actualizar el proyecto ${id}.`);
+    }
+
+    return data as CatalogProject;
   }
 
   async delete(id: string): Promise<void> {

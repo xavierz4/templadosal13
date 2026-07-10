@@ -6,14 +6,55 @@
   REGLA 4 — Dumb: delega HTTP a catalogAdminClient.ts
 -->
 <script lang="ts">
-  import type { CatalogProject } from '@core/domain/catalogSchema';
-  import { togglePublish, deleteProject } from '../api/catalogAdminClient';
+  import { CATALOG_CATEGORIES } from '@core/domain/catalogSchema';
+  import type { CatalogProject, CatalogCategory } from '@core/domain/catalogSchema';
+  import { togglePublish, deleteProject, updateProject } from '../api/catalogAdminClient';
+  import CatalogEditModal from './CatalogEditModal.svelte';
   import { untrack, onMount } from 'svelte';
 
   const props: { projects: CatalogProject[] } = $props();
 
   let localProjects: CatalogProject[] = $state(untrack(() => [...props.projects]));
   let errorMessage: string = $state('');
+
+  // ── Búsqueda y filtro ──
+  let searchQuery: string = $state('');
+  let categoryFilter: string = $state('all');
+
+  const filteredProjects = $derived.by(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return localProjects.filter((p) => {
+      if (categoryFilter !== 'all' && p.category !== categoryFilter) return false;
+      if (!q) return true;
+      return `${p.title} ${p.description ?? ''}`.toLowerCase().includes(q);
+    });
+  });
+
+  // ── Modal de edición ──
+  let editingProject: CatalogProject | null = $state(null);
+  let editSaving: boolean = $state(false);
+
+  interface EditPatch {
+    title?: string;
+    category?: CatalogCategory;
+    description?: string | null;
+    image_url?: string;
+    image_path?: string;
+  }
+
+  async function handleSaveEdit(id: string, patch: EditPatch) {
+    editSaving = true;
+    errorMessage = '';
+    const result = await updateProject(id, patch);
+    editSaving = false;
+
+    if (result.error || !result.project) {
+      errorMessage = `Error al guardar: ${result.error ?? 'respuesta inválida'}`;
+      return;
+    }
+    localProjects = localProjects.map((p) => (p.id === id ? result.project! : p));
+    editingProject = null;
+  }
 
   // Escucha el evento del ProjectUploadForm (island hermano) para insertar
   // la tarjeta recién creada al tope del grid sin recargar la página.
@@ -75,14 +116,59 @@
   </div>
 {/if}
 
+<!-- Toolbar: búsqueda + filtro por categoría -->
+{#if localProjects.length > 0}
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg
+        class="search-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input
+        class="search-input"
+        type="search"
+        placeholder="Buscar por título o descripción…"
+        bind:value={searchQuery}
+      />
+    </div>
+    <select class="cat-select" bind:value={categoryFilter} aria-label="Filtrar por categoría">
+      <option value="all">Todas las categorías</option>
+      {#each CATALOG_CATEGORIES as cat (cat)}
+        <option value={cat}>{categoryLabels[cat]}</option>
+      {/each}
+    </select>
+    {#if searchQuery || categoryFilter !== 'all'}
+      <button
+        class="clear-btn"
+        onclick={() => {
+          searchQuery = '';
+          categoryFilter = 'all';
+        }}>Limpiar</button
+      >
+    {/if}
+  </div>
+{/if}
+
 {#if localProjects.length === 0}
   <div class="empty-state">
     <p>No hay proyectos en el catálogo aún.</p>
     <p class="empty-hint">Usa el formulario de arriba para añadir el primero.</p>
   </div>
+{:else if filteredProjects.length === 0}
+  <div class="empty-state">
+    <p>Ningún proyecto coincide con la búsqueda.</p>
+  </div>
 {:else}
   <div class="catalog-grid">
-    {#each localProjects as project (project.id)}
+    {#each filteredProjects as project (project.id)}
       <div class="project-card" class:unpublished={!project.is_published}>
         <!-- Image -->
         <div class="card-image-wrap">
@@ -111,6 +197,13 @@
               {project.is_published ? 'Despublicar' : 'Publicar'}
             </button>
             <button
+              class="btn-edit"
+              onclick={() => (editingProject = project)}
+              aria-label={`Editar ${project.title}`}
+            >
+              Editar
+            </button>
+            <button
               class="btn-delete"
               onclick={() => handleDelete(project)}
               aria-label={`Eliminar ${project.title}`}
@@ -123,6 +216,14 @@
     {/each}
   </div>
 {/if}
+
+<!-- Modal de edición -->
+<CatalogEditModal
+  project={editingProject}
+  saving={editSaving}
+  onsave={handleSaveEdit}
+  onclose={() => (editingProject = null)}
+/>
 
 <style>
   .error-banner {
@@ -146,6 +247,64 @@
     cursor: pointer;
     padding: 0 0.25rem;
     line-height: 1;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+  }
+  .search-input,
+  .cat-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .search-input {
+    width: 100%;
+    padding-left: 2.1rem;
+  }
+  .search-input:focus,
+  .cat-select:focus {
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+  .clear-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover {
+    color: #fff;
+    border-color: rgba(56, 189, 248, 0.4);
   }
 
   .empty-state {
@@ -278,6 +437,21 @@
   .btn-unpublish {
     background: rgba(239, 68, 68, 0.12);
     color: #ef4444;
+  }
+
+  .btn-edit {
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.08);
+    color: var(--color-al13-cyan);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-edit:hover {
+    background: rgba(56, 189, 248, 0.15);
   }
 
   .btn-delete {

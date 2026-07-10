@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { TogglePublishSchema } from '@core/domain/catalogSchema';
+import { TogglePublishSchema, CatalogUpdateSchema } from '@core/domain/catalogSchema';
 import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
 import { SupabaseCatalogRepository } from '@core/infrastructure/repositories/SupabaseCatalogRepository';
 import { SupabaseStorageService } from '@core/infrastructure/storage/SupabaseStorageService';
@@ -7,12 +7,16 @@ import { SupabaseStorageService } from '@core/infrastructure/storage/SupabaseSto
 export const prerender = false;
 
 /**
- * PATCH /api/admin/catalog/[id]  — Toggle publicación del proyecto
+ * PATCH  /api/admin/catalog/[id] — Toggle publicación del proyecto
+ * PUT    /api/admin/catalog/[id] — Edita metadata (título, categoría, descripción, imagen)
  * DELETE /api/admin/catalog/[id] — Elimina proyecto + imagen del bucket
  */
 
 // ── Shared Auth Guard ─────────────────────────────────────────────────────
-async function getAuthenticatedClient(request: Request, cookies: Parameters<APIRoute>[0]['cookies']) {
+async function getAuthenticatedClient(
+  request: Request,
+  cookies: Parameters<APIRoute>[0]['cookies']
+) {
   const client = createSupabaseServerClient(request, cookies);
   const {
     data: { session },
@@ -62,6 +66,51 @@ export const PATCH: APIRoute = async ({ params, request, cookies }) => {
     }
     if (error instanceof Error) {
       console.error('[CatalogPatch] Error:', { message: error.message, id });
+    }
+    return new Response(JSON.stringify({ error: 'Error al actualizar el proyecto.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
+
+// ── PUT — Edita metadata del proyecto ─────────────────────────────────────
+export const PUT: APIRoute = async ({ params, request, cookies }) => {
+  const { client, session } = await getAuthenticatedClient(request, cookies);
+  if (!session) return UNAUTHORIZED;
+
+  const { id } = params;
+  if (!id) {
+    return new Response(JSON.stringify({ error: 'ID requerido.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    const body = await request.json();
+    const patch = CatalogUpdateSchema.parse(body);
+
+    const catalogRepository = new SupabaseCatalogRepository(client);
+    const project = await catalogRepository.update(id, patch);
+
+    return new Response(JSON.stringify({ success: true, project }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error: unknown) {
+    const isZodError =
+      typeof error === 'object' &&
+      error !== null &&
+      (error as { name?: string }).name === 'ZodError';
+    if (isZodError) {
+      return new Response(JSON.stringify({ error: 'Datos del proyecto inválidos.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (error instanceof Error) {
+      console.error('[CatalogPut] Error:', { message: error.message, id });
     }
     return new Response(JSON.stringify({ error: 'Error al actualizar el proyecto.' }), {
       status: 500,
