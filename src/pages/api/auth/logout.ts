@@ -7,7 +7,7 @@ export const prerender = false;
 
 /**
  * POST /api/auth/logout
- * 
+ *
  * Cierra la sesión del administrador y limpia cookies.
  * Solo orquesta (REGLA 2): delega a SupabaseAuthService.signOut()
  */
@@ -18,14 +18,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     await authService.signOut();
 
-    return new Response(JSON.stringify({
-      message: 'Sesión cerrada exitosamente.',
-      success: true
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    return new Response(
+      JSON.stringify({
+        message: 'Sesión cerrada exitosamente.',
+        success: true,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('[Auth Logout API] Error:', { message: error.message });
@@ -33,18 +35,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       console.error('[Auth Logout API] Unknown error:', { error });
     }
 
-    return new Response(JSON.stringify({
-      error: 'Error al cerrar la sesión.'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'Error al cerrar la sesión.',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 };
 
-// Permitir redirecciones de navegación directa (clics en enlaces)
-export const GET: APIRoute = async (context) => {
-  const result = await POST(context);
-  // Redirigir siempre tras un GET manual
-  return context.redirect('/admin/login', 302);
-};
+// SIN handler GET: el prefetch de Astro (prefetchAll) hace GET a todos los
+// <a href> visibles — un GET aquí cerraba la sesión del admin al cargar
+// cualquier página del panel. Logout solo por POST explícito.

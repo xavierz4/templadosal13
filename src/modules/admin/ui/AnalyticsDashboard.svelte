@@ -11,6 +11,7 @@
     LinearScale,
     ArcElement,
   } from 'chart.js';
+  import type { ChartData } from 'chart.js';
   import type { AnalyticsRPCResponse, DashboardAnalyticsRow } from '@core/domain/analyticsSchema';
 
   ChartJS.register(
@@ -32,7 +33,6 @@
   const BRAND_GOLD = '#d4af37';
   const BRAND_RED = '#ef4444';
   const BRAND_GREEN = '#22c55e';
-  const GLASS_BG = 'rgba(255, 255, 255, 0.05)';
 
   // 1. Process data for Pipeline Donut (By Status)
   let statusTotals = $derived.by(() => {
@@ -48,13 +48,7 @@
     datasets: [
       {
         data: Object.values(statusTotals),
-        backgroundColor: [
-          BRAND_CYAN,
-          BRAND_GOLD,
-          BRAND_GREEN,
-          BRAND_RED,
-          '#a855f7',
-        ],
+        backgroundColor: [BRAND_CYAN, BRAND_GOLD, BRAND_GREEN, BRAND_RED, '#a855f7'],
         borderWidth: 1,
         borderColor: '#090a0c',
       },
@@ -83,13 +77,18 @@
         data: Object.values(monthTotals),
         backgroundColor: BRAND_CYAN,
         borderRadius: 4,
+        // Evita que con pocos meses la barra se estire a todo el ancho
+        maxBarThickness: 64,
       },
     ],
   });
 
   // 3. KPI Cards Math
   let totalVolume = $derived(
-    data.reduce((sum: number, row: DashboardAnalyticsRow) => sum + Number(row.total_estimated_value || 0), 0)
+    data.reduce(
+      (sum: number, row: DashboardAnalyticsRow) => sum + Number(row.total_estimated_value || 0),
+      0
+    )
   );
   let totalLeads = $derived(
     data.reduce((sum: number, row: DashboardAnalyticsRow) => sum + Number(row.leads_count || 0), 0)
@@ -103,16 +102,15 @@
 
   let barCanvas: HTMLCanvasElement | undefined = $state();
   let donutCanvas: HTMLCanvasElement | undefined = $state();
-  // We don't type the entire Chart config here to avoid bloat, we just need the controller
-  let barChart: any;
-  let donutChart: any;
+  let barChart: ChartJS | undefined;
+  let donutChart: ChartJS | undefined;
 
   $effect(() => {
     if (barCanvas) {
       if (barChart) barChart.destroy();
       barChart = new ChartJS(barCanvas, {
         type: 'bar',
-        data: monthChartData as any,
+        data: monthChartData as ChartData<'bar'>,
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -121,7 +119,7 @@
             y: { ticks: { color: '#a0a0a0' } },
             x: { ticks: { color: '#a0a0a0' } },
           },
-        }
+        },
       });
     }
 
@@ -129,13 +127,13 @@
       if (donutChart) donutChart.destroy();
       donutChart = new ChartJS(donutCanvas, {
         type: 'doughnut',
-        data: statusChartData as any,
+        data: statusChartData as ChartData<'doughnut'>,
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { position: 'bottom', labels: { color: '#e0e0e0' } } },
           cutout: '70%',
-        }
+        },
       });
     }
 

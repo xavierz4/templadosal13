@@ -1,17 +1,63 @@
 ---
 /**
- * /admin/index.astro — Dashboard Principal del Admin Panel (Task 4.1.2)
+ * /admin/index.astro — Dashboard Principal del Admin Panel
  *
  * Usa AdminLayout que intercepta JWT cookie y redirige si no hay sesión.
- * Esta página solo muestra estadísticas básicas (placeholder para Epic 4.2).
+ * Muestra KPIs reales (leads, catálogo) leídos server-side y accesos rápidos.
  */
 import AdminLayout from '@shared/ui/AdminLayout.astro';
+import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
+import { SupabaseLeadRepository } from '@core/infrastructure/repositories/SupabaseLeadRepository';
+import { SupabaseCatalogRepository } from '@core/infrastructure/repositories/SupabaseCatalogRepository';
+import type { AdminLead } from '@core/domain/leadAdminSchema';
+import type { CatalogProject } from '@core/domain/catalogSchema';
 
 // SSR obligatorio para auth con cookies
 export const prerender = false;
+
+const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+
+let leads: AdminLead[] = [];
+let projects: CatalogProject[] = [];
+let loadError = '';
+
+try {
+  const leadRepo = new SupabaseLeadRepository(supabase);
+  const catalogRepo = new SupabaseCatalogRepository(supabase);
+  [leads, projects] = await Promise.all([leadRepo.getAll(), catalogRepo.getAll()]);
+} catch (error: unknown) {
+  loadError = error instanceof Error ? error.message : 'Error al cargar el resumen.';
+  console.error('[Admin Dashboard] Load error:', error);
+}
+
+// ── KPIs derivados ──
+const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+const totalLeads = leads.length;
+const newLeads7d = leads.filter((l) => new Date(l.created_at).getTime() >= sevenDaysAgo).length;
+const wonLeads = leads.filter((l) => l.status === 'CERRADO_GANADO').length;
+const totalProjects = projects.length;
+const publishedProjects = projects.filter((p) => p.is_published).length;
+
+// Últimos 5 leads para la lista de actividad reciente
+const recentLeads = leads.slice(0, 5);
+const productLabels: Record<string, string> = {
+  cabina_ducha: 'Cabina de Ducha',
+  divisor_oficina: 'Divisor de Oficina',
+  fachada_monumental: 'Fachada Monumental',
+  puerta_pivotante: 'Puerta Pivotante',
+};
+const statusLabels: Record<string, string> = {
+  NUEVO: 'Nuevo',
+  CONTACTADO: 'Contactado',
+  COTIZADO: 'Cotizado',
+  CERRADO_GANADO: 'Ganado',
+  PERDIDO: 'Perdido',
+};
 ---
 
 <AdminLayout title="Dashboard" section="Dashboard">
+  {loadError && <div class="fetch-error">⚠️ {loadError}</div>}
+
   <div class="dashboard-grid">
     <!-- Stat Cards -->
     <div class="stat-card">
@@ -32,8 +78,8 @@ export const prerender = false;
       </div>
       <div class="stat-info">
         <p class="stat-label">Leads Totales</p>
-        <p class="stat-value">—</p>
-        <p class="stat-sub">Kanban disponible en Epic 4.2</p>
+        <p class="stat-value">{totalLeads}</p>
+        <p class="stat-sub">{wonLeads} cerrados ganados</p>
       </div>
     </div>
 
@@ -53,8 +99,8 @@ export const prerender = false;
       </div>
       <div class="stat-info">
         <p class="stat-label">Leads Nuevos (7d)</p>
-        <p class="stat-value">—</p>
-        <p class="stat-sub">Telemetría en Epic 6.2</p>
+        <p class="stat-value">{newLeads7d}</p>
+        <p class="stat-sub">Últimos 7 días</p>
       </div>
     </div>
 
@@ -77,36 +123,60 @@ export const prerender = false;
       </div>
       <div class="stat-info">
         <p class="stat-label">Proyectos Catálogo</p>
-        <p class="stat-value">—</p>
-        <p class="stat-sub">CMS disponible en Epic 4.3</p>
+        <p class="stat-value">{totalProjects}</p>
+        <p class="stat-sub">{publishedProjects} publicados</p>
       </div>
     </div>
 
-    <!-- Auth OK Banner -->
-    <div class="auth-banner">
-      <div class="auth-banner-icon">🔐</div>
-      <div>
-        <p class="auth-banner-title">Sesión autenticada correctamente</p>
-        <p class="auth-banner-sub">
-          Cookie JWT interceptada vía <code>@supabase/ssr</code> · HttpOnly · Secure · SameSite=Strict
-        </p>
+    <!-- Actividad reciente -->
+    <div class="recent-card">
+      <div class="recent-header">
+        <h2 class="recent-title">Leads recientes</h2>
+        <a href="/admin/leads" class="recent-link">Ver todos →</a>
       </div>
+
+      {
+        recentLeads.length === 0 ? (
+          <p class="recent-empty">
+            Aún no hay leads registrados. Cuando un cliente use el cotizador, aparecerá aquí.
+          </p>
+        ) : (
+          <ul class="recent-list">
+            {recentLeads.map((lead) => (
+              <li class="recent-item">
+                <div class="recent-item-main">
+                  <span class="recent-name">{lead.customer_name}</span>
+                  <span class="recent-product">
+                    {productLabels[lead.product_type] ?? lead.product_type}
+                  </span>
+                </div>
+                <span class={`recent-status recent-status--${lead.status}`}>
+                  {statusLabels[lead.status] ?? lead.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
 
-    <!-- Next tasks -->
-    <div class="next-card">
-      <h2 class="next-title">⚙️ Próximos módulos</h2>
-      <ul class="next-list">
-        <li class="next-item next-item--done">
-          ✅ Task 4.1.1 — Login UI + Supabase Auth endpoints
-        </li>
-        <li class="next-item next-item--done">✅ Task 4.1.2 — AdminLayout SSR con JWT guard</li>
-        <li class="next-item next-item--todo">
-          ⬜ Task 4.1.3 — Redirect automático si ya autenticado al entrar a /admin/login
-        </li>
-        <li class="next-item next-item--todo">⬜ Task 4.2 — CRM Kanban de Leads B2B</li>
-        <li class="next-item next-item--todo">⬜ Task 4.3 — CMS Catálogo + upload S3</li>
-      </ul>
+    <!-- Accesos rápidos -->
+    <div class="quick-card">
+      <h2 class="recent-title">Accesos rápidos</h2>
+      <div class="quick-links">
+        <a href="/admin/leads" class="quick-link">
+          <span class="quick-emoji">📋</span>
+          <span>Gestionar Leads</span>
+        </a>
+        <a href="/admin/catalog" class="quick-link">
+          <span class="quick-emoji">🖼️</span>
+          <span>Añadir Proyecto</span>
+        </a>
+        <a href="/admin/analytics" class="quick-link">
+          <span class="quick-emoji">📊</span>
+          <span>Ver Telemetría</span>
+        </a>
+      </div>
     </div>
   </div>
 </AdminLayout>
@@ -180,73 +250,167 @@ export const prerender = false;
     margin-top: 0.25rem;
   }
 
-  /* Auth Banner */
-  .auth-banner {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: rgba(34, 197, 94, 0.06);
-    border: 1px solid rgba(34, 197, 94, 0.15);
-    border-radius: 0.875rem;
+  /* Error banner */
+  .fetch-error {
+    padding: 0.875rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
   }
 
-  .auth-banner-icon {
-    font-size: 1.4rem;
-  }
-  .auth-banner-title {
-    font-weight: 600;
-    color: #86efac;
-    font-size: 0.875rem;
-    margin-bottom: 0.2rem;
-  }
-  .auth-banner-sub {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.35);
-  }
-  .auth-banner-sub code {
-    font-family: 'Courier New', monospace;
-    color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.1rem 0.3rem;
-    border-radius: 0.25rem;
-  }
-
-  /* Next tasks */
-  .next-card {
-    grid-column: 1 / -1;
+  /* Recent leads + Quick links share the bottom row */
+  .recent-card,
+  .quick-card {
     padding: 1.25rem;
     background: rgba(255, 255, 255, 0.015);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 0.875rem;
   }
+  .recent-card {
+    grid-column: 1 / 3;
+  }
+  .quick-card {
+    grid-column: 3 / -1;
+  }
 
-  .next-title {
+  .recent-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .recent-title {
     font-family: 'Outfit', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
     color: #e0e0e0;
-    margin-bottom: 1rem;
   }
 
-  .next-list {
+  .recent-link {
+    font-size: 0.75rem;
+    color: #38bdf8;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .recent-link:hover {
+    color: #7dd3fc;
+  }
+
+  .recent-empty {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.35);
+    line-height: 1.5;
+    padding: 1rem 0;
+  }
+
+  .recent-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .next-item {
-    font-size: 0.825rem;
-    padding: 0.5rem 0.75rem;
+  .recent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 0.5rem;
   }
-  .next-item--done {
-    color: rgba(134, 239, 172, 0.7);
-    background: rgba(34, 197, 94, 0.04);
+
+  .recent-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
   }
-  .next-item--todo {
-    color: rgba(255, 255, 255, 0.35);
+  .recent-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .recent-product {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .recent-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .recent-status--NUEVO {
+    color: #60a5fa;
+    background: rgba(96, 165, 250, 0.12);
+  }
+  .recent-status--CONTACTADO {
+    color: #a78bfa;
+    background: rgba(167, 139, 250, 0.12);
+  }
+  .recent-status--COTIZADO {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+  }
+  .recent-status--CERRADO_GANADO {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+  }
+  .recent-status--PERDIDO {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+  }
+
+  /* Quick links */
+  .quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .quick-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.875rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.625rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .quick-link:hover {
+    background: rgba(56, 189, 248, 0.06);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #fff;
+  }
+  .quick-emoji {
+    font-size: 1.1rem;
+  }
+
+  /* Responsive: stack on narrow viewports */
+  @media (max-width: 860px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    .recent-card,
+    .quick-card {
+      grid-column: 1 / -1;
+    }
   }
 </style>

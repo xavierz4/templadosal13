@@ -4,7 +4,7 @@
  * Los componentes Svelte en ui/ NO hacen fetch() directamente.
  * Delegan a este módulo para todas las operaciones HTTP del CMS.
  */
-import type { CatalogCategory } from '@core/domain/catalogSchema';
+import type { CatalogCategory, CatalogProject } from '@core/domain/catalogSchema';
 
 export interface PresignResponse {
   signedUrl?: string;
@@ -16,7 +16,7 @@ export interface PresignResponse {
 
 export interface CreateProjectResponse {
   success?: boolean;
-  project?: { id: string; title: string };
+  project?: CatalogProject;
   error?: string;
 }
 

@@ -95,6 +95,13 @@
       }
 
       step = 3;
+      // Los dos islands (form y grid) se montan por separado; un CustomEvent en
+      // window los conecta para insertar la tarjeta sin recargar la página.
+      if (createResult.project) {
+        window.dispatchEvent(
+          new CustomEvent('al13:project-created', { detail: createResult.project })
+        );
+      }
       if (props.onSuccess) {
         props.onSuccess(createResult.project);
       }

@@ -8,12 +8,25 @@
 <script lang="ts">
   import type { CatalogProject } from '@core/domain/catalogSchema';
   import { togglePublish, deleteProject } from '../api/catalogAdminClient';
-  import { untrack } from 'svelte';
+  import { untrack, onMount } from 'svelte';
 
   const props: { projects: CatalogProject[] } = $props();
 
   let localProjects: CatalogProject[] = $state(untrack(() => [...props.projects]));
   let errorMessage: string = $state('');
+
+  // Escucha el evento del ProjectUploadForm (island hermano) para insertar
+  // la tarjeta recién creada al tope del grid sin recargar la página.
+  onMount(() => {
+    const handler = (e: Event) => {
+      const project = (e as CustomEvent<CatalogProject>).detail;
+      if (project && !localProjects.some((p) => p.id === project.id)) {
+        localProjects = [project, ...localProjects];
+      }
+    };
+    window.addEventListener('al13:project-created', handler);
+    return () => window.removeEventListener('al13:project-created', handler);
+  });
 
   const categoryLabels: Record<string, string> = {
     cabina_ducha: 'Cabina de Ducha',

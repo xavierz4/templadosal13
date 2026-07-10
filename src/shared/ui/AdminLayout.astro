@@ -233,7 +233,8 @@ const adminEmail = session?.user?.email ?? 'Admin';
       </div>
       <div class="topbar-right">
         <span class="admin-badge">{adminEmail}</span>
-        <a href="/api/auth/logout" class="logout-btn" id="logout-btn">Cerrar sesión</a>
+        <!-- button, no <a>: un enlace a un endpoint mutador es prefetcheable/crawleable -->
+        <button type="button" class="logout-btn" id="logout-btn">Cerrar sesión</button>
       </div>
     </header>
 
@@ -304,7 +305,8 @@ const adminEmail = session?.user?.email ?? 'Admin';
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"
+          ></path>
         </svg>
         Telemetría B.I.
       </a>

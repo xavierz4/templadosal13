@@ -3,10 +3,10 @@ import type { IAuthService, AuthResult } from '@core/domain/services/IAuthServic
 
 /**
  * Adaptador de Infraestructura para Supabase Auth (GoTrue).
- * 
+ *
  * Implementa IAuthService (REGLA 2 — Hexagonal / Dependency Inversion).
  * Recibe SupabaseClient por constructor para DI con cookies del request.
- * 
+ *
  * Patrón: pages/api/auth/* → IAuthService → SupabaseAuthService → Supabase GoTrue
  */
 export class SupabaseAuthService implements IAuthService {
@@ -25,7 +25,9 @@ export class SupabaseAuthService implements IAuthService {
 
       if (error) {
         console.warn('[AuthService] Login failed:', { email, error: error.message });
-        return { success: false, error: error.message };
+        // No filtrar el mensaje crudo de GoTrue (inglés + fuga de detalle);
+        // mensaje genérico en español que no revela si el email existe.
+        return { success: false, error: 'Correo o contraseña incorrectos.' };
       }
 
       console.warn('[AuthService] Login successful:', { email });
