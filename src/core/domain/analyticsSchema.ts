@@ -16,4 +16,11 @@ export const DashboardAnalyticsRowSchema = z.object({
 export type DashboardAnalyticsRow = z.infer<typeof DashboardAnalyticsRowSchema>;
 
 // Tipo exacto del RPC generado por Supabase (`get_dashboard_analytics`)
-export type AnalyticsRPCResponse = Database['public']['Functions']['get_dashboard_analytics']['Returns'];
+export type AnalyticsRPCResponse =
+  Database['public']['Functions']['get_dashboard_analytics']['Returns'];
+
+// Atribución por fuente/campaña (`get_source_analytics`)
+export type SourceAnalyticsRow =
+  Database['public']['Functions']['get_source_analytics']['Returns'][number];
+export type SourceAnalyticsResponse =
+  Database['public']['Functions']['get_source_analytics']['Returns'];

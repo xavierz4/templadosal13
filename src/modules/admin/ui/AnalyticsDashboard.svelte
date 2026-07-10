@@ -12,7 +12,11 @@
     ArcElement,
   } from 'chart.js';
   import type { ChartData } from 'chart.js';
-  import type { AnalyticsRPCResponse, DashboardAnalyticsRow } from '@core/domain/analyticsSchema';
+  import type {
+    AnalyticsRPCResponse,
+    DashboardAnalyticsRow,
+    SourceAnalyticsResponse,
+  } from '@core/domain/analyticsSchema';
 
   ChartJS.register(
     Title,
@@ -26,7 +30,8 @@
     ArcElement
   );
 
-  let { data }: { data: AnalyticsRPCResponse } = $props();
+  let { data, sources = [] }: { data: AnalyticsRPCResponse; sources?: SourceAnalyticsResponse } =
+    $props();
 
   // Color palette AL13 B2B — alineada al acento cyan/emerald de la marca.
   // Los cortes del donut usan la paleta semántica de estados del Kanban.
@@ -35,10 +40,44 @@
   const BRAND_GREEN = '#22c55e';
   const BRAND_AMBER = '#fbbf24';
 
+  // ── Filtros (client-side sobre los datos ya agregados) ──
+  let productFilter = $state('all');
+  let periodFilter = $state('all'); // all | 3m | 6m | 12m
+
+  const PRODUCT_OPTIONS = [
+    { id: 'all', label: 'Todos los productos' },
+    { id: 'cabina_ducha', label: 'Cabina de Ducha' },
+    { id: 'divisor_oficina', label: 'Divisor de Oficina' },
+    { id: 'fachada_monumental', label: 'Fachada Monumental' },
+    { id: 'puerta_pivotante', label: 'Puerta Pivotante' },
+  ];
+  const PERIOD_OPTIONS = [
+    { id: 'all', label: 'Todo el histórico' },
+    { id: '3m', label: 'Últimos 3 meses' },
+    { id: '6m', label: 'Últimos 6 meses' },
+    { id: '12m', label: 'Últimos 12 meses' },
+  ];
+
+  const periodMonths: Record<string, number> = { '3m': 3, '6m': 6, '12m': 12 };
+
+  const filteredData = $derived.by(() => {
+    let cutoff = 0;
+    if (periodFilter !== 'all') {
+      const months = periodMonths[periodFilter];
+      const now = new Date(data[0]?.record_month ?? '2026-01-01');
+      cutoff = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1).getTime();
+    }
+    return data.filter((row: DashboardAnalyticsRow) => {
+      if (productFilter !== 'all' && row.product_type !== productFilter) return false;
+      if (cutoff && new Date(row.record_month).getTime() < cutoff) return false;
+      return true;
+    });
+  });
+
   // 1. Process data for Pipeline Donut (By Status)
   let statusTotals = $derived.by(() => {
     const acc: Record<string, number> = {};
-    data.forEach((row: DashboardAnalyticsRow) => {
+    filteredData.forEach((row: DashboardAnalyticsRow) => {
       acc[row.status] = (acc[row.status] || 0) + Number(row.leads_count);
     });
     return acc;
@@ -59,7 +98,7 @@
   // 2. Process data for Bar Chart (Leads by Month)
   let monthTotals = $derived.by(() => {
     const acc: Record<string, number> = {};
-    data.forEach((row: DashboardAnalyticsRow) => {
+    filteredData.forEach((row: DashboardAnalyticsRow) => {
       // row.record_month comes as ISO string or Date depending on the DB bridge.
       const monthStr = new Date(row.record_month).toLocaleString('es-CO', {
         month: 'short',
@@ -86,13 +125,16 @@
 
   // 3. KPI Cards Math
   let totalVolume = $derived(
-    data.reduce(
+    filteredData.reduce(
       (sum: number, row: DashboardAnalyticsRow) => sum + Number(row.total_estimated_value || 0),
       0
     )
   );
   let totalLeads = $derived(
-    data.reduce((sum: number, row: DashboardAnalyticsRow) => sum + Number(row.leads_count || 0), 0)
+    filteredData.reduce(
+      (sum: number, row: DashboardAnalyticsRow) => sum + Number(row.leads_count || 0),
+      0
+    )
   );
 
   const formatter = new Intl.NumberFormat('es-CO', {
@@ -100,6 +142,11 @@
     currency: 'COP',
     maximumFractionDigits: 0,
   });
+
+  // 4. Atribución por fuente (ordenada por volumen de leads desc)
+  const sortedSources = $derived(
+    [...sources].sort((a, b) => Number(b.leads_count ?? 0) - Number(a.leads_count ?? 0))
+  );
 
   let barCanvas: HTMLCanvasElement | undefined = $state();
   let donutCanvas: HTMLCanvasElement | undefined = $state();
@@ -146,6 +193,29 @@
 </script>
 
 <div class="analytics-container">
+  <!-- Filtros -->
+  <div class="filter-bar">
+    <select class="filter-select" bind:value={productFilter} aria-label="Filtrar por producto">
+      {#each PRODUCT_OPTIONS as opt (opt.id)}
+        <option value={opt.id}>{opt.label}</option>
+      {/each}
+    </select>
+    <select class="filter-select" bind:value={periodFilter} aria-label="Filtrar por período">
+      {#each PERIOD_OPTIONS as opt (opt.id)}
+        <option value={opt.id}>{opt.label}</option>
+      {/each}
+    </select>
+    {#if productFilter !== 'all' || periodFilter !== 'all'}
+      <button
+        class="filter-clear"
+        onclick={() => {
+          productFilter = 'all';
+          periodFilter = 'all';
+        }}>Limpiar filtros</button
+      >
+    {/if}
+  </div>
+
   <!-- KPI Grid -->
   <div class="kpi-grid">
     <div class="kpi-card">
@@ -179,6 +249,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Atribución de marketing (utm_source / utm_campaign) -->
+  <div class="source-box">
+    <h2 class="chart-header">Atribución de Leads por Fuente</h2>
+    {#if sortedSources.length === 0}
+      <p class="source-empty">Sin datos de atribución todavía.</p>
+    {:else}
+      <table class="source-table">
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Campaña</th>
+            <th class="num">Leads</th>
+            <th class="num">Valor estimado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each sortedSources as row (row.source + '|' + row.campaign)}
+            <tr>
+              <td><span class="source-tag">{row.source}</span></td>
+              <td class="muted">{row.campaign}</td>
+              <td class="num">{row.leads_count}</td>
+              <td class="num">{formatter.format(Number(row.total_value ?? 0))}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -187,6 +286,90 @@
     flex-direction: column;
     gap: 1.5rem;
     width: 100%;
+  }
+
+  /* Filtros */
+  .filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  .filter-select:focus {
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+  .filter-clear {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-clear:hover {
+    color: #fff;
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  /* Atribución */
+  .source-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.875rem;
+    padding: 1.5rem;
+  }
+  .source-empty {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0.5rem 0;
+  }
+  .source-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  .source-table th {
+    text-align: left;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .source-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #d0d0d0;
+  }
+  .source-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .source-table .muted {
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .source-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-al13-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
   }
 
   .kpi-grid {
