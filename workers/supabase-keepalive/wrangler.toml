@@ -1,0 +1,10 @@
+name = "supabase-keepalive"
+main = "index.js"
+compatibility_date = "2026-07-10"
+
+# Worker solo-cron: no expone URL pública, así no requiere subdominio workers.dev
+workers_dev = false
+
+# Todos los días a las 12:00 UTC (07:00 Colombia)
+[triggers]
+crons = ["0 12 * * *"]
