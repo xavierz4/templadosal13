@@ -10,12 +10,13 @@ const envSchema = z.object({
   // Resend (Obligatory for transactional emails)
   RESEND_API_KEY: z.string().startsWith('re_', 'Resend Key debe empezar con re_'),
 
-  // Anthropic (Opcional — solo el módulo de marketing con IA lo necesita).
-  // Pago por uso; si falta, el generador de contenido responde con un error claro.
-  ANTHROPIC_API_KEY: z
-    .string()
-    .startsWith('sk-ant-', 'Anthropic Key debe empezar con sk-ant-')
-    .optional(),
+  // DeepSeek (Opcional — solo el módulo de marketing con IA lo necesita).
+  // API compatible con OpenAI. Base y modelo configurables por si se usa un
+  // proveedor/revendedor con otra URL. Si falta la key, el generador responde
+  // con un error claro y no rompe la app.
+  DEEPSEEK_API_KEY: z.string().min(1).optional(),
+  DEEPSEEK_BASE_URL: z.string().url().default('https://api.deepseek.com'),
+  DEEPSEEK_MODEL: z.string().default('deepseek-v4-pro'),
 });
 
 // Extraemos las variables del entorno (Astro y Node proveen diferentes vías)
@@ -27,7 +28,10 @@ const processEnv = {
   SUPABASE_SERVICE_ROLE_KEY:
     import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
   RESEND_API_KEY: import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY,
-  ANTHROPIC_API_KEY: import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY,
+  DEEPSEEK_API_KEY: import.meta.env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY,
+  DEEPSEEK_BASE_URL:
+    import.meta.env.DEEPSEEK_BASE_URL || process.env.DEEPSEEK_BASE_URL || undefined,
+  DEEPSEEK_MODEL: import.meta.env.DEEPSEEK_MODEL || process.env.DEEPSEEK_MODEL || undefined,
 };
 
 // Fail Fast: Si el schema no pasa, el servidor explota antes de intentar enviar un email o leer DB

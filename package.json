@@ -19,7 +19,6 @@
     "*.{js,cjs,ts,astro,svelte,json,css,md}": "prettier --write"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.111.0",
     "@astrojs/check": "^0.9.6",
     "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/sitemap": "^3.7.0",

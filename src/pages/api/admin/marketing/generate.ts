@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { GenerateRequestSchema, buildTargetUrl } from '@core/domain/marketingSchema';
 import { createSupabaseServerClient } from '@core/infrastructure/supabaseServer';
 import { SupabaseMarketingRepository } from '@core/infrastructure/repositories/SupabaseMarketingRepository';
-import { AnthropicMarketingService } from '@core/infrastructure/services/AnthropicMarketingService';
+import { DeepSeekMarketingService } from '@core/infrastructure/services/DeepSeekMarketingService';
 
 export const prerender = false;
 
@@ -30,7 +30,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const req = GenerateRequestSchema.parse(body);
 
     // 1. Generar contenido creativo con la IA
-    const service = new AnthropicMarketingService();
+    const service = new DeepSeekMarketingService();
     const pieces = await service.generateContent(req);
 
     // 2. Cerrar el embudo: cada pieza lleva su link con UTMs (dominio puro)
@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const message = error instanceof Error ? error.message : 'Error al generar contenido.';
     // Mensaje de la falta de API key llega tal cual (útil para el admin).
-    const isConfigError = message.includes('ANTHROPIC_API_KEY');
+    const isConfigError = message.includes('DEEPSEEK_API_KEY');
     console.error('[MarketingGenerate] Error:', { message });
     return json({ error: message }, isConfigError ? 503 : 500);
   }
